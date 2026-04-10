@@ -76,22 +76,4 @@ export interface AppState {
   sortOrder: 'asc' | 'desc'
 }
 
-// NextAuth session extension
-declare module 'next-auth' {
-  interface Session {
-    accessToken: string
-    user: {
-      name?: string | null
-      email?: string | null
-      image?: string | null
-      login: string          // GitHub username
-    }
-  }
-}
-
-declare module 'next-auth/jwt' {
-  interface JWT {
-    accessToken?: string
-    login?: string
-  }
-}
+// NextAuth extensions moved to types/next-auth.d.ts
