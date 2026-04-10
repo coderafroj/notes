@@ -1,41 +1,60 @@
-export interface Note {
-  id: string
-  title: string
-  content: string        // TipTap JSON string
-  contentText: string    // Plain text for search
-  tags: string[]
-  folder: string
-  isPinned: boolean
-  isFavorite: boolean
-  createdAt: string      // ISO date
-  updatedAt: string      // ISO date
-  attachments: Attachment[]
-  sha?: string           // GitHub file SHA (needed for updates)
-  color?: NoteColor
-}
-
-export type NoteColor = 'default' | 'yellow' | 'green' | 'blue' | 'pink' | 'purple'
+// ============================================================
+// types/index.ts — All shared types for Noteflow
+// ============================================================
 
 export interface Attachment {
   id: string
   name: string
-  type: string           // MIME type
-  size: number
-  url: string            // GitHub raw URL or base64
-  createdAt: string
+  url: string        // base64 data URL or external URL
+  type: string       // MIME type
+  size: number       // bytes
 }
 
-// Folder structure
+// Full note — stored in notes/note-{id}.json on GitHub + Dexie
+export interface Note {
+  id: string
+  title: string
+  content: string          // TipTap JSON (stringified)
+  contentText: string      // Plain text extracted from content (for search)
+  contentPreview: string   // First ~200 chars of contentText
+  tags: string[]
+  folder: string           // folder id or 'all'
+  isPinned: boolean
+  isFavorite: boolean
+  createdAt: string        // ISO string
+  updatedAt: string        // ISO string
+  attachments: Attachment[]
+  color: string | null     // 'purple' | 'teal' | 'amber' | 'blue' | null
+  sha?: string             // GitHub file SHA — required for updates
+}
+
+// Lightweight note — stored in index.json, used in dashboard list
+export interface NoteIndexEntry {
+  id: string
+  title: string
+  contentPreview: string
+  tags: string[]
+  folder: string
+  isPinned: boolean
+  isFavorite: boolean
+  color: string | null
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Folder {
   id: string
   name: string
-  parentId: string | null
   color: string
-  icon: string
-  createdAt: string
+  parentId?: string | null
 }
 
-// Index file stored in GitHub repo root
+export interface TagEntry {
+  name: string
+  count: number
+}
+
+// Root index.json shape on GitHub
 export interface NotesIndex {
   version: string
   notes: NoteIndexEntry[]
@@ -44,35 +63,35 @@ export interface NotesIndex {
   updatedAt: string
 }
 
-export interface NoteIndexEntry {
-  id: string
-  title: string
-  tags: string[]
-  folder: string
-  isPinned: boolean
-  isFavorite: boolean
-  createdAt: string
-  updatedAt: string
-  color?: NoteColor
-  sha?: string
-  contentPreview: string  // First 150 chars of plain text
-}
-
-export interface TagEntry {
-  name: string
-  color: string
-  count: number
-}
-
-// App state
+// Zustand global app state
 export interface AppState {
   notes: NoteIndexEntry[]
   folders: Folder[]
   tags: TagEntry[]
   selectedNoteId: string | null
-  selectedFolderId: string // "all" | id
+  selectedFolderId: string
   searchQuery: string
   viewMode: 'grid' | 'list'
   sortBy: 'updatedAt' | 'createdAt' | 'title'
   sortOrder: 'asc' | 'desc'
+}
+
+// NextAuth session extension
+declare module 'next-auth' {
+  interface Session {
+    accessToken: string
+    user: {
+      name?: string | null
+      email?: string | null
+      image?: string | null
+      login: string          // GitHub username
+    }
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    accessToken?: string
+    login?: string
+  }
 }

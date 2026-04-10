@@ -3,7 +3,7 @@
 import { Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { motion } from 'framer-motion'
-import { PenLine, AlertTriangle, User } from 'lucide-react'
+import { PenLine, AlertTriangle, User, ShieldCheck, Zap, Globe } from 'lucide-react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
 function GithubIcon({ size = 20 }: { size?: number }) {
@@ -25,72 +25,101 @@ function LoginContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[var(--background)]">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[var(--background)] relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[var(--p-purple)]/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[var(--p-teal)]/10 rounded-full blur-[120px]" />
+      </div>
+
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
         className="w-full max-w-md"
       >
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-12 h-12 bg-[var(--p-purple)] rounded-2xl flex items-center justify-center text-white shadow-lg">
-            <PenLine size={28} />
-          </div>
-          <h1 className="text-4xl font-bold tracking-tight">Noteflow</h1>
+        <div className="flex flex-col items-center mb-10">
+          <motion.div 
+            initial={{ y: 20 }}
+            animate={{ y: 0 }}
+            className="w-16 h-16 bg-[var(--p-purple)] rounded-[24px] flex items-center justify-center text-white shadow-2xl shadow-[var(--p-purple)]/40 mb-6"
+          >
+            <PenLine size={32} strokeWidth={2.5} />
+          </motion.div>
+          <h1 className="text-5xl font-bold tracking-tight mb-2">Noteflow</h1>
+          <p className="text-[var(--muted-text)] font-medium">Elevate your note-taking experience.</p>
         </div>
 
-        <div className="glass-card rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--p-purple)] opacity-10 blur-3xl -mr-16 -mt-16" />
-          
-          <h2 className="text-xl font-semibold mb-2 text-center text-[var(--foreground)]">Welcome back</h2>
-          <p className="text-[var(--muted-text)] text-sm text-center mb-8">
-            Your notes. Your GitHub. Zero lock-in.
+        <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-[40px] p-8 md:p-10 shadow-2xl relative">
+          <h2 className="text-2xl font-bold mb-2 text-center text-[var(--foreground)]">Welcome back</h2>
+          <p className="text-[var(--muted-text)] text-sm text-center mb-10">
+            Securely synced with your private GitHub.
           </p>
 
           {error === 'OAuthSignin' && (
-            <div className="mb-6 bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-200 dark:border-red-900/50 p-4 rounded-xl flex items-start gap-3">
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              className="mb-8 bg-red-50 dark:bg-red-900/10 text-red-500 border border-red-100 dark:border-red-900/30 p-5 rounded-3xl flex items-start gap-3"
+            >
               <AlertTriangle size={20} className="shrink-0 mt-0.5" />
-              <div className="text-sm">
-                <p className="font-semibold mb-1">GitHub Config Missing</p>
-                <p>Please configure GITHUB_ID and GITHUB_SECRET in your .env.local file to use cloud sync, or continue as a guest below.</p>
+              <div className="text-xs leading-relaxed">
+                <p className="font-bold mb-1">Configuration Required</p>
+                <p>GITHUB_ID and GITHUB_SECRET are missing. Set them in .env.local or continue as a guest.</p>
               </div>
-            </div>
+            </motion.div>
           )}
 
-          <button
-            onClick={() => signIn('github', { callbackUrl: '/' })}
-            className="w-full flex items-center justify-center gap-3 bg-[var(--foreground)] text-[var(--background)] py-4 rounded-2xl font-medium hover:opacity-90 transition-all shadow-lg active:scale-[0.98] mb-3"
-          >
-            <GithubIcon size={20} />
-            <span>Continue with GitHub</span>
-          </button>
-          
-          <button
-            onClick={handleGuestLogin}
-            className="w-full flex items-center justify-center gap-3 border border-[var(--border)] text-[var(--foreground)] bg-[var(--card-bg)] py-4 rounded-2xl font-medium hover:bg-[var(--muted)] transition-all shadow-sm active:scale-[0.98]"
-          >
-            <User size={20} />
-            <span>Continue as Guest (Offline)</span>
-          </button>
+          <div className="space-y-4">
+            <button
+              onClick={() => signIn('github', { callbackUrl: '/' })}
+              className="w-full h-16 flex items-center justify-center gap-3 bg-[var(--foreground)] text-[var(--background)] rounded-3xl font-bold hover:opacity-90 transition-all shadow-xl active:scale-[0.98]"
+            >
+              <GithubIcon size={22} />
+              <span>Continue with GitHub</span>
+            </button>
+            
+            <button
+              onClick={handleGuestLogin}
+              className="w-full h-16 flex items-center justify-center gap-3 border border-[var(--border)] text-[var(--foreground)] bg-[var(--card-bg)] rounded-3xl font-bold hover:bg-[var(--muted)] transition-all shadow-sm active:scale-[0.98]"
+            >
+              <User size={22} />
+              <span>Continue as Guest</span>
+            </button>
+          </div>
 
-          <div className="mt-8 flex flex-col gap-4">
-            <div className="flex items-center gap-3 p-4 rounded-2xl bg-[var(--muted)]/50 border border-[var(--border)]">
-              <div className="w-2 h-2 rounded-full bg-[var(--p-blue)]" />
-              <p className="text-xs text-[var(--muted-text)]">
-                Notes are stored as JSON files in your private repo.
-              </p>
+          <div className="mt-12 grid grid-cols-3 gap-4">
+            <div className="flex flex-col items-center text-center gap-2">
+              <div className="w-10 h-10 rounded-2xl bg-[var(--muted)] flex items-center justify-center text-[var(--p-purple)]">
+                <ShieldCheck size={20} />
+              </div>
+              <span className="text-[10px] font-bold text-[var(--muted-text)] uppercase tracking-wider">Private</span>
             </div>
-            <div className="flex items-center gap-3 p-4 rounded-2xl bg-[var(--muted)]/50 border border-[var(--border)]">
-              <div className="w-2 h-2 rounded-full bg-[var(--p-teal)]" />
-              <p className="text-xs text-[var(--muted-text)]">
-                Full offline access via local browser cache.
-              </p>
+            <div className="flex flex-col items-center text-center gap-2">
+              <div className="w-10 h-10 rounded-2xl bg-[var(--muted)] flex items-center justify-center text-[var(--p-teal)]">
+                <Zap size={20} />
+              </div>
+              <span className="text-[10px] font-bold text-[var(--muted-text)] uppercase tracking-wider">Fast</span>
+            </div>
+            <div className="flex flex-col items-center text-center gap-2">
+              <div className="w-10 h-10 rounded-2xl bg-[var(--muted)] flex items-center justify-center text-[var(--p-blue)]">
+                <Globe size={20} />
+              </div>
+              <span className="text-[10px] font-bold text-[var(--muted-text)] uppercase tracking-wider">Cloud</span>
             </div>
           </div>
         </div>
 
-        <p className="mt-8 text-center text-xs text-[var(--muted-text)]">
-          By continuing, you agree to our terms of service and privacy policy.
-        </p>
+        <div className="mt-12 flex flex-col items-center gap-6">
+          <p className="text-center text-[10px] font-bold text-[var(--muted-text)] uppercase tracking-[0.2em]">
+            Trust your thoughts to GitHub
+          </p>
+          <div className="flex items-center gap-4 text-[var(--muted-text)]">
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--p-purple)]" />
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--p-teal)]" />
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--p-coral)]" />
+          </div>
+        </div>
       </motion.div>
     </div>
   )

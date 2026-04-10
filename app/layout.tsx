@@ -1,15 +1,9 @@
-import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Inter } from "next/font/google";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-sans",
-  subsets: ["latin"],
-});
-
-const outfit = Outfit({
-  variable: "--font-heading",
   subsets: ["latin"],
 });
 
@@ -26,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="en" className={`${inter.variable}`}>
       <body className="antialiased">
         <AuthProvider>{children}</AuthProvider>
       </body>
