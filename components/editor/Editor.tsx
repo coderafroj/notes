@@ -236,7 +236,7 @@ export default function Editor({ content, onChange, editable = true }: EditorPro
           {/* Bubble Menu */}
           <BubbleMenu 
             editor={editor} 
-            tippyOptions={{ duration: 100 }}
+            {...({ tippyOptions: { duration: 100 } } as any)}
             className="flex items-center gap-0.5 p-1 bg-[var(--foreground)] text-[var(--background)] rounded-lg shadow-xl overflow-hidden"
           >
             <button
@@ -262,7 +262,7 @@ export default function Editor({ content, onChange, editable = true }: EditorPro
           {/* Floating Menu */}
           <FloatingMenu 
             editor={editor} 
-            tippyOptions={{ duration: 100 }}
+            {...({ tippyOptions: { duration: 100 } } as any)}
             className="flex flex-col gap-0.5 p-1 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-xl overflow-hidden min-w-[120px]"
           >
             <button
