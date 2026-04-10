@@ -25,47 +25,58 @@ function LoginContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[var(--background)] relative overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[var(--p-purple)]/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[var(--p-teal)]/10 rounded-full blur-[120px]" />
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[radial-gradient(circle_at_top_left,rgba(127,119,221,0.15),transparent),radial-gradient(circle_at_bottom_right,rgba(29,158,117,0.1),transparent)] relative overflow-hidden bg-[var(--background)]">
+      {/* Premium Gradient Overlays */}
+      <div className="absolute top-0 left-0 w-full h-full -z-10 bg-[var(--background)]">
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--p-purple)]/10 rounded-full blur-[160px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[var(--p-teal)]/5 rounded-full blur-[140px]" />
       </div>
 
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
         className="w-full max-w-md"
       >
-        <div className="flex flex-col items-center mb-10">
+        <div className="flex flex-col items-center mb-12">
           <motion.div 
-            initial={{ y: 20 }}
-            animate={{ y: 0 }}
-            className="w-16 h-16 bg-[var(--p-purple)] rounded-[24px] flex items-center justify-center text-white shadow-2xl shadow-[var(--p-purple)]/40 mb-6"
+            whileHover={{ scale: 1.05, rotate: 5 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-20 h-20 bg-gradient-to-br from-[var(--p-purple)] to-[var(--p-blue)] rounded-[28px] flex items-center justify-center text-white shadow-2xl shadow-[var(--p-purple)]/40 mb-8"
           >
-            <PenLine size={32} strokeWidth={2.5} />
+            <PenLine size={40} strokeWidth={2.5} />
           </motion.div>
-          <h1 className="text-5xl font-bold tracking-tight mb-2">Noteflow</h1>
-          <p className="text-[var(--muted-text)] font-medium">Elevate your note-taking experience.</p>
+          <h1 className="text-6xl font-black tracking-tight mb-3 bg-clip-text text-transparent bg-gradient-to-b from-[var(--foreground)] to-[var(--muted-text)]">
+            Noteflow
+          </h1>
+          <p className="text-[var(--muted-text)] font-semibold tracking-wide text-center">
+            Your notes. Your GitHub. <span className="text-[var(--p-purple)]">Zero lock-in.</span>
+          </p>
         </div>
 
-        <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-[40px] p-8 md:p-10 shadow-2xl relative">
-          <h2 className="text-2xl font-bold mb-2 text-center text-[var(--foreground)]">Welcome back</h2>
-          <p className="text-[var(--muted-text)] text-sm text-center mb-10">
+        <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-[48px] p-8 md:p-12 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] relative">
+          <h2 className="text-3xl font-bold mb-3 text-center text-[var(--foreground)] tracking-tight">Welcome back</h2>
+          <p className="text-[var(--muted-text)] text-sm font-medium text-center mb-10">
             Securely synced with your private GitHub.
           </p>
 
-          {error === 'OAuthSignin' && (
+          {(error === 'OAuthSignin' || error === 'OAuthCallback') && (
             <motion.div 
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
-              className="mb-8 bg-red-50 dark:bg-red-900/10 text-red-500 border border-red-100 dark:border-red-900/30 p-5 rounded-3xl flex items-start gap-3"
+              className="mb-8 bg-amber-50 dark:bg-amber-900/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 p-6 rounded-[32px] flex items-start gap-4"
             >
-              <AlertTriangle size={20} className="shrink-0 mt-0.5" />
-              <div className="text-xs leading-relaxed">
-                <p className="font-bold mb-1">Configuration Required</p>
-                <p>GITHUB_ID and GITHUB_SECRET are missing. Set them in .env.local or continue as a guest.</p>
+              <AlertTriangle size={24} className="shrink-0 mt-1" />
+              <div className="text-xs leading-relaxed space-y-2">
+                <p className="font-bold text-sm uppercase tracking-wider">Configuration Required</p>
+                {error === 'OAuthCallback' ? (
+                  <>
+                    <p>It looks like your <span className="font-bold">Callback URL</span> or <span className="font-bold">NEXTAUTH_URL</span> is misconfigured.</p>
+                    <p>Ensure your GitHub App allows <span className="font-mono bg-white/50 dark:bg-black/50 px-1 rounded">/api/auth/callback/github</span> and your environment variables match your current domain.</p>
+                  </>
+                ) : (
+                  <p>GITHUB_ID and GITHUB_SECRET are missing. Set them in .env.local to enable cloud sync, or continue as a guest for local storage.</p>
+                )}
               </div>
             </motion.div>
           )}
@@ -73,53 +84,56 @@ function LoginContent() {
           <div className="space-y-4">
             <button
               onClick={() => signIn('github', { callbackUrl: '/' })}
-              className="w-full h-16 flex items-center justify-center gap-3 bg-[var(--foreground)] text-[var(--background)] rounded-3xl font-bold hover:opacity-90 transition-all shadow-xl active:scale-[0.98]"
+              className="w-full h-16 flex items-center justify-center gap-4 bg-[var(--foreground)] text-[var(--background)] rounded-[24px] font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-black/10 dark:shadow-white/5 group"
             >
-              <GithubIcon size={22} />
+              <motion.div whileHover={{ rotate: 15 }}>
+                <GithubIcon size={24} />
+              </motion.div>
               <span>Continue with GitHub</span>
             </button>
             
             <button
               onClick={handleGuestLogin}
-              className="w-full h-16 flex items-center justify-center gap-3 border border-[var(--border)] text-[var(--foreground)] bg-[var(--card-bg)] rounded-3xl font-bold hover:bg-[var(--muted)] transition-all shadow-sm active:scale-[0.98]"
+              className="w-full h-16 flex items-center justify-center gap-4 border-2 border-[var(--border)] text-[var(--foreground)] bg-transparent rounded-[24px] font-bold hover:bg-[var(--muted)] hover:border-transparent active:scale-[0.98] transition-all"
             >
-              <User size={22} />
+              <User size={24} className="text-[var(--muted-text)]" />
               <span>Continue as Guest</span>
             </button>
           </div>
 
-          <div className="mt-12 grid grid-cols-3 gap-4">
-            <div className="flex flex-col items-center text-center gap-2">
-              <div className="w-10 h-10 rounded-2xl bg-[var(--muted)] flex items-center justify-center text-[var(--p-purple)]">
-                <ShieldCheck size={20} />
+          <div className="mt-12 pt-8 border-t border-[var(--border)]/50 grid grid-cols-3 gap-6">
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-[var(--muted)] flex items-center justify-center text-[var(--p-purple)] shadow-inner">
+                <ShieldCheck size={24} />
               </div>
-              <span className="text-[10px] font-bold text-[var(--muted-text)] uppercase tracking-wider">Private</span>
+              <span className="text-[10px] font-black text-[var(--muted-text)] uppercase tracking-[0.1em]">Private</span>
             </div>
-            <div className="flex flex-col items-center text-center gap-2">
-              <div className="w-10 h-10 rounded-2xl bg-[var(--muted)] flex items-center justify-center text-[var(--p-teal)]">
-                <Zap size={20} />
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-[var(--muted)] flex items-center justify-center text-[var(--p-teal)] shadow-inner">
+                <Zap size={24} />
               </div>
-              <span className="text-[10px] font-bold text-[var(--muted-text)] uppercase tracking-wider">Fast</span>
+              <span className="text-[10px] font-black text-[var(--muted-text)] uppercase tracking-[0.1em]">Fast</span>
             </div>
-            <div className="flex flex-col items-center text-center gap-2">
-              <div className="w-10 h-10 rounded-2xl bg-[var(--muted)] flex items-center justify-center text-[var(--p-blue)]">
-                <Globe size={20} />
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-[var(--muted)] flex items-center justify-center text-[var(--p-blue)] shadow-inner">
+                <Globe size={24} />
               </div>
-              <span className="text-[10px] font-bold text-[var(--muted-text)] uppercase tracking-wider">Cloud</span>
+              <span className="text-[10px] font-black text-[var(--muted-text)] uppercase tracking-[0.1em]">Secure</span>
             </div>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center gap-6">
-          <p className="text-center text-[10px] font-bold text-[var(--muted-text)] uppercase tracking-[0.2em]">
-            Trust your thoughts to GitHub
+        <div className="mt-12 flex flex-col items-center gap-8">
+          <p className="text-center text-xs font-bold text-[var(--muted-text)]/50 uppercase tracking-[0.3em]">
+            User-owned data architecture
           </p>
-          <div className="flex items-center gap-4 text-[var(--muted-text)]">
-            <div className="w-1.5 h-1.5 rounded-full bg-[var(--p-purple)]" />
-            <div className="w-1.5 h-1.5 rounded-full bg-[var(--p-teal)]" />
-            <div className="w-1.5 h-1.5 rounded-full bg-[var(--p-coral)]" />
+          <div className="flex items-center gap-6">
+            <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 3 }} className="w-2 h-2 rounded-full bg-[var(--p-purple)] opacity-60" />
+            <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 3, delay: 0.5 }} className="w-2 h-2 rounded-full bg-[var(--p-teal)] opacity-60" />
+            <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 3, delay: 1 }} className="w-2 h-2 rounded-full bg-[var(--p-coral)] opacity-60" />
           </div>
         </div>
+
       </motion.div>
     </div>
   )

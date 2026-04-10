@@ -12,8 +12,18 @@ export const metadata: Metadata = {
   title: "Noteflow | Your Notes, Your GitHub",
   description: "A premium notes application that stores your data in your own private GitHub repository.",
   manifest: "/manifest.json",
-  themeColor: "#ffffff",
+  themeColor: "#7F77DD",
+  appleWebApp: {
+    title: "Noteflow",
+    statusBarStyle: "default",
+    capable: true,
+  },
+  icons: {
+    icon: "/icon-192x192.png",
+    apple: "/icon-192x192.png",
+  },
 };
+
 
 export default function RootLayout({
   children,
