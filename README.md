@@ -31,5 +31,5 @@ Follow these steps to get your local development environment running:
 
 1. **Clone the project:**
    ```bash
-   git clone [https://github.com/your-username/notes-app.git](https://github.com/your-username/notes-app.git)
+   git clone [https://github.com/coderafroj/.git](https://github.com/coderafroj/notes.git)
    cd notes-app
