@@ -2,7 +2,7 @@
 
 Welcome to **NoteStream**, a sleek and high-performance note-taking application built with the latest web technologies. This project is crafted with precision to provide a seamless user experience.
 
-> **Developed by:** [Coderafroj](https://github.com/your-github-username)
+> **Developed by:** [Coderafroj](https://github.com/coderafroj)
 
 ---
 
