@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', 'Outfit', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #111111;
+  --card-bg: #ffffff;
+  --border: #e5e7eb;
+  --muted: #f3f4f6;
+  --muted-text: #6b7280;
+  
+  --p-purple: #7F77DD;
+  --p-teal: #1D9E75;
+  --p-coral: #D85A30;
+  --p-blue: #378ADD;
+  --p-amber: #BA7517;
+  --p-pink: #D4537E;
+  --p-green: #639922;
+  --p-gray: #888780;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #f0f0f0;
+  --card-bg: #141414;
+  --border: #262626;
+  --muted: #1a1a1a;
+  --muted-text: #a1a1aa;
+}
+
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    @apply antialiased;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/70 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10;
+  }
+}

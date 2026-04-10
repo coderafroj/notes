@@ -1,0 +1,225 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1rem 0;font-family:var(--font-sans)}
+.sec{margin-bottom:2rem}
+.sec-label{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.75rem}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.card{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.1rem}
+.card-h{display:flex;align-items:center;gap:8px;margin-bottom:.4rem}
+.pill{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.p-purple{background:#7F77DD}.p-teal{background:#1D9E75}.p-coral{background:#D85A30}
+.p-blue{background:#378ADD}.p-amber{background:#BA7517}.p-pink{background:#D4537E}
+.p-green{background:#639922}.p-gray{background:#888780}
+.ct{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.cd{font-size:12px;color:var(--color-text-secondary);line-height:1.5;margin-top:.25rem}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;margin-top:.4rem}
+.bp{background:#EEEDFE;color:#3C3489}.bt{background:#E1F5EE;color:#0F6E56}
+.bc{background:#FAECE7;color:#993C1D}.bb{background:#E6F1FB;color:#0C447C}
+.ba{background:#FAEEDA;color:#854F0B}.bpk{background:#FBEAF0;color:#72243E}
+.bg{background:#EAF3DE;color:#3B6D11}.bgr{background:#F1EFE8;color:#444441}
+.flow{display:flex;flex-direction:column;gap:0}
+.fstep{display:flex;align-items:flex-start;gap:12px;padding:.75rem 0}
+.fstep:not(:last-child){border-bottom:.5px solid var(--color-border-tertiary)}
+.fnum{width:24px;height:24px;border-radius:50%;background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--color-text-secondary);flex-shrink:0;margin-top:2px}
+.ftitle{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.2rem}
+.fdesc{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.code-block{background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.75rem 1rem;font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary);line-height:1.7;overflow-x:auto;white-space:pre}
+.stack-box{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.srow{display:flex;align-items:center;gap:0;padding:.6rem 1rem;border-bottom:.5px solid var(--color-border-tertiary)}
+.srow:last-child{border-bottom:none}
+.slabel{font-size:12px;color:var(--color-text-tertiary);width:100px;flex-shrink:0}
+.sval{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.phase-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.phase{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.75rem}
+.phase-num{font-size:10px;font-weight:500;color:var(--color-text-tertiary);margin-bottom:.3rem}
+.phase-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:.4rem}
+.phase-item{font-size:11px;color:var(--color-text-secondary);line-height:1.6}
+.db-flow{display:flex;flex-direction:column;gap:8px}
+.db-row{display:flex;align-items:center;gap:10px}
+.db-box{flex:1;background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.5rem .75rem;font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.db-or{font-size:11px;color:var(--color-text-tertiary);font-weight:500}
+.db-arrow{font-size:11px;color:var(--color-text-tertiary);text-align:center}
+.highlight{border:1.5px solid #378ADD}
+.warn{background:#FAEEDA;border:.5px solid #EF9F27;border-radius:var(--border-radius-md);padding:.6rem .9rem;font-size:12px;color:#633806;margin-top:.5rem}
+</style>
+
+<div class="wrap">
+
+<div class="sec">
+  <div class="sec-label">App ka naam — Noteflow</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-h"><div class="pill p-purple"></div><span class="ct">Tagline</span></div>
+      <div class="cd">Your notes. Your GitHub. Zero lock-in.</div>
+      <span class="badge bp">Notion + GitHub = Noteflow</span>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="pill p-blue"></div><span class="ct">Core idea</span></div>
+      <div class="cd">Har note ek JSON/Markdown file hai — user ki apni private GitHub repo mein. Hum sirf ek sundar UI hain.</div>
+      <span class="badge bb">User owns their data</span>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Database strategy — GitHub + fallback</div>
+  <div class="db-flow">
+    <div class="db-row">
+      <div class="db-box highlight" style="text-align:center">
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:2px">Option A — best</div>
+        GitHub OAuth login
+        <div style="font-size:10px;color:var(--color-text-tertiary);margin-top:2px">User ka apna repo → notes save</div>
+      </div>
+      <div class="db-or">ya</div>
+      <div class="db-box" style="text-align:center">
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:2px">Option B — fallback</div>
+        Guest mode
+        <div style="font-size:10px;color:var(--color-text-tertiary);margin-top:2px">IndexedDB (local browser)</div>
+      </div>
+    </div>
+    <div class="db-arrow">↓ dono case mein same UI</div>
+    <div class="db-row">
+      <div class="db-box" style="text-align:center;flex:1">
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:2px">Notes stored as</div>
+        /notes/note-{id}.json
+        <div style="font-size:10px;color:var(--color-text-tertiary);margin-top:2px">GitHub repo mein file</div>
+      </div>
+      <div class="db-box" style="text-align:center;flex:1">
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:2px">Index file</div>
+        /index.json
+        <div style="font-size:10px;color:var(--color-text-tertiary);margin-top:2px">Saari notes ki list + tags</div>
+      </div>
+      <div class="db-box" style="text-align:center;flex:1">
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:2px">Attachments</div>
+        /attachments/
+        <div style="font-size:10px;color:var(--color-text-tertiary);margin-top:2px">Images base64 ya raw file</div>
+      </div>
+    </div>
+    <div class="warn">Token ka kya hoga? → GitHub OAuth flow mein user khud apna token authorize karta hai. Tumhara koi token nahi. Vercel mein sirf GitHub OAuth App ka Client ID aur Secret hoga (public nahi).</div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Auth flow — step by step</div>
+  <div class="card">
+    <div class="flow">
+      <div class="fstep">
+        <div class="fnum">1</div>
+        <div><div class="ftitle">User "Login with GitHub" click kare</div><div class="fdesc">Tumhare Vercel app se GitHub OAuth page pe redirect</div></div>
+      </div>
+      <div class="fstep">
+        <div class="fnum">2</div>
+        <div><div class="ftitle">GitHub permission maange</div><div class="fdesc">Scope: repo (private repos read/write). User allow kare.</div></div>
+      </div>
+      <div class="fstep">
+        <div class="fnum">3</div>
+        <div><div class="ftitle">Access token mile — browser mein store</div><div class="fdesc">localStorage mein secure rakhna. Kisi ko nahi dikhta.</div></div>
+      </div>
+      <div class="fstep">
+        <div class="fnum">4</div>
+        <div><div class="ftitle">App automatically ek "noteflow-data" repo banaye</div><div class="fdesc">Pehli baar login pe GitHub API se private repo create karo</div></div>
+      </div>
+      <div class="fstep">
+        <div class="fnum">5</div>
+        <div><div class="ftitle">Ab saari notes us repo mein save hongi</div><div class="fdesc">GitHub API calls token ke saath — user ko kuch dikhta nahi</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Features — poora list</div>
+  <div class="grid3">
+    <div class="card"><div class="card-h"><div class="pill p-purple"></div><span class="ct">Rich text editor</span></div><div class="cd">Headings, bold, italic, tables, code blocks, checklists, dividers</div><span class="badge bp">TipTap</span></div>
+    <div class="card"><div class="card-h"><div class="pill p-blue"></div><span class="ct">File attach</span></div><div class="cd">Image, PDF drag & drop. GitHub mein base64 ya raw file save</div><span class="badge bb">GitHub API</span></div>
+    <div class="card"><div class="card-h"><div class="pill p-teal"></div><span class="ct">Tags + folders</span></div><div class="cd">Color-coded tags, nested folders, instant filter</div><span class="badge bt">index.json</span></div>
+    <div class="card"><div class="card-h"><div class="pill p-amber"></div><span class="ct">Offline mode</span></div><div class="cd">IndexedDB mein cache — internet aaye toh GitHub sync</div><span class="badge ba">PWA</span></div>
+    <div class="card"><div class="card-h"><div class="pill p-coral"></div><span class="ct">Version history</span></div><div class="cd">GitHub ka built-in commits = free version history!</div><span class="badge bc">Git commits</span></div>
+    <div class="card"><div class="card-h"><div class="pill p-pink"></div><span class="ct">Dark / light</span></div><div class="cd">System default ya manual toggle. OLED pure black</div><span class="badge bpk">CSS vars</span></div>
+    <div class="card"><div class="card-h"><div class="pill p-green"></div><span class="ct">Export</span></div><div class="cd">PDF, Markdown, HTML — ek click mein download</div><span class="badge bg">jsPDF</span></div>
+    <div class="card"><div class="card-h"><div class="pill p-purple"></div><span class="ct">Search</span></div><div class="cd">Title + content mein instant local search. Fuse.js se fuzzy</div><span class="badge bp">Fuse.js</span></div>
+    <div class="card"><div class="card-h"><div class="pill p-blue"></div><span class="ct">Mobile app feel</span></div><div class="cd">Bottom nav, swipe gestures, PWA install, splash screen</div><span class="badge bb">PWA + Framer</span></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Tech stack</div>
+  <div class="stack-box">
+    <div class="srow"><span class="slabel">Framework</span><span class="sval">Next.js 14 (App Router) + TypeScript</span></div>
+    <div class="srow"><span class="slabel">Styling</span><span class="sval">Tailwind CSS + Framer Motion (animations)</span></div>
+    <div class="srow"><span class="slabel">Editor</span><span class="sval">TipTap v2 — free, Notion-like, extensible</span></div>
+    <div class="srow"><span class="slabel">Auth</span><span class="sval">NextAuth.js + GitHub OAuth Provider</span></div>
+    <div class="srow"><span class="slabel">Database</span><span class="sval">GitHub REST API (user ki repo) + IndexedDB fallback</span></div>
+    <div class="srow"><span class="slabel">Offline</span><span class="sval">Dexie.js (IndexedDB wrapper) + next-pwa</span></div>
+    <div class="srow"><span class="slabel">Search</span><span class="sval">Fuse.js (client-side fuzzy search)</span></div>
+    <div class="srow"><span class="slabel">Export</span><span class="sval">jsPDF + html2canvas + markdown-it</span></div>
+    <div class="srow"><span class="slabel">Deploy</span><span class="sval">Vercel (free tier, auto-deploy from GitHub)</span></div>
+    <div class="srow"><span class="slabel">Icons</span><span class="sval">Lucide React (free, clean, 1000+ icons)</span></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Folder structure</div>
+  <div class="code-block">noteflow/
+├── app/
+│   ├── (auth)/
+│   │   └── login/page.tsx        ← GitHub login page
+│   ├── (app)/
+│   │   ├── layout.tsx            ← sidebar + bottom nav
+│   │   ├── page.tsx              ← notes list / dashboard
+│   │   ├── note/[id]/page.tsx    ← note editor
+│   │   └── settings/page.tsx     ← GitHub connect, theme
+│   └── api/
+│       ├── auth/[...nextauth]/   ← NextAuth GitHub OAuth
+│       └── github/               ← proxy for GitHub API calls
+├── components/
+│   ├── editor/                   ← TipTap editor components
+│   ├── sidebar/                  ← folders, tags, search
+│   ├── ui/                       ← buttons, modals, inputs
+│   └── mobile/                   ← bottom nav, swipe handler
+├── lib/
+│   ├── github.ts                 ← GitHub API helper functions
+│   ├── db.ts                     ← IndexedDB (Dexie) setup
+│   ├── sync.ts                   ← offline → GitHub sync logic
+│   └── search.ts                 ← Fuse.js search setup
+└── public/
+    ├── manifest.json             ← PWA manifest
+    └── sw.js                     ← service worker</div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Build phases</div>
+  <div class="phase-grid">
+    <div class="phase">
+      <div class="phase-num">Phase 1 — 1 hafte</div>
+      <div class="phase-title">Foundation</div>
+      <div class="phase-item">Next.js setup<br>GitHub OAuth<br>Repo create<br>Notes list page</div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">Phase 2 — 1 hafte</div>
+      <div class="phase-title">Editor</div>
+      <div class="phase-item">TipTap install<br>Save to GitHub<br>Load from GitHub<br>Auto-save</div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">Phase 3 — 1 hafte</div>
+      <div class="phase-title">Features</div>
+      <div class="phase-item">Tags + folders<br>Search (Fuse.js)<br>File attachments<br>Dark mode</div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">Phase 4 — 1 hafte</div>
+      <div class="phase-title">Polish</div>
+      <div class="phase-item">PWA offline<br>Export PDF/MD<br>Animations<br>Mobile nav</div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
+  <button onclick="sendPrompt('Phase 1 ka poora code likh do — Next.js setup, GitHub OAuth, aur notes list page ↗')">Phase 1 ka code chahiye ↗</button>
+  <button onclick="sendPrompt('TipTap editor ka poora code dikhao GitHub save ke saath ↗')">Editor ka code ↗</button>
+  <button onclick="sendPrompt('GitHub API helper file github.ts ka poora code likh do ↗')">GitHub API helper ↗</button>
+  <button onclick="sendPrompt('App ka mobile UI design dikhao ↗')">Mobile UI design ↗</button>
+</div>
+
+</div>
