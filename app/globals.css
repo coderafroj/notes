@@ -111,6 +111,11 @@
   opacity: 0.5;
 }
 
+/* Ensure editor text is visible and black by default in light mode */
+.tiptap {
+  color: var(--foreground);
+}
+
 /* ── Task list ───────────────────────────────────────────── */
 .tiptap ul[data-type="taskList"] {
   list-style: none;
@@ -233,11 +238,9 @@
   padding: 0.05em 0.2em;
 }
 
-@media (prefers-color-scheme: dark) {
-  .tiptap mark {
-    background: #713f12;
-    color: #fef9c3;
-  }
+.dark .tiptap mark {
+  background: #713f12;
+  color: #fef9c3;
 }
 
 /* ── Links ───────────────────────────────────────────────── */

@@ -146,7 +146,7 @@ export default function Editor({
     editorProps: {
       attributes: {
         class:
-          'prose prose-base max-w-none focus:outline-none min-h-[60vh] dark:prose-invert prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-relaxed prose-li:leading-relaxed',
+          'prose prose-base max-w-none focus:outline-none min-h-[60vh] text-[var(--foreground)] dark:prose-invert prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-relaxed prose-li:leading-relaxed',
         spellcheck: 'true',
       },
     },
