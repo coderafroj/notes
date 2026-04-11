@@ -175,52 +175,52 @@ export default function NotePage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[var(--background)]">
+    <div className="flex flex-col h-full bg-[var(--background)] max-w-full overflow-hidden">
       {/* Header */}
-      <header className="px-6 py-4 flex items-center justify-between border-b border-[var(--border)] sticky top-0 bg-[var(--background)] z-20">
-        <div className="flex items-center gap-4 flex-1 min-w-0">
+      <header className="px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-[var(--border)] sticky top-0 bg-[var(--background)] z-20 overflow-hidden">
+        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
           <button
             onClick={() => router.back()}
-            className="p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)] shrink-0"
+            className="p-1.5 sm:p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)] shrink-0"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} sm:size={20} />
           </button>
           <input
             key={note.id}
             defaultValue={note.title}
             onBlur={(e) => handleTitleBlur(e.target.value)}
-            className="text-lg font-bold bg-transparent outline-none focus:text-[var(--p-purple)] transition-colors min-w-0 flex-1 truncate"
+            className="text-base sm:text-lg font-bold bg-transparent outline-none focus:text-[var(--p-purple)] transition-colors min-w-0 flex-1 truncate"
             placeholder="Note Title"
           />
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Save status */}
-          <div className="mr-3 text-xs font-medium text-[var(--muted-text)] flex items-center gap-2 min-w-[120px] justify-end">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-2">
+          {/* Save status - reduced width on mobile */}
+          <div className="mr-1 sm:mr-3 text-[10px] sm:text-xs font-medium text-[var(--muted-text)] flex items-center gap-1 sm:gap-2 min-w-[70px] sm:min-w-[120px] justify-end">
             {saveStatus === 'saving' && (
-              <span className="flex items-center gap-1.5 animate-pulse">
-                <Loader2 size={12} className="animate-spin" />
-                Saving...
+              <span className="flex items-center gap-1 animate-pulse">
+                <Loader2 size={10} className="animate-spin" />
+                <span className="hidden xs:inline">Saving...</span>
               </span>
             )}
             {saveStatus === 'saved' && (
               <span className="text-[var(--p-teal)] flex items-center gap-1">
-                <Check size={12} />
-                Saved to GitHub
+                <Check size={10} />
+                <span className="hidden xs:inline">Saved</span>
               </span>
             )}
             {saveStatus === 'error' && (
-              <span className="text-red-500">Save failed</span>
+              <span className="text-red-500">Error</span>
             )}
           </div>
 
           <button
             onClick={handleToggleFavorite}
-            className="p-2 rounded-xl hover:bg-[var(--muted)] transition-all"
+            className="p-1.5 sm:p-2 rounded-xl hover:bg-[var(--muted)] transition-all shrink-0"
             title={note.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
             <Star
-              size={20}
+              size={18}
               className={
                 note.isFavorite
                   ? 'fill-[var(--p-amber)] text-[var(--p-amber)]'
@@ -231,7 +231,7 @@ export default function NotePage() {
 
           <button
             onClick={handleShare}
-            className="p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)]"
+            className="hidden md:flex p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)]"
             title="Copy link"
           >
             <Share size={20} />
@@ -239,7 +239,7 @@ export default function NotePage() {
 
           <button
             onClick={() => router.push(`/focus/${note.id}`)}
-            className="p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)]"
+            className="hidden sm:flex p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)]"
             title="Focus Mode"
           >
             <Focus size={20} />
@@ -247,7 +247,7 @@ export default function NotePage() {
 
           <button
             onClick={() => router.push(`/history/${note.id}`)}
-            className="p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)]"
+            className="hidden sm:flex p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)]"
             title="Version History"
           >
             <History size={20} />
@@ -257,13 +257,33 @@ export default function NotePage() {
           <div className="relative">
             <button
               onClick={() => setShowExportMenu((v) => !v)}
-              className="p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)]"
+              className="p-1.5 sm:p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)]"
               title="Export"
             >
-              <Download size={20} />
+              <Download size={18} />
             </button>
             {showExportMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-lg overflow-hidden z-50">
+                {/* Mobile only visible actions in menu */}
+                <button
+                  onClick={handleShare}
+                  className="md:hidden w-full text-left px-4 py-3 text-sm hover:bg-[var(--muted)] transition-colors border-b border-[var(--border)]"
+                >
+                  Share Link
+                </button>
+                <button
+                  onClick={() => router.push(`/focus/${note.id}`)}
+                  className="sm:hidden w-full text-left px-4 py-3 text-sm hover:bg-[var(--muted)] transition-colors border-b border-[var(--border)]"
+                >
+                  Focus Mode
+                </button>
+                <button
+                  onClick={() => router.push(`/history/${note.id}`)}
+                  className="sm:hidden w-full text-left px-4 py-3 text-sm hover:bg-[var(--muted)] transition-colors border-b border-[var(--border)]"
+                >
+                  Version History
+                </button>
+                
                 <button
                   onClick={() => {
                     exportToPDF(note.title, '.tiptap')
@@ -283,19 +303,19 @@ export default function NotePage() {
                   Export as Markdown
                 </button>
               </div>
-            )}
+            </div>
           </div>
 
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="p-2 rounded-xl transition-all text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 disabled:opacity-50"
+            className="p-1.5 sm:p-2 rounded-xl transition-all text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 disabled:opacity-50"
             title="Delete note"
           >
             {isDeleting ? (
-              <Loader2 size={20} className="animate-spin" />
+              <Loader2 size={18} className="animate-spin" />
             ) : (
-              <Trash2 size={20} />
+              <Trash2 size={18} />
             )}
           </button>
         </div>

@@ -205,13 +205,13 @@ export default function Editor({
   if (!editor) return null
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full max-w-full overflow-hidden">
       {editable && (
         <>
           {/* ── Main toolbar ───────────────────────────────── */}
-          <div className="sticky top-0 z-20 bg-[var(--background)] border-b border-[var(--border)]">
+          <div className="sticky top-0 z-20 bg-[var(--background)] border-b border-[var(--border)] max-w-full overflow-hidden">
             {/* Row 1 — History + Headings + Text format */}
-            <div className="flex items-center gap-0.5 px-3 py-2 overflow-x-auto scrollbar-hide">
+            <div className="flex items-center gap-0.5 px-3 py-2 overflow-x-auto scrollbar-hide max-w-full">
               {/* History */}
               <ToolBtn
                 onClick={() => editor.chain().focus().undo().run()}
