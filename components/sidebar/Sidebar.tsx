@@ -23,6 +23,7 @@ import { saveNoteWithSync } from '@/lib/sync'
 import { cn } from '@/lib/utils'
 import { v4 as uuidv4 } from 'uuid'
 import { Note } from '@/types'
+import TemplatesPicker from '@/components/note-ui/TemplatesPicker'
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -39,6 +40,7 @@ export default function Sidebar() {
   } = useNoteflowStore()
 
   const [isCreating, setIsCreating] = useState(false)
+  const [showTemplates, setShowTemplates] = useState(false)
 
   const navItems = [
     { label: 'All Notes', icon: PenLine, id: 'all', href: '/' },
@@ -46,33 +48,42 @@ export default function Sidebar() {
   ]
 
   // ── Create new note ───────────────────────────────────────
-  const handleNewNote = useCallback(async () => {
+  const handleNewNote = useCallback(() => {
     if (isCreating) return
-    setIsCreating(true)
-    const id = uuidv4()
-    const now = new Date().toISOString()
-    const note: Note = {
-      id,
-      title: 'Untitled Note',
-      content: '',
-      contentText: '',
-      contentPreview: '',
-      tags: [],
-      folder: selectedFolderId === 'all' ? 'all' : selectedFolderId,
-      isPinned: false,
-      isFavorite: false,
-      createdAt: now,
-      updatedAt: now,
-      attachments: [],
-      color: null,
-    }
-    await saveNoteWithSync(session?.accessToken, session?.user?.login, note)
-    router.push(`/note/${id}`)
-    setIsCreating(false)
-  }, [session, selectedFolderId, isCreating, router])
+    setShowTemplates(true)
+  }, [isCreating])
 
   return (
     <aside className="hidden lg:flex w-72 flex-col h-screen border-r border-[var(--border)] bg-[var(--background)] p-6 gap-6 overflow-hidden">
+      {showTemplates && (
+        <TemplatesPicker
+          onSelect={async (key, content, title) => {
+            setShowTemplates(false)
+            setIsCreating(true)
+            const id = uuidv4()
+            const now = new Date().toISOString()
+            const note: Note = {
+              id,
+              title: title || 'Untitled Note',
+              content: content ? JSON.stringify(content) : '',
+              contentText: '',
+              contentPreview: '',
+              tags: [],
+              folder: selectedFolderId === 'all' ? 'all' : selectedFolderId,
+              isPinned: false,
+              isFavorite: false,
+              createdAt: now,
+              updatedAt: now,
+              attachments: [],
+              color: null,
+            }
+            await saveNoteWithSync(session?.accessToken, session?.user?.login, note)
+            router.push(`/note/${id}`)
+            setIsCreating(false)
+          }}
+          onClose={() => setShowTemplates(false)}
+        />
+      )}
       {/* Logo */}
       <div className="flex items-center gap-3 shrink-0">
         <div className="w-8 h-8 bg-[var(--p-purple)] rounded-xl flex items-center justify-center text-white">

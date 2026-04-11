@@ -16,8 +16,11 @@ import {
   Check,
   Download,
   Loader2,
+  Focus,
+  History,
 } from 'lucide-react'
 import Editor from '@/components/editor/Editor'
+import NoteMetaBar from '@/components/note-ui/NoteMetaBar'
 import { Note } from '@/types'
 import { cn } from '@/lib/utils'
 import { exportToPDF, exportToMarkdown } from '@/lib/export'
@@ -234,6 +237,22 @@ export default function NotePage() {
             <Share size={20} />
           </button>
 
+          <button
+            onClick={() => router.push(`/focus/${note.id}`)}
+            className="p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)]"
+            title="Focus Mode"
+          >
+            <Focus size={20} />
+          </button>
+
+          <button
+            onClick={() => router.push(`/history/${note.id}`)}
+            className="p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)]"
+            title="Version History"
+          >
+            <History size={20} />
+          </button>
+
           {/* Export dropdown */}
           <div className="relative">
             <button
@@ -281,6 +300,15 @@ export default function NotePage() {
           </button>
         </div>
       </header>
+
+      <NoteMetaBar
+        note={note}
+        onUpdate={async (changes) => {
+          const updated = { ...note, ...changes, updatedAt: new Date().toISOString() }
+          setNote(updated)
+          await saveNoteWithSync(session?.accessToken, session?.user?.login, updated)
+        }}
+      />
 
       {/* Editor body */}
       <div className="flex-1 overflow-y-auto px-6 lg:px-24 py-12">

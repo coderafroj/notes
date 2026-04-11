@@ -25,6 +25,8 @@ export const metadata: Metadata = {
 };
 
 
+import PWARegister from '@/components/PWARegister'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,6 +36,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable}`}>
       <body className="antialiased">
         <AuthProvider>{children}</AuthProvider>
+        <PWARegister />
       </body>
     </html>
   );

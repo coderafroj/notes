@@ -11,7 +11,9 @@
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
     "@tailwindcss/typography": "^0.5.19",
+    "@tiptap/extension-bubble-menu": "^3.22.3",
     "@tiptap/extension-character-count": "^3.22.3",
+    "@tiptap/extension-floating-menu": "^3.22.3",
     "@tiptap/extension-highlight": "^3.22.3",
     "@tiptap/extension-image": "^3.22.3",
     "@tiptap/extension-link": "^3.22.3",

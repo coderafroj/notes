@@ -1,0 +1,18 @@
+'use client'
+// components/PWARegister.tsx
+// Add <PWARegister /> to your app/layout.tsx (inside <body>)
+
+import { useEffect } from 'react'
+
+export default function PWARegister() {
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then((reg) => console.log('[SW] registered:', reg.scope))
+        .catch((err) => console.error('[SW] failed:', err))
+    }
+  }, [])
+
+  return null
+}

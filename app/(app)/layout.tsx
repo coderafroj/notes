@@ -4,6 +4,7 @@ import { cookies } from 'next/headers'
 import { authOptions } from '@/lib/auth'
 import Sidebar from '@/components/sidebar/Sidebar'
 import BottomNav from '@/components/mobile/BottomNav'
+import CommandPalette from '@/components/command-palette/CommandPalette'
 
 export default async function AppLayout({
   children,
@@ -27,6 +28,7 @@ export default async function AppLayout({
         </div>
         <BottomNav />
       </main>
+      <CommandPalette />
     </div>
   )
 }
