@@ -183,7 +183,7 @@ export default function NotePage() {
             onClick={() => router.back()}
             className="p-1.5 sm:p-2 rounded-xl hover:bg-[var(--muted)] transition-all text-[var(--muted-text)] shrink-0"
           >
-            <ChevronLeft size={18} sm:size={20} />
+            <ChevronLeft size={20} />
           </button>
           <input
             key={note.id}
