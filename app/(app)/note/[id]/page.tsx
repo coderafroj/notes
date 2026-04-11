@@ -303,7 +303,7 @@ export default function NotePage() {
                   Export as Markdown
                 </button>
               </div>
-            </div>
+            )}
           </div>
 
           <button
