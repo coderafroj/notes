@@ -177,7 +177,7 @@ export default function NotePage() {
   return (
     <div className="flex flex-col h-full bg-[var(--background)] max-w-full overflow-hidden">
       {/* Header */}
-      <header className="px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-[var(--border)] sticky top-0 bg-[var(--background)] z-20 overflow-hidden">
+      <header className="px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-[var(--border)] sticky top-0 bg-[var(--background)] z-20">
         <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
           <button
             onClick={() => router.back()}
