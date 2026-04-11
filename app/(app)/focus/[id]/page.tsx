@@ -24,7 +24,7 @@ export default function FocusPage() {
   const pendingNote = useRef<Note | null>(null)
 
   useEffect(() => {
-    if (!id || !session?.accessToken) return
+    if (!id || !session?.accessToken || !session?.user?.login) return
     const noteId = id as string
     db.notes.get(noteId).then((local) => { if (local) setNote(local) })
     getFile(session.accessToken, session.user.login, `notes/note-${noteId}.json`).then((res) => {
@@ -42,7 +42,7 @@ export default function FocusPage() {
     setSaveStatus('saving')
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
-      if (!pendingNote.current || !session?.accessToken) return
+      if (!pendingNote.current || !session?.accessToken || !session?.user?.login) return
       await saveNoteWithSync(session.accessToken, session.user.login, pendingNote.current)
       setSaveStatus('saved')
       setTimeout(() => setSaveStatus('idle'), 2000)
@@ -64,7 +64,7 @@ export default function FocusPage() {
         <input
           defaultValue={note.title}
           onBlur={async (e) => {
-            if (!session?.accessToken) return
+            if (!session?.accessToken || !session?.user?.login) return
             const updated = { ...note, title: e.target.value }
             setNote(updated)
             await saveNoteWithSync(session.accessToken, session.user.login, updated)
