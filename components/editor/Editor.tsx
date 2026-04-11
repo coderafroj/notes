@@ -407,7 +407,7 @@ export default function Editor({
           {/* ── Bubble menu (appears on text selection) ──── */}
           <BubbleMenu
             editor={editor}
-            tippyOptions={{ duration: 150, placement: 'top' }}
+            options={{ placement: 'top' }}
             className="flex items-center gap-0.5 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-xl px-1.5 py-1.5"
           >
             <ToolBtn
@@ -473,7 +473,7 @@ export default function Editor({
           {/* ── Floating menu (appears on empty line) ──── */}
           <FloatingMenu
             editor={editor}
-            tippyOptions={{ duration: 150, placement: 'left' }}
+            options={{ placement: 'left' }}
             className="flex items-center gap-1 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-xl px-2 py-1.5"
           >
             <ToolBtn
