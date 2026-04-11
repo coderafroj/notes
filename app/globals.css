@@ -111,9 +111,27 @@
   opacity: 0.5;
 }
 
-/* Ensure editor text is visible and black by default in light mode */
+/* Ensure editor text is visible and adapts to theme correctly */
 .tiptap {
-  color: var(--foreground);
+  color: var(--foreground) !important;
+}
+
+.tiptap p, 
+.tiptap li, 
+.tiptap h1, 
+.tiptap h2, 
+.tiptap h3, 
+.tiptap h4, 
+.tiptap h5, 
+.tiptap h6 {
+  color: inherit !important;
+}
+
+/* Ensure placeholder is visible but muted */
+.tiptap p.is-editor-empty:first-child::before,
+.tiptap .is-empty::before {
+  color: var(--muted-text) !important;
+  opacity: 0.6 !important;
 }
 
 /* ── Task list ───────────────────────────────────────────── */
