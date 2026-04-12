@@ -6,7 +6,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Plus, Star, Settings, FileText, Hash, X } from 'lucide-react'
+import { Search, Plus, Star, Settings, FileText, Hash, X, Moon, Sun, Monitor, Focus, History, Trash2, Copy } from 'lucide-react'
 import { useNoteflowStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
 import { v4 as uuidv4 } from 'uuid'
@@ -23,6 +23,19 @@ export default function CommandPalette() {
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+
+  useEffect(() => {
+    setTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light')
+  }, [])
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light'
+    document.documentElement.classList.remove('light', 'dark')
+    document.documentElement.classList.add(newTheme)
+    setTheme(newTheme)
+    setOpen(false)
+  }
 
   // Open/close with Ctrl+K
   useEffect(() => {
@@ -43,7 +56,7 @@ export default function CommandPalette() {
     if (open) setTimeout(() => inputRef.current?.focus(), 50)
   }, [open])
 
-  // Build items list
+  // ── Build items list ───────────────────────────────────────
   const staticItems = [
     {
       id: 'new',
@@ -51,7 +64,6 @@ export default function CommandPalette() {
       icon: <Plus size={15} />,
       group: 'Actions',
       action: async () => {
-        if (!session?.accessToken) return
         const id = uuidv4()
         const now = new Date().toISOString()
         const note: Note = {
@@ -59,15 +71,29 @@ export default function CommandPalette() {
           contentPreview: '', tags: [], folder: 'all', isPinned: false,
           isFavorite: false, createdAt: now, updatedAt: now, attachments: [], color: null,
         }
-        await saveNoteWithSync(session.accessToken, session.user.login, note)
+        await saveNoteWithSync(session?.accessToken, session?.user?.login, note)
         router.push(`/note/${id}`)
         setOpen(false)
       },
     },
-    { id: 'favorites', label: 'Favorites', icon: <Star size={15} />, group: 'Navigate', action: () => { router.push('/favorites'); setOpen(false) } },
-    { id: 'settings', label: 'Settings', icon: <Settings size={15} />, group: 'Navigate', action: () => { router.push('/settings'); setOpen(false) } },
-    { id: 'search', label: 'Search Notes', icon: <Search size={15} />, group: 'Navigate', action: () => { router.push('/search'); setOpen(false) } },
+    { id: 'theme', label: `Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`, icon: theme === 'light' ? <Moon size={15} /> : <Sun size={15} />, group: 'System', action: toggleTheme },
+    { id: 'favorites', label: 'Go to Favorites', icon: <Star size={15} />, group: 'Navigate', action: () => { router.push('/favorites'); setOpen(false) } },
+    { id: 'settings', label: 'Go to Settings', icon: <Settings size={15} />, group: 'Navigate', action: () => { router.push('/settings'); setOpen(false) } },
+    { id: 'search', label: 'Quick Search', icon: <Search size={15} />, group: 'Navigate', action: () => { router.push('/search'); setOpen(false) } },
   ]
+
+  // Add contextual commands if on a note page
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
+  const isOnNotePage = pathname.startsWith('/note/')
+  const currentNoteId = isOnNotePage ? pathname.split('/').pop() : null
+
+  if (isOnNotePage && currentNoteId) {
+    staticItems.push(
+      { id: 'focus', label: 'Open Focus Mode', icon: <Focus size={15} />, group: 'Current Note', action: () => { router.push(`/focus/${currentNoteId}`); setOpen(false) } },
+      { id: 'history', label: 'View Version History', icon: <History size={15} />, group: 'Current Note', action: () => { router.push(`/history/${currentNoteId}`); setOpen(false) } },
+      { id: 'copy', label: 'Copy Link', icon: <Copy size={15} />, group: 'Current Note', action: () => { navigator.clipboard.writeText(window.location.href); alert('Link copied!'); setOpen(false) } },
+    )
+  }
 
   const noteItems = notes
     .filter((n) =>
@@ -138,19 +164,20 @@ export default function CommandPalette() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="fixed top-[15vh] left-1/2 -translate-x-1/2 w-full max-w-lg z-50 px-4"
+            className="fixed top-[10vh] sm:top-[15vh] left-1/2 -translate-x-1/2 w-full max-w-lg z-50 px-3 sm:px-4"
           >
-            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-2xl shadow-2xl overflow-hidden">
+            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-2xl shadow-2xl overflow-hidden glass-card">
               {/* Input */}
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)]">
-                <Search size={18} className="text-[var(--muted-text)] shrink-0" />
+              <div className="flex items-center gap-3 px-4 py-4 border-b border-[var(--border)]">
+                <Search size={20} className="text-[var(--p-purple)] shrink-0" />
                 <input
                   ref={inputRef}
                   value={query}
                   onChange={(e) => { setQuery(e.target.value); setSelected(0) }}
-                  placeholder="Search notes, actions, tags..."
-                  className="flex-1 bg-transparent outline-none text-sm text-[var(--foreground)] placeholder:text-[var(--muted-text)]"
+                  placeholder="Type a command or search..."
+                  className="flex-1 bg-transparent outline-none text-base sm:text-sm text-[var(--foreground)] placeholder:text-[var(--muted-text)]"
                 />
+
                 {query && (
                   <button onClick={() => setQuery('')}>
                     <X size={15} className="text-[var(--muted-text)]" />

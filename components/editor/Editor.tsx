@@ -54,7 +54,9 @@ interface EditorProps {
   content: string
   onChange: (content: string) => void
   editable?: boolean
+  color?: string | null
 }
+
 
 // ── Toolbar button ───────────────────────────────────────────
 const ToolBtn = ({
@@ -97,12 +99,26 @@ export default function Editor({
   content,
   onChange,
   editable = true,
+  color = null,
 }: EditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [wordCount, setWordCount] = useState(0)
   const [charCount, setCharCount] = useState(0)
   const [showLinkInput, setShowLinkInput] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
+
+  const getBgColor = () => {
+    switch (color) {
+      case 'purple': return 'rgba(127, 119, 221, 0.05)'
+      case 'teal': return 'rgba(29, 158, 117, 0.05)'
+      case 'amber': return 'rgba(239, 159, 39, 0.05)'
+      case 'blue': return 'rgba(55, 138, 221, 0.05)'
+      case 'red': return 'rgba(226, 75, 74, 0.05)'
+      case 'green': return 'rgba(99, 153, 34, 0.05)'
+      default: return 'transparent'
+    }
+  }
+
 
   const editor = useEditor({
     extensions: [
@@ -205,7 +221,11 @@ export default function Editor({
   if (!editor) return null
 
   return (
-    <div className="flex flex-col w-full max-w-full overflow-hidden">
+    <div
+      className="flex flex-col w-full max-w-full overflow-hidden transition-colors duration-500 rounded-3xl"
+      style={{ backgroundColor: getBgColor() }}
+    >
+
       {editable && (
         <>
           {/* ── Main toolbar ───────────────────────────────── */}

@@ -263,7 +263,8 @@ export default function NotePage() {
               <Download size={18} />
             </button>
             {showExportMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-lg overflow-hidden z-50">
+              <div className="absolute right-0 mt-2 w-56 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-2xl overflow-hidden z-[100] animate-in fade-in zoom-in-95 duration-150">
+
                 {/* Mobile only visible actions in menu */}
                 <button
                   onClick={handleShare}
@@ -354,8 +355,10 @@ export default function NotePage() {
           <Editor
             content={note.content}
             onChange={handleContentChange}
+            color={note.color}
             editable
           />
+
         </motion.div>
       </div>
     </div>

@@ -8,59 +8,47 @@ export async function exportToPDF(title: string, selector: string = '.tiptap') {
 
   try {
     const canvas = await html2canvas(element, {
-      scale: 3, // Higher scale for better quality
+      scale: 2, // 2 is enough for good quality without huge file size
       useCORS: true,
       logging: false,
-      backgroundColor: getComputedStyle(document.body).getPropertyValue('--background').trim() || '#ffffff',
+      backgroundColor: '#ffffff', // Standardize on white for print
       onclone: (clonedDoc) => {
         const clonedElement = clonedDoc.querySelector(selector) as HTMLElement
         if (clonedElement) {
-          // Explicitly set colors to ensure they are captured correctly without depending on CSS variable inheritance
-          clonedElement.style.color = getComputedStyle(element).color
-          clonedElement.style.background = getComputedStyle(element).backgroundColor
-          clonedElement.style.padding = '40px'
-          clonedElement.style.borderRadius = '0'
-          
-          // Ensure marks (highlights) are captured
-          const marks = clonedElement.querySelectorAll('mark')
-          marks.forEach(mark => {
-            const originalMark = document.querySelector('mark')
-            if (originalMark) {
-              mark.style.backgroundColor = getComputedStyle(originalMark).backgroundColor
-              mark.style.color = getComputedStyle(originalMark).color
-            }
-          })
+          clonedElement.style.color = '#111827' // Native dark gray for readability
+          clonedElement.style.padding = '60px'
+          clonedElement.style.width = '800px' // Closer to A4 ratio
+          clonedElement.style.background = '#ffffff'
         }
       }
     })
     
     // Calculate aspect ratio and dimensions for A4 page
-    const imgData = canvas.toDataURL('image/png', 1.0)
+    const imgData = canvas.toDataURL('image/jpeg', 0.95)
     const pdf = new jsPDF({
       orientation: 'portrait',
-      unit: 'pt', // Using points for more precision
+      unit: 'mm',
       format: 'a4',
     })
     
-    const margin = 20
-    const pdfWidth = pdf.internal.pageSize.getWidth() - (margin * 2)
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width
-    const pageHeight = pdf.internal.pageSize.getHeight()
-    
-    let heightLeft = pdfHeight
-    let position = margin
+    const imgWidth = 210 // A4 width in mm
+    const pageHeight = 297 // A4 height in mm
+    const imgHeight = (canvas.height * imgWidth) / canvas.width
+    let heightLeft = imgHeight
+    let position = 0
     
     // Add first page
-    pdf.addImage(imgData, 'PNG', margin, position, pdfWidth, pdfHeight, undefined, 'FAST')
-    heightLeft -= (pageHeight - (margin * 2))
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
+    heightLeft -= pageHeight
     
     // Add subsequent pages if content is long
     while (heightLeft > 0) {
-      position = heightLeft - pdfHeight + margin
+      position = heightLeft - imgHeight
       pdf.addPage()
-      pdf.addImage(imgData, 'PNG', margin, position, pdfWidth, pdfHeight, undefined, 'FAST')
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
       heightLeft -= pageHeight
     }
+
     
     pdf.save(`${title.toLowerCase().replace(/\s+/g, '-')}.pdf`)
   } catch (error) {
