@@ -151,7 +151,7 @@ export default function Editor({
     extensions: [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
-        // Try to disable things if they cause duplicates
+        codeBlock: false, // Use a separate extension if needed, but here it's fine
       }),
       TextStyle,
       Color,
