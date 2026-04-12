@@ -24,6 +24,8 @@ import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import Placeholder from '@tiptap/extension-placeholder'
 import CharacterCount from '@tiptap/extension-character-count'
+import TextAlign from '@tiptap/extension-text-align'
+import { SlashCommands, getSuggestionItems, renderItems } from './SlashCommands'
 import {
   Bold,
   Italic,
@@ -170,6 +172,15 @@ export default function Editor({
         },
       }),
       CharacterCount,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      SlashCommands.configure({
+        suggestion: {
+          items: getSuggestionItems,
+          render: renderItems,
+        },
+      }),
     ],
     content: content
       ? (() => {
