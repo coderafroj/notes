@@ -8,14 +8,18 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  themeColor: "#7F77DD",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover",
+};
+
 export const metadata: Metadata = {
   title: "Noteflow | Your Notes, Your GitHub",
   description: "A premium notes application that stores your data in your own private GitHub repository.",
   manifest: "/manifest.json",
-  themeColor: "#7F77DD",
   appleWebApp: {
     title: "Noteflow",
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     capable: true,
   },
   icons: {
@@ -23,6 +27,7 @@ export const metadata: Metadata = {
     apple: "/icon-192x192.png",
   },
 };
+
 
 
 import PWARegister from '@/components/PWARegister'

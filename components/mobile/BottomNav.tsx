@@ -56,38 +56,49 @@ export default function BottomNav() {
     { label: 'Settings', icon: Settings, href: '/settings', id: 'settings' },
   ]
 
+  const triggerHaptic = (pattern = 10) => {
+    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(pattern)
+    }
+  }
+
+  const handleTabClick = (href: string) => {
+    triggerHaptic()
+    router.push(href)
+  }
+
   // Hide BottomNav on Note Editor page
   if (pathname.includes('/note/')) return null
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-6 pt-2 select-none">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-safe pt-2 select-none">
       {/* Background with blur */}
-      <div className="absolute inset-x-0 bottom-0 top-0 bg-[var(--background)]/80 backdrop-blur-xl border-t border-[var(--border)] -z-10" />
+      <div className="absolute inset-0 bg-[var(--background)]/70 backdrop-blur-2xl border-t border-[var(--border)] -z-10" />
 
-      <div className="max-w-md mx-auto flex items-center justify-between">
+      <div className="max-w-md mx-auto flex items-center justify-between pb-[env(safe-area-inset-bottom)]">
         {tabs.slice(0, 2).map((tab) => (
           <button
             key={tab.id}
-            onClick={() => router.push(tab.href)}
-            className="flex flex-col items-center gap-1.5 px-4 py-2 relative"
+            onClick={() => handleTabClick(tab.href)}
+            className="flex flex-col items-center gap-1.5 px-4 py-2 relative active:scale-90 transition-transform"
           >
             <tab.icon
-              size={20}
+              size={22}
               className={cn(
                 "transition-all duration-300",
-                pathname === tab.href ? "text-[var(--p-purple)] scale-110" : "text-[var(--muted-text)]"
+                pathname === tab.href ? "text-[var(--p-purple)]" : "text-[var(--muted-text)]"
               )}
             />
             <span className={cn(
                "text-[10px] font-bold uppercase tracking-tighter transition-all duration-300",
-               pathname === tab.href ? "text-[var(--p-purple)] opacity-100" : "text-[var(--muted-text)] opacity-0"
+               pathname === tab.href ? "text-[var(--p-purple)] opacity-100" : "text-[var(--muted-text)] opacity-60"
             )}>
               {tab.label}
             </span>
             {pathname === tab.href && (
               <motion.div
                 layoutId="bottom-nav-active"
-                className="absolute -top-1 w-1 h-1 rounded-full bg-[var(--p-purple)]"
+                className="absolute -top-1 w-1 h-1 rounded-full bg-[var(--p-purple)] shadow-[0_0_8px_var(--p-purple)]"
               />
             )}
           </button>
@@ -95,36 +106,39 @@ export default function BottomNav() {
 
         {/* Center Action Button */}
         <button
-          onClick={handleNewNote}
+          onClick={() => {
+            triggerHaptic([10, 30, 10]);
+            handleNewNote();
+          }}
           disabled={isCreating}
-          className="relative -top-6 flex items-center justify-center w-14 h-14 bg-[var(--foreground)] text-[var(--background)] rounded-full shadow-xl shadow-[var(--p-purple)]/20 active:scale-95 transition-transform disabled:opacity-50"
+          className="relative -top-6 flex items-center justify-center w-14 h-14 bg-[var(--foreground)] text-[var(--background)] rounded-2xl shadow-2xl shadow-[var(--p-purple)]/30 active:scale-90 active:rotate-12 transition-all disabled:opacity-50"
         >
-          <Plus size={24} className={cn(isCreating && "animate-spin")} />
+          <Plus size={28} className={cn(isCreating && "animate-spin")} />
         </button>
 
         {tabs.slice(2).map((tab) => (
           <button
             key={tab.id}
-            onClick={() => router.push(tab.href)}
-            className="flex flex-col items-center gap-1.5 px-4 py-2 relative"
+            onClick={() => handleTabClick(tab.href)}
+            className="flex flex-col items-center gap-1.5 px-4 py-2 relative active:scale-90 transition-transform"
           >
             <tab.icon
-              size={20}
+              size={22}
               className={cn(
                 "transition-all duration-300",
-                pathname === tab.href ? "text-[var(--p-purple)] scale-110" : "text-[var(--muted-text)]"
+                pathname === tab.href ? "text-[var(--p-purple)]" : "text-[var(--muted-text)]"
               )}
             />
             <span className={cn(
                "text-[10px] font-bold uppercase tracking-tighter transition-all duration-300",
-               pathname === tab.href ? "text-[var(--p-purple)] opacity-100" : "text-[var(--muted-text)] opacity-0"
+               pathname === tab.href ? "text-[var(--p-purple)] opacity-100" : "text-[var(--muted-text)] opacity-60"
             )}>
               {tab.label}
             </span>
             {pathname === tab.href && (
               <motion.div
                 layoutId="bottom-nav-active"
-                className="absolute -top-1 w-1 h-1 rounded-full bg-[var(--p-purple)]"
+                className="absolute -top-1 w-1 h-1 rounded-full bg-[var(--p-purple)] shadow-[0_0_8px_var(--p-purple)]"
               />
             )}
           </button>
@@ -133,3 +147,4 @@ export default function BottomNav() {
     </nav>
   )
 }
+

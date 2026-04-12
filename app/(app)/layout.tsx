@@ -5,6 +5,9 @@ import { authOptions } from '@/lib/auth'
 import Sidebar from '@/components/sidebar/Sidebar'
 import BottomNav from '@/components/mobile/BottomNav'
 import CommandPalette from '@/components/command-palette/CommandPalette'
+import { AnimatePresence } from 'framer-motion'
+import PageTransition from '@/components/shared/PageTransition'
+import InstallPrompt from '@/components/mobile/InstallPrompt'
 
 export default async function AppLayout({
   children,
@@ -23,12 +26,18 @@ export default async function AppLayout({
     <div className="flex h-screen overflow-hidden bg-[var(--background)]">
       <Sidebar />
       <main className="flex-1 flex flex-col min-w-0 relative overflow-hidden">
-        <div className="flex-1 overflow-y-auto pb-24 lg:pb-0">
-          {children}
+        <div className="flex-1 overflow-y-auto pb-safe lg:pb-0">
+          <AnimatePresence mode="wait">
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </AnimatePresence>
         </div>
         <BottomNav />
+        <InstallPrompt />
       </main>
       <CommandPalette />
     </div>
   )
 }
+
