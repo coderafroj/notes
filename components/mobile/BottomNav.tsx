@@ -56,11 +56,12 @@ export default function BottomNav() {
     { label: 'Settings', icon: Settings, href: '/settings', id: 'settings' },
   ]
 
-  const triggerHaptic = (pattern = 10) => {
+  const triggerHaptic = (pattern: number | number[] = 10) => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
       navigator.vibrate(pattern)
     }
   }
+
 
   const handleTabClick = (href: string) => {
     triggerHaptic()
