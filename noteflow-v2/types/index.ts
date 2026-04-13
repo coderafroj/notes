@@ -1,16 +1,13 @@
-// ============================================================
-// types/index.ts — All shared types for Noteflow
-// ============================================================
+// types/index.ts — UPDATED with public publishing + drawing support
 
 export interface Attachment {
   id: string
   name: string
-  url: string        // base64 data URL or external URL
-  type: string       // MIME type
-  size: number       // bytes
+  url: string
+  type: string
+  size: number
 }
 
-// Full note — stored in notes/note-{id}.json on GitHub + Dexie
 export interface Note {
   id: string
   title: string

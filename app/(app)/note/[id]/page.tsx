@@ -20,6 +20,8 @@ import {
   History,
 } from 'lucide-react'
 import Editor from '@/components/editor/Editor'
+import DrawingCanvas from '@/components/editor/DrawingCanvas'
+import PublishToggle from '@/components/note-ui/PublishToggle'
 import NoteMetaBar from '@/components/note-ui/NoteMetaBar'
 import { Note } from '@/types'
 import { cn } from '@/lib/utils'
@@ -38,6 +40,7 @@ export default function NotePage() {
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<'write' | 'draw'>('write')
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingNote = useRef<Note | null>(null)
@@ -214,6 +217,32 @@ export default function NotePage() {
             )}
           </div>
 
+          <div className="flex bg-[var(--muted)] rounded-xl p-1 mx-2">
+            {(['write', 'draw'] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setActiveTab(t)}
+                className={cn(
+                  'px-3 py-1 rounded-lg text-xs font-semibold transition-all capitalize',
+                  activeTab === t
+                    ? 'bg-[var(--card-bg)] text-[var(--p-purple)] shadow-sm'
+                    : 'text-[var(--muted-text)] hover:text-[var(--foreground)]'
+                )}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+
+          {session && (
+            <PublishToggle
+              note={note}
+              token={session.accessToken}
+              username={session.user.login}
+              onUpdate={(updated) => setNote(updated)}
+            />
+          )}
+
           <button
             onClick={handleToggleFavorite}
             className="p-1.5 sm:p-2 rounded-xl hover:bg-[var(--muted)] transition-all shrink-0"
@@ -352,12 +381,25 @@ export default function NotePage() {
             </div>
           )}
 
-          <Editor
-            content={note.content}
-            onChange={handleContentChange}
-            color={note.color}
-            editable
-          />
+          {activeTab === 'write' ? (
+            <Editor
+              content={note.content}
+              onChange={handleContentChange}
+              color={note.color}
+              editable
+            />
+          ) : (
+            <div className="py-2">
+              <DrawingCanvas
+                data={note.drawingData}
+                onChange={async (d) => {
+                  const updated = { ...note, drawingData: d, updatedAt: new Date().toISOString() }
+                  setNote(updated)
+                  await saveNoteWithSync(session?.accessToken, session?.user?.login, updated)
+                }}
+              />
+            </div>
+          )}
 
         </motion.div>
       </div>

@@ -13,7 +13,20 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'avatars.githubusercontent.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'github.com',
+      },
     ],
+  },
+  async redirects() {
+    return [
+      {
+        source: '/@:username',
+        destination: '/:username',
+        permanent: false,
+      },
+    ]
   },
 };
 

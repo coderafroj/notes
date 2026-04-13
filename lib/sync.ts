@@ -176,6 +176,9 @@ async function updateIndex(token: string, username: string, note: Note) {
     color: note.color,
     createdAt: note.createdAt,
     updatedAt: note.updatedAt,
+    isPublished: note.isPublished || false,
+    slug: note.slug || '',
+    publishedAt: note.publishedAt,
   }
 
   const idx = index.notes.findIndex((n) => n.id === note.id)

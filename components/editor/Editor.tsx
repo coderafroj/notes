@@ -25,6 +25,8 @@ import TableHeader from '@tiptap/extension-table-header'
 import Placeholder from '@tiptap/extension-placeholder'
 import CharacterCount from '@tiptap/extension-character-count'
 import TextAlign from '@tiptap/extension-text-align'
+import Subscript from '@tiptap/extension-subscript'
+import Superscript from '@tiptap/extension-superscript'
 import { SlashCommands, getSuggestionItems, renderItems } from './SlashCommands'
 import {
   Bold,
@@ -53,6 +55,8 @@ import {
   Type,
   Palette,
   ChevronDown,
+  Subscript as SubscriptIcon,
+  Superscript as SuperscriptIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -151,7 +155,7 @@ export default function Editor({
     extensions: [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
-        codeBlock: false, // Use a separate extension if needed, but here it's fine
+        codeBlock: true,
       }),
       TextStyle,
       Color,
@@ -160,6 +164,8 @@ export default function Editor({
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
       Underline,
+      Subscript,
+      Superscript,
       Link.configure({ openOnClick: false, autolink: true }),
       Table.configure({ resizable: true }),
       TableRow,
@@ -182,6 +188,7 @@ export default function Editor({
         },
       }),
     ],
+    immediatelyRender: false,
     content: content
       ? (() => {
           try {
@@ -261,7 +268,7 @@ export default function Editor({
 
   return (
     <div
-      className="flex flex-col w-full max-w-full overflow-hidden transition-colors duration-500 rounded-3xl"
+      className="flex flex-col w-full max-w-full transition-colors duration-500 rounded-3xl"
       style={{ backgroundColor: getBgColor() }}
     >
 
@@ -349,6 +356,20 @@ export default function Editor({
                 title="Strikethrough"
               >
                 <Strikethrough size={15} />
+              </ToolBtn>
+              <ToolBtn
+                onClick={() => editor.chain().focus().toggleSubscript().run()}
+                active={editor.isActive('subscript')}
+                title="Subscript"
+              >
+                <SubscriptIcon size={15} />
+              </ToolBtn>
+              <ToolBtn
+                onClick={() => editor.chain().focus().toggleSuperscript().run()}
+                active={editor.isActive('superscript')}
+                title="Superscript"
+              >
+                <SuperscriptIcon size={15} />
               </ToolBtn>
 
               <div className="relative">

@@ -21,6 +21,8 @@ import { initializeNoteflow } from '@/lib/github'
 import { searchNotes } from '@/lib/search'
 import { saveNoteWithSync } from '@/lib/sync'
 import NoteCard from '@/components/dashboard/NoteCard'
+import SwipeActions from '@/components/mobile/SwipeActions'
+import { deleteNoteWithSync, toggleFavoriteWithSync } from '@/lib/sync'
 import { cn } from '@/lib/utils'
 import { v4 as uuidv4 } from 'uuid'
 import { Note } from '@/types'
@@ -117,6 +119,8 @@ export default function Dashboard() {
       updatedAt: now,
       attachments: [],
       color: null,
+      isPublished: false,
+      slug: '',
     }
     await saveNoteWithSync(session?.accessToken, session?.user?.login, note)
     router.push(`/note/${id}`)
@@ -265,7 +269,23 @@ export default function Dashboard() {
         >
           <AnimatePresence>
             {displayNotes.map((note) => (
-              <NoteCard key={note.id} note={note} viewMode={viewMode} />
+              <SwipeActions
+                key={note.id}
+                isFavorite={note.isFavorite}
+                onDelete={async () => {
+                  if (!session?.accessToken) return
+                  if (!confirm('Delete this note?')) return
+                  await deleteNoteWithSync(session.accessToken, session.user.login, note.id)
+                  setNotes(notes.filter((n) => n.id !== note.id))
+                }}
+                onFavorite={async () => {
+                  if (!session?.accessToken) return
+                  await toggleFavoriteWithSync(session.accessToken, session.user.login, note.id, !note.isFavorite)
+                  setNotes(notes.map((n) => n.id === note.id ? { ...n, isFavorite: !n.isFavorite } : n))
+                }}
+              >
+                <NoteCard note={note} viewMode={viewMode} />
+              </SwipeActions>
             ))}
           </AnimatePresence>
         </motion.div>
