@@ -70,6 +70,7 @@ export default function CommandPalette() {
           id, title: 'Untitled Note', content: '', contentText: '',
           contentPreview: '', tags: [], folder: 'all', isPinned: false,
           isFavorite: false, createdAt: now, updatedAt: now, attachments: [], color: null,
+          isPublished: false, slug: '',
         }
         await saveNoteWithSync(session?.accessToken, session?.user?.login, note)
         router.push(`/note/${id}`)

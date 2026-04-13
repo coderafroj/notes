@@ -97,8 +97,19 @@
 }
 
 /* ============================================================
-   Editor styles — add to your globals.css
+   Editor styles — Premium Overrides
    ============================================================ */
+.tab-active {
+  background: var(--card-bg);
+  color: var(--p-purple);
+  box-shadow: var(--shadow-sm);
+}
+
+.tool-btn-active {
+  background: var(--p-purple);
+  color: white;
+  box-shadow: 0 4px 12px rgba(127, 119, 221, 0.3);
+}
 
 /* ── Placeholder ─────────────────────────────────────────── */
 .tiptap p.is-editor-empty:first-child::before,
@@ -226,6 +237,17 @@
   font-size: inherit;
   padding: 0;
   border-radius: 0;
+}
+
+/* ── Subscript / Superscript ─────────────────────────────── */
+.tiptap sub {
+  vertical-align: sub;
+  font-size: 0.75em;
+}
+
+.tiptap sup {
+  vertical-align: super;
+  font-size: 0.75em;
 }
 
 /* ── Inline code ─────────────────────────────────────────── */

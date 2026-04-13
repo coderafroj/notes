@@ -97,6 +97,20 @@ export async function saveFile(
   )
 }
 
+// ── Get commit history for a single file ─────────────────────
+export async function getFileHistory(
+  token: string,
+  username: string,
+  path: string,
+  perPage = 20
+): Promise<any[]> {
+  const data = await githubFetch(
+    `/repos/${username}/${REPO_NAME}/commits?path=${encodeURIComponent(path)}&per_page=${perPage}`,
+    token
+  )
+  return Array.isArray(data) ? data : []
+}
+
 // ── Bootstrap: create repo + index.json if first time ────────
 export async function initializeNoteflow(
   token: string,

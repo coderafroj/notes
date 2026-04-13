@@ -176,6 +176,9 @@ async function updateIndex(token: string, username: string, note: Note) {
     color: note.color,
     createdAt: note.createdAt,
     updatedAt: note.updatedAt,
+    isPublished: note.isPublished || false,
+    slug: note.slug || '',
+    publishedAt: note.publishedAt,
   }
 
   const idx = index.notes.findIndex((n) => n.id === note.id)
@@ -196,4 +199,16 @@ async function updateIndex(token: string, username: string, note: Note) {
   index.updatedAt = new Date().toISOString()
 
   await saveFile(token, username, 'index.json', index, indexFile?.sha)
+}
+
+// -----------------------------------------------------------
+// Helper: extract plain text from TipTap JSON
+// -----------------------------------------------------------
+export function extractText(node: any): string {
+  if (!node) return ''
+  if (node.type === 'text') return node.text ?? ''
+  if (node.content) {
+    return node.content.map(extractText).join(' ')
+  }
+  return ''
 }

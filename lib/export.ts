@@ -8,32 +8,36 @@ export async function exportToPDF(title: string, selector: string = '.tiptap') {
 
   try {
     const canvas = await html2canvas(element, {
-      scale: 2, // 2 is enough for good quality without huge file size
+      scale: 5, // Higher scale for extreme sharpness on zoom
       useCORS: true,
       logging: false,
-      backgroundColor: '#ffffff', // Standardize on white for print
+      backgroundColor: '#ffffff',
       onclone: (clonedDoc) => {
         const clonedElement = clonedDoc.querySelector(selector) as HTMLElement
         if (clonedElement) {
-          clonedElement.style.color = '#111827' // Native dark gray for readability
           clonedElement.style.padding = '60px'
-          clonedElement.style.width = '800px' // Closer to A4 ratio
+          clonedElement.style.width = '850px' // Standard A4 width-ish
           clonedElement.style.background = '#ffffff'
 
-          // ── Normalize colors to prevent lab() error ─────────
-          // html2canvas fails on modern color functions like lab, oklch, etc.
+          // ── Normalize only problematic modern colors ─────────
           const allElements = clonedElement.querySelectorAll('*')
           allElements.forEach((el) => {
             const htmlEl = el as HTMLElement
+            // Use inline style if available, otherwise computed
             const style = window.getComputedStyle(htmlEl)
             
-            // Check for modern color functions in common properties
             const props = ['color', 'backgroundColor', 'borderColor', 'outlineColor']
             props.forEach(prop => {
               const val = (style as any)[prop]
+              // Only convert if it contains modern functions that html2canvas fails on
               if (val && (val.includes('lab(') || val.includes('oklch(') || val.includes('hwb('))) {
-                // Fallback to a safe color or strip it
-                htmlEl.style.setProperty(prop, prop === 'color' ? '#111827' : 'transparent', 'important')
+                // Determine a safe fallback color
+                if (prop === 'color') {
+                   // If it's a heading or text, use dark gray instead of stripping
+                   htmlEl.style.setProperty(prop, '#111827', 'important')
+                } else {
+                   htmlEl.style.setProperty(prop, 'transparent', 'important')
+                }
               }
             })
           })
