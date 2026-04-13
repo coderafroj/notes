@@ -80,6 +80,9 @@ export interface AppState {
   viewMode: 'grid' | 'list'
   sortBy: 'updatedAt' | 'createdAt' | 'title'
   sortOrder: 'asc' | 'desc'
+  theme: 'light' | 'dark' | 'system'
+  focusMode: boolean
+  commandPaletteOpen: boolean
 }
 
 declare module 'next-auth' {

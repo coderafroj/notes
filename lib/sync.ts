@@ -200,3 +200,15 @@ async function updateIndex(token: string, username: string, note: Note) {
 
   await saveFile(token, username, 'index.json', index, indexFile?.sha)
 }
+
+// -----------------------------------------------------------
+// Helper: extract plain text from TipTap JSON
+// -----------------------------------------------------------
+export function extractText(node: any): string {
+  if (!node) return ''
+  if (node.type === 'text') return node.text ?? ''
+  if (node.content) {
+    return node.content.map(extractText).join(' ')
+  }
+  return ''
+}

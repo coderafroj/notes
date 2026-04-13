@@ -76,6 +76,8 @@ export default function Sidebar() {
               updatedAt: now,
               attachments: [],
               color: null,
+              isPublished: false,
+              slug: '',
             }
             await saveNoteWithSync(session?.accessToken, session?.user?.login, note)
             router.push(`/note/${id}`)
