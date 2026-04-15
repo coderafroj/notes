@@ -9,6 +9,19 @@ import { getFile, saveFile, githubFetch, initializeNoteflow } from './github'
 const REPO_NAME = 'noteflow-data'
 
 // -----------------------------------------------------------
+// Guest-mode helpers: local-only, no GitHub
+// -----------------------------------------------------------
+export async function saveNoteLocal(note: Note) {
+  await db.notes.put(note)
+}
+
+export async function deleteNoteLocal(noteId: string) {
+  await db.notes.delete(noteId)
+}
+
+
+
+// -----------------------------------------------------------
 // Full sync: pull remote changes into local Dexie DB
 // -----------------------------------------------------------
 export async function syncToGitHub(token: string, username: string) {
