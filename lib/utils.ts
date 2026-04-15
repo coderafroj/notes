@@ -24,8 +24,36 @@ export function formatDate(date: string | Date) {
   }).format(d)
 }
 
+// Alias used by NoteCard and other components
+export const formatRelative = formatDate
+
 export function generateId(): string {
   return crypto.randomUUID()
+}
+
+/**
+ * Extract plain text from a TipTap JSON node tree.
+ */
+export function extractText(node: any): string {
+  if (!node) return ''
+  if (node.type === 'text') return node.text ?? ''
+  if (Array.isArray(node.content)) {
+    return node.content.map(extractText).join(' ')
+  }
+  return ''
+}
+
+/**
+ * Convert a title into a URL-safe slug.
+ */
+export function makeSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .slice(0, 80)
 }
 
 export const NOTE_COLORS = [

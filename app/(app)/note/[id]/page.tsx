@@ -18,7 +18,8 @@ import { db } from '@/lib/db'
 import { useNoteflowStore } from '@/lib/store'
 
 export default function NotePage() {
-  const { id } = useParams()
+  const params = useParams()
+  const id = params.id as string
   const router = useRouter()
   const { data: session } = useSession()
   const { isGuest, removeNote } = useNoteflowStore()

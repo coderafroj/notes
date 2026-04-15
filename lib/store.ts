@@ -25,6 +25,7 @@ interface NoteflowStore extends AppState {
   // Note actions (optimistic update)
   updateNoteInList: (id: string, patch: Partial<NoteIndexEntry>) => void
   removeNoteFromList: (id: string) => void
+  removeNote: (id: string) => void   // alias for removeNoteFromList
   addNoteToList: (entry: NoteIndexEntry) => void
 }
 
@@ -64,6 +65,8 @@ export const useNoteflowStore = create<NoteflowStore>()(
           notes: s.notes.map((n) => (n.id === id ? { ...n, ...patch } : n)),
         })),
       removeNoteFromList: (id) =>
+        set((s) => ({ notes: s.notes.filter((n) => n.id !== id) })),
+      removeNote: (id) =>
         set((s) => ({ notes: s.notes.filter((n) => n.id !== id) })),
       addNoteToList: (entry) =>
         set((s) => ({ notes: [entry, ...s.notes] })),

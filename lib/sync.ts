@@ -19,6 +19,10 @@ export async function deleteNoteLocal(noteId: string) {
   await db.notes.delete(noteId)
 }
 
+export async function getAllLocalNotes() {
+  return db.notes.toArray()
+}
+
 
 
 // -----------------------------------------------------------
