@@ -14,7 +14,7 @@ import Editor from '@/components/editor/Editor'
 
 export default function FocusPage() {
   const params = useParams()
-  const id = params.id as string
+  const id = params?.id as string
   const router = useRouter()
   const { data: session } = useSession()
   const { isGuest } = useNoteflowStore()

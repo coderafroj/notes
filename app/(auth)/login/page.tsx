@@ -17,7 +17,7 @@ function GithubIcon({ size = 20 }: { size?: number }) {
 function LoginContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const error = searchParams.get('error')
+  const error = searchParams?.get('error')
 
   const handleGuestLogin = () => {
     document.cookie = "noteflow-guest=true; path=/; max-age=31536000"

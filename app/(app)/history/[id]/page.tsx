@@ -12,7 +12,7 @@ const REPO = 'noteflow-data'
 
 export default function HistoryPage() {
   const params = useParams()
-  const id = params.id as string
+  const id = params?.id as string
   const router = useRouter()
   const { data: session } = useSession()
   const [versions, setVersions] = useState<any[]>([])
