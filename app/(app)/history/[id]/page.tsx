@@ -30,36 +30,58 @@ export default function HistoryPage() {
   }, [id, session])
 
   return (
-    <div className="p-5 lg:p-10 max-w-2xl mx-auto">
-      <div className="flex items-center gap-3 mb-8">
-        <button onClick={() => router.back()} className="p-2 rounded-xl hover:bg-[var(--muted)] text-[var(--muted-text)]"><ChevronLeft size={18} /></button>
+    <div className="p-8 lg:p-12 max-w-2xl mx-auto animate-in">
+      <div className="flex items-center gap-4 mb-10">
+        <button onClick={() => router.back()} 
+          className="interactive-scale p-2.5 rounded-xl bg-[var(--muted)] hover:bg-[var(--border)] text-[var(--muted-text)] hover:text-[var(--foreground)] transition-all"
+        >
+          <ChevronLeft size={20} />
+        </button>
         <div>
-          <h1 className="text-2xl font-bold">Version History</h1>
-          <p className="text-sm text-[var(--muted-text)]">All saves from GitHub</p>
+          <h1 className="text-2xl font-bold tracking-tight">Version History</h1>
+          <p className="text-xs font-semibold text-[var(--muted-text)] uppercase tracking-widest mt-0.5 opacity-60">Snapshot log from GitHub</p>
         </div>
       </div>
+
       {loading ? (
-        <div className="flex items-center justify-center py-20"><Loader2 size={22} className="animate-spin text-[var(--muted-text)]" /></div>
+        <div className="flex flex-col items-center justify-center py-24 gap-4">
+          <Loader2 size={24} className="animate-spin text-[var(--p-purple)]" />
+          <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted-text)] opacity-50">Fetching history...</p>
+        </div>
       ) : versions.length === 0 ? (
-        <div className="text-center py-20 text-[var(--muted-text)]">
-          <GitCommit size={40} className="mx-auto mb-4 opacity-20" />
-          <p>No history yet.</p>
+        <div className="text-center py-24 glass-card rounded-3xl border-dashed border-2">
+          <GitCommit size={48} className="mx-auto mb-4 text-[var(--muted-text)] opacity-20" />
+          <p className="font-bold text-[var(--muted-text)]">No revision history found</p>
+          <p className="text-xs text-[var(--muted-text)] mt-1 opacity-60">Sync your note with GitHub to see versions</p>
         </div>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           {versions.map((v, i) => (
-            <motion.div key={v.sha} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
-              className="flex items-start gap-3 p-4 rounded-xl border border-[var(--border)] hover:border-[var(--p-purple)]/50 transition-all"
+            <motion.div 
+              key={v.sha} 
+              initial={{ opacity: 0, y: 10 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ delay: i * 0.05, type: 'spring', damping: 20, stiffness: 100 }}
+              className="interactive-scale flex items-start gap-4 p-5 rounded-2xl bg-[var(--card-bg)] border border-[var(--border)] hover:border-[var(--p-purple)]/30 hover:shadow-lg hover:shadow-purple-500/5 transition-all group"
             >
-              <GitCommit size={15} className="text-[var(--muted-text)] mt-0.5 shrink-0" />
+              <div className="w-10 h-10 rounded-xl bg-[var(--muted)] flex items-center justify-center text-[var(--muted-text)] group-hover:bg-[var(--p-purple)]/10 group-hover:text-[var(--p-purple)] transition-colors">
+                <GitCommit size={18} />
+              </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium truncate">{v.message}</p>
-                <div className="flex items-center gap-2 mt-1 text-xs text-[var(--muted-text)]">
-                  <Clock size={10} />{formatDate(v.date)}
-                  <span className="font-mono opacity-60">{v.sha.slice(0, 7)}</span>
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-sm font-bold truncate leading-tight">{v.message}</p>
+                  {i === 0 && (
+                    <span className="premium-gradient text-[10px] text-white px-2.5 py-0.5 rounded-lg font-bold shadow-sm shadow-purple-500/20 whitespace-nowrap">
+                      LATEST VERSION
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-3 mt-2 text-[11px] font-bold text-[var(--muted-text)] opacity-60">
+                  <span className="flex items-center gap-1"><Clock size={12} /> {formatDate(v.date)}</span>
+                  <span className="select-none">•</span>
+                  <span className="font-mono bg-[var(--muted)] px-1.5 py-0.5 rounded text-[10px]">{v.sha.slice(0, 7)}</span>
                 </div>
               </div>
-              {i === 0 && <span className="text-[10px] bg-[var(--p-teal)]/15 text-[var(--p-teal)] px-2 py-0.5 rounded-full font-medium shrink-0">Latest</span>}
             </motion.div>
           ))}
         </div>
@@ -67,3 +89,4 @@ export default function HistoryPage() {
     </div>
   )
 }
+

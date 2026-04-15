@@ -38,41 +38,65 @@ export default function PublishToggle({ note, token, username, onUpdate }: Props
   return (
     <div className="relative">
       <button onClick={() => setOpen((v) => !v)}
-        className={cn('flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all border',
+        className={cn('interactive-scale flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border',
           note.isPublished
-            ? 'bg-[var(--p-teal)]/10 text-[var(--p-teal)] border-[var(--p-teal)]/20'
-            : 'bg-[var(--muted)] text-[var(--muted-text)] border-[var(--border)]'
+            ? 'bg-[var(--p-teal)] text-white border-[var(--p-teal)] shadow-sm'
+            : 'bg-[var(--muted)] text-[var(--muted-text)] border-[var(--border)] hover:border-[var(--muted-text)]/40'
         )}
       >
-        {note.isPublished ? <Globe size={13} /> : <Lock size={13} />}
-        <span className="hidden sm:inline">{note.isPublished ? 'Public' : 'Private'}</span>
+        {note.isPublished ? <Globe size={13} strokeWidth={2.5} /> : <Lock size={13} strokeWidth={2} />}
+        <span className="hidden sm:inline lowercase tracking-wider">{note.isPublished ? 'Live' : 'Private'}</span>
       </button>
 
       {open && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 w-64 bg-[var(--card-bg)] border border-[var(--border)] rounded-2xl shadow-2xl p-4 z-40">
-            <p className="font-semibold text-sm mb-1">{note.isPublished ? 'Note is public' : 'Note is private'}</p>
-            <p className="text-xs text-[var(--muted-text)] mb-4">
-              {note.isPublished ? 'Anyone with the link can read it' : 'Only you can see this note'}
+          <div className="absolute right-0 top-full mt-3 w-72 glass-card rounded-2xl shadow-2xl p-5 z-40 animate-in origin-top-right">
+            <div className="flex items-center gap-3 mb-4">
+               <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm',
+                 note.isPublished ? 'bg-[var(--p-teal)]/10 text-[var(--p-teal)]' : 'bg-[var(--muted)] text-[var(--muted-text)]'
+               )}>
+                 {note.isPublished ? <Globe size={20} /> : <Lock size={20} />}
+               </div>
+               <div>
+                  <p className="font-bold text-sm leading-tight">{note.isPublished ? 'Public Access' : 'Private Access'}</p>
+                  <p className="text-[10px] font-bold text-[var(--muted-text)] uppercase tracking-widest mt-0.5 opacity-60">
+                    Visibility Settings
+                  </p>
+               </div>
+            </div>
+
+            <p className="text-xs text-[var(--muted-text)] mb-5 leading-relaxed">
+              {note.isPublished 
+                ? 'Your note is currently indexed and visible to anyone with the unique URL.' 
+                : 'Only you can access this note. Content is encrypted and stored securely.'}
             </p>
+
             {publicUrl && (
-              <div className="flex items-center gap-2 p-2 bg-[var(--muted)] rounded-lg mb-3">
-                <p className="text-xs text-[var(--muted-text)] truncate flex-1">{publicUrl}</p>
-                <button onClick={copy} className="shrink-0 text-[var(--muted-text)] hover:text-[var(--foreground)]">
-                  {copied ? <Check size={13} className="text-[var(--p-teal)]" /> : <Copy size={13} />}
-                </button>
-                <a href={publicUrl} target="_blank" rel="noopener" className="shrink-0 text-[var(--muted-text)] hover:text-[var(--p-purple)]"><ExternalLink size={13} /></a>
+              <div className="group flex flex-col gap-2 p-3 bg-[var(--muted)]/50 border border-[var(--border)] rounded-xl mb-4 transition-colors hover:bg-[var(--muted)]">
+                <div className="flex items-center justify-between gap-2">
+                   <p className="text-[10px] font-bold text-[var(--muted-text)] uppercase tracking-widest opacity-60">Public Link</p>
+                   <div className="flex items-center gap-2">
+                      <button onClick={copy} className="interactive-scale p-1.5 bg-[var(--card-bg)] border border-[var(--border)] rounded-lg text-[var(--muted-text)] hover:text-[var(--foreground)] shadow-sm">
+                        {copied ? <Check size={12} className="text-[var(--p-teal)]" /> : <Copy size={12} />}
+                      </button>
+                      <a href={publicUrl} target="_blank" rel="noopener" className="interactive-scale p-1.5 bg-[var(--card-bg)] border border-[var(--border)] rounded-lg text-[var(--muted-text)] hover:text-[var(--p-purple)] shadow-sm">
+                        <ExternalLink size={12} />
+                      </a>
+                   </div>
+                </div>
+                <p className="text-[11px] text-[var(--muted-text)] truncate font-medium">{publicUrl}</p>
               </div>
             )}
+
             <button onClick={toggle} disabled={loading}
-              className={cn('w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-medium transition-all',
+              className={cn('w-full interactive-scale flex items-center justify-center gap-2.5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm',
                 note.isPublished
-                  ? 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/10 dark:text-red-400'
-                  : 'bg-[var(--p-purple)] text-white hover:opacity-90'
+                  ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-100'
+                  : 'premium-gradient text-white hover:opacity-90'
               )}
             >
-              {loading ? <Loader2 size={14} className="animate-spin" /> : note.isPublished ? <><Lock size={14} /> Make private</> : <><Globe size={14} /> Publish</>}
+              {loading ? <Loader2 size={14} className="animate-spin" /> : note.isPublished ? <><Lock size={14} /> Revoke Public Access</> : <><Globe size={14} /> Go Public</>}
             </button>
           </div>
         </>
@@ -80,3 +104,4 @@ export default function PublishToggle({ note, token, username, onUpdate }: Props
     </div>
   )
 }
+

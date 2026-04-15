@@ -30,60 +30,88 @@ export default function NoteMetaBar({ note, onUpdate }: Props) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 px-4 lg:px-6 py-2 border-b border-[var(--border)] bg-[var(--background)] min-h-[44px]">
-      {/* Pin */}
+    <div className="flex flex-wrap items-center gap-3 px-5 lg:px-8 py-3 border-b border-[var(--border)] bg-[var(--background)] min-h-[52px] animate-in">
+      {/* Pin Toggle */}
       <button onClick={() => onUpdate({ isPinned: !note.isPinned })}
-        className={cn('flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium transition-all',
-          note.isPinned ? 'bg-[var(--p-amber)]/15 text-[var(--p-amber)]' : 'text-[var(--muted-text)] hover:bg-[var(--muted)]'
+        className={cn('interactive-scale flex items-center gap-2 px-3 py-1.5 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all',
+          note.isPinned 
+            ? 'bg-[var(--p-amber)] text-white shadow-sm shadow-orange-500/20' 
+            : 'text-[var(--muted-text)] hover:bg-[var(--muted)] border border-transparent hover:border-[var(--border)]'
         )}
       >
-        {note.isPinned ? <Pin size={12} /> : <PinOff size={12} />}
-        <span className="hidden sm:inline">{note.isPinned ? 'Pinned' : 'Pin'}</span>
+        {note.isPinned ? <Pin size={13} strokeWidth={2.5} /> : <PinOff size={13} />}
+        <span className="hidden sm:inline">{note.isPinned ? 'Pinned' : 'Pin Note'}</span>
       </button>
 
-      {/* Color */}
+      <div className="h-4 w-[1px] bg-[var(--border)] mx-1 hidden sm:block" />
+
+      {/* Color Picker */}
       <div className="relative">
         <button onClick={() => setShowColors((v) => !v)}
-          className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs text-[var(--muted-text)] hover:bg-[var(--muted)] transition-all"
+          className="interactive-scale flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-[var(--muted-text)] hover:bg-[var(--muted)] border border-transparent hover:border-[var(--border)] transition-all uppercase tracking-wider"
         >
-          <span className="w-3 h-3 rounded-full border border-[var(--border)]"
-            style={{ backgroundColor: COLORS.find((c) => c.key === note.color)?.hex || '#888780' }} />
-          <Palette size={11} />
+          <div className="w-4 h-4 rounded-full shadow-inner border border-black/5"
+            style={{ backgroundColor: COLORS.find((c) => c.key === note.color)?.hex || 'var(--muted-text)' }} />
+          <Palette size={13} />
+          <span className="hidden md:inline">Appearance</span>
         </button>
         {showColors && (
-          <div className="absolute top-full mt-1 left-0 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-xl p-2.5 flex gap-2 z-30">
-            {COLORS.map((c) => (
-              <button key={String(c.key)} onClick={() => { onUpdate({ color: c.key }); setShowColors(false) }}
-                className={cn('w-5 h-5 rounded-full border-2 hover:scale-110 transition-transform', note.color === c.key ? 'border-[var(--foreground)]' : 'border-transparent', !c.key && 'bg-[var(--muted)] border-[var(--border)]')}
-                style={{ backgroundColor: c.key ? c.hex : undefined }}
-              />
-            ))}
-          </div>
+          <>
+             <div className="fixed inset-0 z-30" onClick={() => setShowColors(false)} />
+             <div className="absolute top-full mt-2 left-0 glass-card rounded-2xl shadow-2xl p-3 flex gap-2.5 z-40 animate-in origin-top-left">
+               {COLORS.map((c) => (
+                 <button key={String(c.key)} onClick={() => { onUpdate({ color: c.key }); setShowColors(false) }}
+                   className={cn('w-7 h-7 rounded-full border-2 transition-all hover:scale-125 hover:rotate-12', 
+                     note.color === c.key ? 'border-[var(--foreground)] scale-110 shadow-md' : 'border-transparent shadow-sm', 
+                     !c.key && 'bg-[var(--muted)] border-[var(--border)]')}
+                   style={{ backgroundColor: c.key ? c.hex : undefined }}
+                   title={c.key || 'Default'}
+                 />
+               ))}
+             </div>
+          </>
         )}
       </div>
 
-      {/* Tags */}
-      {note.tags.map((tag) => (
-        <span key={tag} className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[var(--p-purple)]/10 text-[var(--p-purple)] text-xs font-medium">
-          <Tag size={10} />{tag}
-          <button onClick={() => onUpdate({ tags: note.tags.filter((t) => t !== tag) })} className="hover:text-red-500 transition-colors"><X size={10} /></button>
-        </span>
-      ))}
+      <div className="h-4 w-[1px] bg-[var(--border)] mx-1" />
 
-      {/* Add tag */}
-      {showTagInput ? (
-        <div className="flex items-center gap-1">
-          <input autoFocus value={tagInput} onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') addTag(); if (e.key === 'Escape') setShowTagInput(false) }}
-            placeholder="tag name" className="text-xs px-2 py-0.5 bg-[var(--muted)] rounded-lg outline-none border border-[var(--p-purple)] w-20" />
-          <button onClick={addTag} className="text-xs text-[var(--p-purple)] font-medium">Add</button>
-          <button onClick={() => setShowTagInput(false)} className="text-xs text-[var(--muted-text)]">✕</button>
-        </div>
-      ) : (
-        <button onClick={() => setShowTagInput(true)} className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs text-[var(--muted-text)] hover:bg-[var(--muted)] transition-all">
-          <Plus size={11} />Add tag
-        </button>
-      )}
+      {/* Tags List */}
+      <div className="flex flex-wrap items-center gap-2">
+        {note.tags.map((tag) => (
+          <span key={tag} className="group flex items-center gap-2 px-3 py-1 rounded-xl bg-[var(--p-purple)]/10 text-[var(--p-purple)] text-[10px] font-bold uppercase tracking-widest border border-[var(--p-purple)]/5 animate-in">
+            <Tag size={10} strokeWidth={2.5} className="opacity-70" />
+            {tag}
+            <button onClick={() => onUpdate({ tags: note.tags.filter((t) => t !== tag) })} 
+              className="hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 -mr-1 p-0.5"
+            >
+              <X size={10} strokeWidth={3} />
+            </button>
+          </span>
+        ))}
+
+        {/* Add Tag Action */}
+        {showTagInput ? (
+          <div className="flex items-center gap-2 animate-in slide-in-from-left-2">
+            <input autoFocus value={tagInput} onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') addTag(); if (e.key === 'Escape') setShowTagInput(false) }}
+              placeholder="Tag label..." 
+              className="text-[11px] font-bold px-3 py-1 bg-[var(--muted)] rounded-xl outline-none border border-[var(--p-purple)]/40 w-28 placeholder:opacity-50" 
+            />
+            <button onClick={addTag} className="text-[10px] font-black text-[var(--p-purple)] uppercase tracking-tighter hover:scale-110 transition-transform">Save</button>
+            <button onClick={() => setShowTagInput(false)} className="text-[var(--muted-text)] hover:text-red-500 transition-colors p-1">
+               <X size={12} strokeWidth={2.5} />
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setShowTagInput(true)} 
+            className="interactive-scale flex items-center gap-2 px-3 py-1.5 rounded-xl text-[11px] font-bold text-[var(--muted-text)] hover:bg-[var(--muted)] border border-dashed border-[var(--border)] hover:border-[var(--muted-text)] transition-all uppercase tracking-wider"
+          >
+            <Plus size={13} />
+            <span>Label</span>
+          </button>
+        )}
+      </div>
     </div>
+
   )
 }

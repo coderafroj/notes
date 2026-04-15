@@ -53,26 +53,41 @@ export default function FocusPage() {
   const words = note.contentText?.trim().split(/\s+/).filter(Boolean).length ?? 0
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex flex-col">
+    <div className="min-h-screen bg-[var(--background)] flex flex-col animate-in">
       {/* Minimal bar */}
-      <div className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-3 z-10 bg-[var(--background)]/80 backdrop-blur-sm border-b border-[var(--border)]">
-        <input defaultValue={note.title} onBlur={async (e) => { const u = { ...note, title: e.target.value }; setNote(u); await save(u) }}
-          className="text-sm font-medium bg-transparent outline-none text-[var(--muted-text)] focus:text-[var(--foreground)] transition-colors max-w-xs" />
-        <div className="flex items-center gap-4 text-xs text-[var(--muted-text)]">
-          {saveStatus === 'saving' && <span className="animate-pulse flex items-center gap-1"><Loader2 size={10} className="animate-spin" />Saving</span>}
-          {saveStatus === 'saved' && <span className="text-[var(--p-teal)] flex items-center gap-1"><Check size={10} />Saved</span>}
-          <span>{words} words</span>
-          <button onClick={() => router.push(`/note/${note.id}`)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--muted)] hover:bg-[var(--border)] transition-all">
-            <X size={12} />Exit
+      <div className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4 z-10 glass-nav">
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 bg-[var(--p-purple)]/10 text-[var(--p-purple)] rounded-lg flex items-center justify-center font-bold text-xs shadow-sm shadow-purple-500/10">N</div>
+          <input defaultValue={note.title} onBlur={async (e) => { const u = { ...note, title: e.target.value }; setNote(u); await save(u) }}
+            className="text-sm font-bold bg-transparent outline-none text-[var(--muted-text)] focus:text-[var(--foreground)] transition-all max-w-xs focus:max-w-md" />
+        </div>
+        
+        <div className="flex items-center gap-6">
+          <div className="hidden sm:flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-[var(--muted-text)]">
+            {saveStatus === 'saving' && <span className="animate-pulse flex items-center gap-1.5"><Loader2 size={11} className="animate-spin" />Saving</span>}
+            {saveStatus === 'saved' && <span className="text-[var(--p-teal)] flex items-center gap-1.5"><Check size={11} />Saved</span>}
+            <span className="opacity-40 select-none">|</span>
+            <span>{words} words</span>
+          </div>
+          
+          <button onClick={() => router.push(`/note/${note.id}`)} 
+            className="interactive-scale flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--muted)] hover:bg-[var(--border)] text-xs font-bold transition-all"
+          >
+            <X size={14} />Exit Focus
           </button>
         </div>
       </div>
-      <div className="flex-1 max-w-2xl mx-auto w-full px-6 pt-20 pb-32">
+
+      <div className="flex-1 max-w-3xl mx-auto w-full px-8 pt-32 pb-48">
         <Editor content={note.content} onChange={handleChange} editable />
       </div>
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 text-xs text-[var(--muted-text)] bg-[var(--muted)] px-4 py-1.5 rounded-full border border-[var(--border)]">
+
+      {/* Subtle word count at bottom */}
+      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-3 px-5 py-2.5 rounded-2xl glass-card text-[10px] font-bold uppercase tracking-widest text-[var(--muted-text)] shadow-lg shadow-black/5">
+        <div className="w-1.5 h-1.5 rounded-full bg-[var(--p-teal)] animate-pulse" />
         {words} words
       </div>
     </div>
   )
 }
+
