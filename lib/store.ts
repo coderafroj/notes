@@ -20,6 +20,8 @@ interface NoteflowStore extends AppState {
   setFocusMode: (v: boolean) => void
   commandPaletteOpen: boolean
   setCommandPaletteOpen: (v: boolean) => void
+  isGuest: boolean
+  setIsGuest: (v: boolean) => void
   // Note actions (optimistic update)
   updateNoteInList: (id: string, patch: Partial<NoteIndexEntry>) => void
   removeNoteFromList: (id: string) => void
@@ -41,6 +43,7 @@ export const useNoteflowStore = create<NoteflowStore>()(
       theme: 'system',
       focusMode: false,
       commandPaletteOpen: false,
+      isGuest: false,
 
       setNotes: (notes) => set({ notes }),
       setFolders: (folders) => set({ folders }),
@@ -54,6 +57,7 @@ export const useNoteflowStore = create<NoteflowStore>()(
       setTheme: (theme) => set({ theme }),
       setFocusMode: (v) => set({ focusMode: v }),
       setCommandPaletteOpen: (v) => set({ commandPaletteOpen: v }),
+      setIsGuest: (v) => set({ isGuest: v }),
 
       updateNoteInList: (id, patch) =>
         set((s) => ({

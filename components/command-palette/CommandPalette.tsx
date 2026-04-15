@@ -167,70 +167,84 @@ export default function CommandPalette() {
             transition={{ duration: 0.15 }}
             className="fixed top-[10vh] sm:top-[15vh] left-1/2 -translate-x-1/2 w-full max-w-lg z-50 px-3 sm:px-4"
           >
-            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-2xl shadow-2xl overflow-hidden glass-card">
+            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-3xl shadow-2xl overflow-hidden glass-card animate-in">
               {/* Input */}
-              <div className="flex items-center gap-3 px-4 py-4 border-b border-[var(--border)]">
-                <Search size={20} className="text-[var(--p-purple)] shrink-0" />
+              <div className="flex items-center gap-4 px-5 py-5 border-b border-[var(--border)]">
+                <Search size={22} className="text-[var(--p-purple)] shrink-0 opacity-80" />
                 <input
                   ref={inputRef}
                   value={query}
                   onChange={(e) => { setQuery(e.target.value); setSelected(0) }}
-                  placeholder="Type a command or search..."
-                  className="flex-1 bg-transparent outline-none text-base sm:text-sm text-[var(--foreground)] placeholder:text-[var(--muted-text)]"
+                  placeholder="What are you looking for?"
+                  className="flex-1 bg-transparent outline-none text-base sm:text-lg text-[var(--foreground)] placeholder:text-[var(--muted-text)] font-medium"
                 />
 
                 {query && (
-                  <button onClick={() => setQuery('')}>
-                    <X size={15} className="text-[var(--muted-text)]" />
+                  <button onClick={() => setQuery('')} className="p-1 hover:bg-[var(--muted)] rounded-full transition-colors">
+                    <X size={16} className="text-[var(--muted-text)]" />
                   </button>
                 )}
-                <kbd className="text-[10px] px-1.5 py-0.5 bg-[var(--muted)] rounded text-[var(--muted-text)] border border-[var(--border)]">
+                <kbd className="hidden sm:inline-flex text-[10px] px-2 py-1 bg-[var(--muted)] rounded-lg text-[var(--muted-text)] border border-[var(--border)] font-bold">
                   ESC
                 </kbd>
               </div>
 
               {/* Results */}
-              <div className="max-h-80 overflow-y-auto py-2">
+              <div className="max-h-[60vh] overflow-y-auto py-3 no-scrollbar">
                 {filtered.length === 0 && (
-                  <p className="text-center text-sm text-[var(--muted-text)] py-8">
-                    No results for "{query}"
-                  </p>
+                  <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
+                    <div className="w-12 h-12 bg-[var(--muted)] rounded-2xl flex items-center justify-center text-[var(--muted-text)] mb-3 opacity-50">
+                       <Search size={24} />
+                    </div>
+                    <p className="text-sm font-semibold">No results found</p>
+                    <p className="text-xs text-[var(--muted-text)] mt-1">Try searching for something else</p>
+                  </div>
                 )}
                 {Object.entries(groups).map(([group, items]) => (
-                  <div key={group}>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted-text)] px-4 py-1.5">
+                  <div key={group} className="mb-2 last:mb-0">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--muted-text)] px-6 py-2 opacity-50">
                       {group}
                     </p>
-                    {items.map((item) => {
-                      const idx = globalIdx++
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={item.action}
-                          onMouseEnter={() => setSelected(idx)}
-                          className={cn(
-                            'w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left',
-                            selected === idx
-                              ? 'bg-[var(--p-purple)]/10 text-[var(--p-purple)]'
-                              : 'text-[var(--foreground)] hover:bg-[var(--muted)]'
-                          )}
-                        >
-                          <span className={selected === idx ? 'text-[var(--p-purple)]' : 'text-[var(--muted-text)]'}>
-                            {item.icon}
-                          </span>
-                          <span className="truncate">{item.label}</span>
-                        </button>
-                      )
-                    })}
+                    <div className="px-2">
+                      {items.map((item) => {
+                        const idx = globalIdx++
+                        const isActive = selected === idx
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={item.action}
+                            onMouseEnter={() => setSelected(idx)}
+                            className={cn(
+                              'interactive-scale w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-sm transition-all text-left group',
+                              isActive
+                                ? 'bg-[var(--p-purple)] text-white shadow-lg shadow-purple-500/30'
+                                : 'text-[var(--foreground)] hover:bg-[var(--muted)]'
+                            )}
+                          >
+                            <span className={cn(
+                              'w-8 h-8 rounded-xl flex items-center justify-center transition-colors',
+                              isActive ? 'bg-white/20 text-white' : 'bg-[var(--muted)] text-[var(--muted-text)] group-hover:bg-[var(--card-bg)]'
+                            )}>
+                              {item.icon}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold truncate">{item.label}</p>
+                              {item.group === 'Notes' && <p className={cn('text-[10px] truncate opacity-70', isActive ? 'text-white' : 'text-[var(--muted-text)]')}>Jump to note content</p>}
+                            </div>
+                            {isActive && <kbd className="text-[10px] font-bold opacity-70">ENTER</kbd>}
+                          </button>
+                        )
+                      })}
+                    </div>
                   </div>
                 ))}
               </div>
 
               {/* Footer */}
-              <div className="flex items-center gap-4 px-4 py-2 border-t border-[var(--border)] text-[10px] text-[var(--muted-text)]">
-                <span><kbd className="bg-[var(--muted)] px-1 rounded border border-[var(--border)]">↑↓</kbd> navigate</span>
-                <span><kbd className="bg-[var(--muted)] px-1 rounded border border-[var(--border)]">↵</kbd> select</span>
-                <span className="ml-auto">Ctrl+K to toggle</span>
+              <div className="flex items-center gap-5 px-6 py-3 bg-[var(--muted)]/50 border-t border-[var(--border)] text-[10px] text-[var(--muted-text)] font-semibold uppercase tracking-wider">
+                <span className="flex items-center gap-1.5"><kbd className="bg-[var(--card-bg)] px-1.5 py-0.5 rounded border border-[var(--border)] shadow-sm">↑↓</kbd> navigate</span>
+                <span className="flex items-center gap-1.5"><kbd className="bg-[var(--card-bg)] px-1.5 py-0.5 rounded border border-[var(--border)] shadow-sm">↵</kbd> select</span>
+                <span className="ml-auto opacity-60">Ctrl+K TO CLOSE</span>
               </div>
             </div>
           </motion.div>

@@ -1,0 +1,51 @@
+plementation Plan - Noteflow V2 Migration & Polish
+This plan outlines the final steps to fully integrate, polish, and prepare the Noteflow application for deployment, using the noteflow-v2 source as a blueprint for architecture and features.
+
+User Review Required
+IMPORTANT
+
+The main project is already using Next.js 16, React 19, and Tailwind 4. noteflow-v2 uses older versions. I will maintain the modern tech stack while porting the "best" features and aesthetics from V2.
+
+Proposed Changes
+1. Core Feature Verification & Integration
+Ensure all "Pro" features from V2 are fully operational in the main codebase.
+
+[MODIFY] 
+Note Page
+Ensure the Drawing Tab is seamless and saves correctly to Dexie/GitHub.
+Verify the Publish Toggle correctly handles public/private states.
+[MODIFY] 
+Focus Mode
+Ensure it provides a distraction-free environment as intended in V2.
+[MODIFY] 
+Version History
+Confirm it accurately fetches commit history from GitHub.
+2. Premium UI/UX Polish
+Apply rich aesthetics as per system instructions to ensure a "WOW" first impression.
+
+[MODIFY] 
+Global Styles
+Implement refined color palettes (HSL-based).
+Add smooth gradients and glassmorphism effects (glass-card).
+Define micro-animations for hover states and transitions.
+[MODIFY] 
+Sidebar
+Enhance the sidebar with better spacing and premium icons.
+3. Deployment Readiness
+[MODIFY] 
+PWA Setup
+Ensure the Service Worker and manifest are correctly configured for offline use.
+[MODIFY] 
+Environment Variables
+Verify GITHUB_ID, GITHUB_SECRET, and NEXTAUTH_URL are correctly set up.
+4. Cleanup
+[DELETE] noteflow-v2 directory
+Remove the redundant source directory once all features are verified.
+Verification Plan
+Automated Tests
+Run npm run build to ensure no build errors.
+Verify PWA registration in the browser.
+Manual Verification
+Test creating a note, drawing on it, and publishing it.
+Check search functionality and version history.
+Verify responsiveness on mobile using the BottomNav.
