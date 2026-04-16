@@ -33,7 +33,7 @@ export default function BottomNav() {
   }
 
   const navItems = [
-    { label: 'Home', icon: Home, href: '/' },
+    { label: 'Home', icon: Home, href: '/dashboard' },
     { label: 'Search', icon: Search, href: '/search' },
     { label: 'New', icon: Plus, href: '#', isAction: true, onClick: handleNew },
     { label: 'Saved', icon: Star, href: '/favorites' },

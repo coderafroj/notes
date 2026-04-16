@@ -2,6 +2,8 @@
 import Link from 'next/link'
 import { getPublicIndex } from '@/lib/publish'
 import { formatDate } from '@/lib/utils'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 
 const TOPICS = [
   { id: 'all', label: 'All' },
@@ -30,10 +32,14 @@ interface Props {
 }
 
 export default async function BrowsePage({ searchParams }: Props) {
+  const session = await getServerSession(authOptions)
   const activeTopic = searchParams.topic ?? 'all'
   const searchQuery = searchParams.q ?? ''
 
   const authors = ['coderafroj']
+  if (session?.user?.login && !authors.includes(session.user.login)) {
+    authors.push(session.user.login)
+  }
   const allNotes: any[] = []
   for (const author of authors) {
     try {

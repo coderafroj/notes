@@ -38,7 +38,7 @@ export default function Sidebar() {
   }, [session, isGuest, selectedFolderId, isCreating])
 
   const navItems = [
-    { label: 'All Notes', icon: PenLine, id: 'all', href: '/' },
+    { label: 'All Notes', icon: PenLine, id: 'all', href: '/dashboard' },
     { label: 'Favorites', icon: Star, id: 'fav', href: '/favorites' },
   ]
 

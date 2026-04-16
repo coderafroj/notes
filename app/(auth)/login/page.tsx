@@ -5,6 +5,8 @@ import { signIn } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import { PenLine, AlertTriangle, User, ShieldCheck, Zap, Globe } from 'lucide-react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 
 function GithubIcon({ size = 20 }: { size?: number }) {
   return (
@@ -18,10 +20,17 @@ function LoginContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const error = searchParams?.get('error')
+  const { data: session } = useSession()
+
+  useEffect(() => {
+    if (session?.user) {
+      router.push('/dashboard')
+    }
+  }, [session, router])
 
   const handleGuestLogin = () => {
     document.cookie = "noteflow-guest=true; path=/; max-age=31536000"
-    router.push('/')
+    router.push('/dashboard')
   }
 
   return (
@@ -83,7 +92,7 @@ function LoginContent() {
 
           <div className="space-y-4">
             <button
-              onClick={() => signIn('github', { callbackUrl: '/' })}
+              onClick={() => signIn('github', { callbackUrl: '/dashboard' })}
               className="w-full h-16 flex items-center justify-center gap-4 bg-[var(--foreground)] text-[var(--background)] rounded-[24px] font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-black/10 dark:shadow-white/5 group"
             >
               <motion.div whileHover={{ rotate: 15 }}>

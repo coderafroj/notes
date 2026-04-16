@@ -4,6 +4,8 @@
 
 import Link from 'next/link'
 import { getPublicIndex } from '@/lib/publish'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 import { BookOpen, Github, Wifi, Download, Globe } from 'lucide-react'
 
@@ -77,10 +79,13 @@ function avatarStyle(login: string) {
 // ── Fetch all public notes from all known authors ───────────
 // In production you'd have a central index; for now we fetch from
 // the repo owner's public index. Pass ?author= to filter.
-async function getAllPublicNotes(): Promise<PublicNote[]> {
+async function getAllPublicNotes(currentUser?: string | null): Promise<PublicNote[]> {
   // Fetch from your own account's public index as seed data
   // Add more usernames as the platform grows
   const authors = ['coderafroj'] // add more authors here as needed
+  if (currentUser && !authors.includes(currentUser)) {
+    authors.push(currentUser)
+  }
   const all: PublicNote[] = []
   for (const author of authors) {
     try {
@@ -93,7 +98,8 @@ async function getAllPublicNotes(): Promise<PublicNote[]> {
 
 // ── Page ────────────────────────────────────────────────────
 export default async function HomePage() {
-  const allNotes = await getAllPublicNotes()
+  const session = await getServerSession(authOptions)
+  const allNotes = await getAllPublicNotes(session?.user?.login)
   const featured = allNotes[0]
   const rest = allNotes.slice(1)
 
