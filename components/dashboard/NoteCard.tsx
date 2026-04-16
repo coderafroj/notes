@@ -24,43 +24,53 @@ export default function NoteCard({ note, viewMode }: NoteCardProps) {
     <Link href={`/note/${note.id}`} className="block group/card">
       <motion.div
         layout
-        whileHover={{ y: isGrid ? -4 : 0, scale: isGrid ? 1 : 1.005 }}
-        whileTap={{ scale: 0.975 }}
+        whileHover={{ y: isGrid ? -6 : 0, scale: isGrid ? 1.02 : 1.01 }}
+        whileTap={{ scale: 0.96 }}
         className={cn(
-          'relative overflow-hidden rounded-2xl cursor-pointer transition-all border border-[var(--border)] bg-[var(--card-bg)]',
-          'hover:border-[var(--p-purple)]/20 hover:shadow-lg hover:shadow-purple-500/5',
-          isGrid ? 'flex flex-col h-52 p-5 gap-3' : 'flex items-center gap-5 h-20 px-5'
+          'relative overflow-hidden rounded-[24px] cursor-pointer transition-all border border-[#e5e4df] dark:border-white/10 bg-white dark:bg-[#1a1a1a]',
+          'hover:border-[#7F77DD]/30 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)]',
+          isGrid ? 'flex flex-col h-[210px] p-6 gap-3' : 'flex items-center gap-5 h-20 px-6'
         )}
-        style={accentColor ? { borderLeftColor: accentColor, borderLeftWidth: '3px' } : undefined}
       >
+        {/* Accent bar */}
+        <div 
+          className="absolute top-0 left-0 w-1.5 h-full opacity-80" 
+          style={{ backgroundColor: accentColor || '#7F77DD' }} 
+        />
+
         <div className={cn('flex-1 min-w-0', !isGrid && 'flex items-center gap-5')}>
           {/* Title row */}
-          <div className={cn('flex items-start justify-between gap-3', isGrid ? 'mb-1' : '')}>
+          <div className={cn('flex items-start justify-between gap-3', isGrid ? 'mb-2' : '')}>
             <div className="flex items-center gap-2 min-w-0 flex-1">
-              {note.isPinned && <Pin size={13} className="text-[var(--p-amber)] shrink-0 fill-[var(--p-amber)] opacity-80" />}
-              <h3 className="font-bold text-[0.95rem] truncate leading-tight group-hover/card:text-[var(--p-purple)] transition-colors">
+              {note.isPinned && (
+                <div className="p-1 bg-[#EF9F27]/10 rounded-md">
+                   <Pin size={12} className="text-[#EF9F27] fill-[#EF9F27]" />
+                </div>
+              )}
+              <h3 className="font-extrabold text-[15px] md:text-[16px] truncate leading-tight group-hover/card:text-[#7F77DD] transition-colors">
                 {note.title || 'Untitled Note'}
               </h3>
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
               {note.isPublished && (
-                <span className="flex items-center gap-1 text-[9px] font-bold text-[var(--p-teal)] bg-[var(--p-teal)]/10 px-2 py-0.5 rounded-lg uppercase tracking-wider">
-                  <Globe size={10} />Live
-                </span>
+                <div className="flex items-center gap-1 text-[9px] font-black text-[#1D9E75] bg-[#1D9E75]/10 px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                  <div className="w-1 h-1 bg-[#1D9E75] rounded-full animate-pulse" />
+                  Live
+                </div>
               )}
-              {note.isFavorite && <Star size={14} className="fill-[var(--p-amber)] text-[var(--p-amber)]" />}
+              {note.isFavorite && <Star size={14} className="fill-[#EF9F27] text-[#EF9F27]" />}
             </div>
           </div>
 
           {/* Preview text */}
           {isGrid && (
-            <p className="text-sm text-[var(--muted-text)] line-clamp-3 leading-relaxed flex-1 text-[0.82rem]">
-              {note.contentPreview || <span className="italic opacity-40">No content yet...</span>}
+            <p className="text-[13px] text-[#888780] line-clamp-3 leading-relaxed flex-1 font-medium">
+              {note.contentPreview || <span className="italic opacity-30">No content yet...</span>}
             </p>
           )}
           {!isGrid && (
-            <p className="text-sm text-[var(--muted-text)] line-clamp-1 flex-1 hidden sm:block text-[0.82rem]">
-              {note.contentPreview || <span className="italic opacity-40">No content yet...</span>}
+            <p className="text-[13px] text-[#888780] line-clamp-1 flex-1 hidden sm:block font-medium">
+              {note.contentPreview || <span className="italic opacity-30">No content yet...</span>}
             </p>
           )}
         </div>
@@ -68,21 +78,21 @@ export default function NoteCard({ note, viewMode }: NoteCardProps) {
         {/* Footer */}
         <div className={cn(
           'flex items-center gap-3',
-          isGrid ? 'mt-auto pt-3 border-t border-[var(--border)]' : 'ml-auto shrink-0'
+          isGrid ? 'mt-auto pt-4 border-t border-[#f2f1ed] dark:border-white/5' : 'ml-auto shrink-0'
         )}>
-          <span className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--muted-text)] uppercase tracking-widest opacity-50">
-            <Clock size={10} />
+          <span className="flex items-center gap-1.5 text-[10px] font-bold text-[#888780] uppercase tracking-widest opacity-60">
+            <Clock size={11} className="opacity-50" />
             {formatRelative(note.updatedAt)}
           </span>
           {isGrid && note.tags.length > 0 && (
             <div className="flex gap-1.5 overflow-hidden ml-auto">
               {note.tags.slice(0, 2).map((tag) => (
-                <span key={tag} className="px-2 py-0.5 rounded-lg bg-[var(--p-purple)]/8 text-[var(--p-purple)] text-[9px] font-black uppercase tracking-wider">
+                <span key={tag} className="px-2.5 py-1 rounded-lg bg-[#7F77DD]/5 text-[#7F77DD] text-[10px] font-black uppercase tracking-tight border border-[#7F77DD]/10">
                   #{tag}
                 </span>
               ))}
               {note.tags.length > 2 && (
-                <span className="text-[9px] font-bold text-[var(--muted-text)] opacity-60">+{note.tags.length - 2}</span>
+                <span className="text-[10px] font-bold text-[#888780] px-1">+{note.tags.length - 2}</span>
               )}
             </div>
           )}

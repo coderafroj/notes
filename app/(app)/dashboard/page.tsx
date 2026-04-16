@@ -9,7 +9,7 @@ import { useNoteflowStore } from '@/lib/store'
 import { initializeNoteflow } from '@/lib/github'
 import { getAllLocalNotes, saveNoteLocal, saveNoteWithSync } from '@/lib/sync'
 import { searchNotes } from '@/lib/search'
-import { cn, makeSlug, extractText } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import NoteCard from '@/components/dashboard/NoteCard'
 import { v4 as uuidv4 } from 'uuid'
 import { Note } from '@/types'
@@ -32,14 +32,11 @@ export default function Dashboard() {
   // Load notes
   useEffect(() => {
     if (isGuest) {
-      // Guest: load from Dexie
       getAllLocalNotes().then((localNotes) => {
-        setNotes(localNotes.map((n) => ({
-          id: n.id, title: n.title, contentPreview: n.contentPreview,
-          tags: n.tags, folder: n.folder, isPinned: n.isPinned,
-          isFavorite: n.isFavorite, color: n.color,
-          createdAt: n.createdAt, updatedAt: n.updatedAt,
-          isPublished: false, slug: n.slug ?? '',
+        setNotes(localNotes.map((n: any) => ({
+          ...n,
+          isPublished: n.isPublished ?? false,
+          slug: n.slug ?? '',
         })))
       })
       return
@@ -54,14 +51,14 @@ export default function Dashboard() {
       })
       .catch(console.error)
       .finally(() => setIsSyncing(false))
-  }, [session, isGuest])
+  }, [session, isGuest, setNotes, setFolders, setTags])
 
   // Filter + search + sort
   const folderFiltered = notes.filter(
     (n) => selectedFolderId === 'all' || n.folder === selectedFolderId
   )
   const searched = searchQuery.trim() ? searchNotes(folderFiltered, searchQuery) : folderFiltered
-  const sorted = [...searched].sort((a, b) => {
+  const sorted = [...searched].sort((a: any, b: any) => {
     if (sortBy === 'title') return sortOrder === 'asc' ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title)
     const da = new Date(a[sortBy]).getTime()
     const db_ = new Date(b[sortBy]).getTime()
@@ -78,7 +75,7 @@ export default function Dashboard() {
     const note: Note = {
       id, title: 'Untitled Note', content: '', contentText: '',
       contentPreview: '', tags: [],
-      folder: selectedFolderId === 'all' ? 'all' : selectedFolderId,
+      folder: selectedFolderId === 'all' ? 'personal' : selectedFolderId,
       isPinned: false, isFavorite: false, createdAt: now, updatedAt: now,
       attachments: [], color: null, isPublished: false,
       slug: `untitled-${id.slice(0, 6)}`,
@@ -90,68 +87,71 @@ export default function Dashboard() {
     }
     router.push(`/note/${id}`)
     setIsCreating(false)
-  }, [session, isGuest, selectedFolderId, isCreating])
+  }, [session, isGuest, selectedFolderId, isCreating, router])
 
-  const sortLabel = sortBy === 'updatedAt' ? 'Last edited' : sortBy === 'createdAt' ? 'Created' : 'Title'
+  const sortLabel = sortBy === 'updatedAt' ? 'Edited' : sortBy === 'createdAt' ? 'Created' : 'Title'
 
   return (
-    <div className="p-5 lg:p-10 max-w-7xl mx-auto">
-      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+    <div className="p-6 md:p-8 lg:p-12 max-w-7xl mx-auto min-h-screen">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight mb-1">
-            {selectedFolderId === 'all' ? 'All Notes' : 'Folder'}
-          </h1>
-          <div className="flex items-center gap-3 text-sm text-[var(--muted-text)]">
-            <span>{displayNotes.length} notes</span>
+          <div className="flex items-center gap-2 mb-1.5 px-0.5">
+             <div className="w-1.5 h-6 bg-[#7F77DD] rounded-full" />
+             <h1 className="text-[28px] md:text-3xl lg:text-4xl font-black tracking-tight text-[#0f0f0f]">
+              {selectedFolderId === 'all' ? 'All Notes' : 'Personal Workspace'}
+            </h1>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-[#888780] font-bold px-1">
+            <span className="bg-[#f2f1ed] px-2.5 py-1 rounded-lg">{displayNotes.length} articles</span>
             {isGuest && (
-              <span className="text-xs px-2 py-0.5 bg-[var(--p-amber)]/15 text-[var(--p-amber)] rounded-full font-medium">
-                Guest mode
+              <span className="text-[10px] px-2 py-1 bg-[#EF9F27]/10 text-[#EF9F27] rounded-lg uppercase tracking-wider">
+                Guest Mode
               </span>
             )}
             {isSyncing && (
-              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-1.5 text-[var(--p-blue)]">
-                <RefreshCw size={12} className="animate-spin" />
-                Syncing...
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-1.5 text-[#7F77DD]">
+                <RefreshCw size={14} className="animate-spin" />
+                Updating...
               </motion.span>
             )}
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Search bar — mobile */}
-          <div className="relative flex-1 sm:hidden">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-text)]" />
+        <div className="flex items-center gap-3">
+          {/* Search bar — hidden on tiny screens, shown above bottom nav on mobile */}
+          <div className="relative flex-1 md:flex-none md:w-64 group">
+            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#888780] group-focus-within:text-[#7F77DD] transition-colors" />
             <input
               value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="w-full pl-9 pr-3 py-2 bg-[var(--muted)] rounded-xl text-sm outline-none border border-transparent focus:border-[var(--p-purple)] transition-all"
+              placeholder="Deep search..."
+              className="w-full pl-11 pr-4 py-3 bg-[#f2f1ed] border border-transparent focus:bg-white focus:border-[#7F77DD]/30 rounded-[18px] text-[14px] outline-none shadow-inner transition-all"
             />
           </div>
 
-          {/* View toggle */}
-          <div className="bg-[var(--muted)] p-1 rounded-xl flex border border-[var(--border)]">
+          {/* View Toggle */}
+          <div className="hidden sm:flex bg-[#f2f1ed] p-1 rounded-[16px] border border-[#e5e4df]">
             {(['grid', 'list'] as const).map((m) => (
               <button key={m} onClick={() => setViewMode(m)}
-                className={cn('p-2 rounded-lg transition-all', viewMode === m ? 'bg-[var(--card-bg)] shadow-sm text-[var(--foreground)]' : 'text-[var(--muted-text)]')}
+                className={cn('p-2.5 rounded-[12px] transition-all', viewMode === m ? 'bg-white shadow-sm text-[#0f0f0f]' : 'text-[#888780]')}
               >
-                {m === 'grid' ? <LayoutGrid size={16} /> : <List size={16} />}
+                {m === 'grid' ? <LayoutGrid size={18} /> : <List size={18} />}
               </button>
             ))}
           </div>
 
-          {/* Sort */}
+          {/* Sort Menu */}
           <div className="relative">
             <button onClick={() => setShowSortMenu((v) => !v)}
-              className="flex items-center gap-1.5 px-3 py-2 border border-[var(--border)] rounded-xl text-sm font-medium text-[var(--muted-text)] hover:bg-[var(--muted)] transition-all"
+              className="flex items-center gap-2 px-4 py-3 bg-white border border-[#e5e4df] rounded-[18px] text-sm font-bold text-[#0f0f0f] shadow-sm hover:shadow-md transition-all active:scale-95"
             >
-              <ArrowUpDown size={14} />
+              <ArrowUpDown size={16} className="text-[#888780]" />
               <span className="hidden sm:inline">{sortLabel}</span>
-              <ChevronDown size={12} />
+              <ChevronDown size={14} className="opacity-50" />
             </button>
             <AnimatePresence>
               {showSortMenu && (
-                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
-                  className="absolute right-0 mt-2 w-44 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-xl overflow-hidden z-50"
+                <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute right-0 mt-3 w-52 bg-white border border-[#e5e4df] rounded-[24px] shadow-2xl overflow-hidden z-50 p-2"
                 >
                   {([['updatedAt', 'Last edited'], ['createdAt', 'Date created'], ['title', 'Title (A–Z)']] as const).map(([key, label]) => (
                     <button key={key} onClick={() => {
@@ -159,10 +159,10 @@ export default function Dashboard() {
                       else { setSortBy(key); setSortOrder(key === 'title' ? 'asc' : 'desc') }
                       setShowSortMenu(false)
                     }}
-                      className={cn('w-full text-left px-4 py-2.5 text-sm hover:bg-[var(--muted)] transition-colors flex items-center justify-between', sortBy === key && 'text-[var(--p-purple)] font-medium')}
+                      className={cn('w-full text-left px-4 py-3 text-[13px] rounded-xl hover:bg-[#f8f8f6] transition-colors flex items-center justify-between font-bold', sortBy === key ? 'text-[#7F77DD] bg-[#7F77DD]/5' : 'text-[#888780]')}
                     >
                       {label}
-                      {sortBy === key && <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>}
+                      {sortBy === key && <span className="text-[10px]">{sortOrder === 'asc' ? 'ASC' : 'DESC'}</span>}
                     </button>
                   ))}
                 </motion.div>
@@ -170,41 +170,41 @@ export default function Dashboard() {
             </AnimatePresence>
           </div>
 
-          {/* New note — desktop */}
           <button onClick={handleNewNote} disabled={isCreating}
-            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[var(--foreground)] text-[var(--background)] rounded-xl text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 shadow-sm"
+            className="hidden sm:flex items-center gap-2 px-5 py-3 bg-[#0f0f0f] text-white rounded-[18px] text-sm font-black shadow-lg shadow-black/10 hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50"
           >
-            <Plus size={16} />
+            <Plus size={18} />
             New Note
           </button>
         </div>
       </header>
 
-      {/* Empty state */}
+      {/* Grid */}
       {displayNotes.length === 0 && !isSyncing ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="w-20 h-20 bg-[var(--muted)] rounded-3xl flex items-center justify-center mb-6 text-4xl">📝</div>
-          <h2 className="text-xl font-bold mb-2">No notes yet</h2>
-          <p className="text-[var(--muted-text)] mb-8 max-w-xs text-sm">
-            {searchQuery ? `No results for "${searchQuery}"` : 'Start writing your first note'}
+        <div className="flex flex-col items-center justify-center py-32 text-center animate-in fade-in slide-in-from-bottom-5 duration-700">
+          <div className="w-24 h-24 bg-[#f2f1ed] rounded-[32px] flex items-center justify-center mb-8 text-5xl shadow-inner">📄</div>
+          <h2 className="text-2xl font-black mb-3">Your workspace is quiet</h2>
+          <p className="text-[#888780] mb-10 max-w-xs text-[15px] font-medium leading-relaxed">
+            {searchQuery ? `Nothing found for "${searchQuery}". Maybe try a different keyword?` : 'Capture your thoughts, code snippets, or study notes. Everything stays synced to GitHub.'}
           </p>
           {!searchQuery && (
             <button onClick={handleNewNote} disabled={isCreating}
-              className="bg-[var(--p-purple)] text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-[var(--p-purple)]/20 hover:scale-105 transition-transform active:scale-95 disabled:opacity-50"
+              className="bg-[#7F77DD] text-white px-10 py-4 rounded-[20px] font-black text-lg shadow-2xl shadow-[#7F77DD]/30 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
             >
-              {isCreating ? 'Creating...' : 'Create First Note'}
+              {isCreating ? 'Booting shell...' : 'Initialise First Note'}
             </button>
           )}
         </div>
       ) : (
-        <motion.div layout className={cn('grid gap-4', viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1')}>
-          <AnimatePresence mode="popLayout">
+        <motion.div layout className={cn('grid gap-5 md:gap-6', viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1')}>
+          <AnimatePresence mode="popLayout" initial={false}>
             {displayNotes.map((note, i) => (
               <motion.div key={note.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ delay: i * 0.03, duration: 0.2 }}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                transition={{ type: "spring", stiffness: 300, damping: 25, delay: i * 0.02 }}
               >
                 <NoteCard note={note} viewMode={viewMode} />
               </motion.div>

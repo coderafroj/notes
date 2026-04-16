@@ -1,4 +1,3 @@
-// app/browse/page.tsx — Browse all public notes with topic filter
 import Link from 'next/link'
 import { getPublicIndex } from '@/lib/publish'
 import { formatDate } from '@/lib/utils'
@@ -6,7 +5,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
 const TOPICS = [
-  { id: 'all', label: 'All' },
+  { id: 'all', label: 'All notes' },
   { id: 'sql', label: 'SQL' },
   { id: 'python', label: 'Python' },
   { id: 'webdev', label: 'Web Dev' },
@@ -28,18 +27,20 @@ function avatarStyle(login: string) {
 }
 
 interface Props {
-  searchParams: { topic?: string; q?: string }
+  searchParams: Promise<{ topic?: string; q?: string }>
 }
 
 export default async function BrowsePage({ searchParams }: Props) {
-  const session = await getServerSession(authOptions)
-  const activeTopic = searchParams.topic ?? 'all'
-  const searchQuery = searchParams.q ?? ''
+  const params = await searchParams
+  const activeTopic = params.topic ?? 'all'
+  const searchQuery = params.q ?? ''
 
+  const session = await getServerSession(authOptions)
   const authors = ['coderafroj']
   if (session?.user?.login && !authors.includes(session.user.login)) {
     authors.push(session.user.login)
   }
+  
   const allNotes: any[] = []
   for (const author of authors) {
     try {
@@ -50,78 +51,79 @@ export default async function BrowsePage({ searchParams }: Props) {
 
   const filtered = allNotes
     .filter((n) => activeTopic === 'all' || n.tags.includes(activeTopic))
-    .filter((n) => !searchQuery || n.title.toLowerCase().includes(searchQuery.toLowerCase()) || n.contentPreview.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter((n) => !searchQuery || n.title.toLowerCase().includes(searchQuery.toLowerCase()) || (n.contentPreview && n.contentPreview.toLowerCase().includes(searchQuery.toLowerCase())))
     .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8f8f6', fontFamily: 'system-ui, sans-serif', color: '#0f0f0f' }}>
-      {/* Nav */}
-      <nav style={{ position: 'sticky', top: 0, background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e5e4df', zIndex: 50, height: 56, display: 'flex', alignItems: 'center', padding: '0 24px', justifyContent: 'space-between' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#0f0f0f', fontWeight: 700, fontSize: 16 }}>
-          <div style={{ width: 28, height: 28, background: '#7F77DD', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 13 }}>N</div>
-          Noteflow
+    <div className="min-h-screen bg-[#f8f8f6] font-sans text-[#0f0f0f]">
+      {/* ── Navbar ── */}
+      <nav className="sticky top-0 bg-white/90 backdrop-blur-xl border-b border-[#e5e4df] z-50 h-14 md:h-16 flex items-center px-4 md:px-8 justify-between">
+        <Link href="/" className="flex items-center gap-2 md:gap-3 outline-none active:scale-95 transition-transform">
+          <div className="w-7 h-7 md:w-8 md:h-8 bg-[#7F77DD] rounded-lg md:rounded-xl flex items-center justify-center text-white font-bold text-xs md:text-sm shadow-sm">N</div>
+          <span className="font-bold text-base md:text-lg">Noteflow</span>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Link href="/login" style={{ padding: '6px 14px', background: '#7F77DD', borderRadius: 8, fontSize: 13, textDecoration: 'none', color: '#fff', fontWeight: 600 }}>Start writing →</Link>
+        <div className="flex items-center gap-2 md:gap-3">
+          <Link href="/login" className="px-4 py-1.5 md:px-5 md:py-2 bg-[#7F77DD] text-white rounded-lg md:rounded-xl text-[13px] md:text-sm font-bold shadow-md hover:bg-[#6b62cf] hover:shadow-lg active:scale-95 transition-all">Write <span className="hidden sm:inline">→</span></Link>
         </div>
       </nav>
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 20px' }}>
-        <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 4 }}>Browse notes</h1>
-          <p style={{ fontSize: 14, color: '#888780' }}>{filtered.length} notes{activeTopic !== 'all' ? ` in ${activeTopic}` : ''}</p>
+      <div className="max-w-[1140px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-[28px] md:text-[34px] font-extrabold tracking-tight mb-1">Browse notes</h1>
+          <p className="text-[13px] md:text-[15px] text-[#888780] font-medium">{filtered.length} notes{activeTopic !== 'all' ? ` in ${activeTopic}` : ''}</p>
         </div>
 
-        {/* Search */}
-        <form method="GET" style={{ marginBottom: 20 }}>
+        {/* ── Search ── */}
+        <form method="GET" className="mb-6">
           <input type="hidden" name="topic" value={activeTopic} />
-          <input name="q" defaultValue={searchQuery} placeholder="Search by title or content..."
-            style={{ width: '100%', maxWidth: 480, padding: '10px 16px', border: '1px solid #e5e4df', borderRadius: 12, fontSize: 14, background: '#fff', outline: 'none', color: '#0f0f0f' }}
-          />
+          <div className="relative max-w-lg">
+            <input name="q" defaultValue={searchQuery} placeholder="Search by title or content..."
+              className="w-full pl-4 pr-10 py-3 md:py-3.5 bg-white border border-[#e5e4df] focus:border-[#7F77DD] focus:ring-4 focus:ring-[#7F77DD]/10 rounded-[14px] text-[14px] md:text-[15px] font-medium text-[#0f0f0f] outline-none shadow-sm transition-all"
+            />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xl opacity-40">🔍</div>
+          </div>
         </form>
 
-        {/* Topic pills */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 28 }}>
-          {TOPICS.map((t) => (
-            <Link key={t.id} href={`/browse?topic=${t.id}`}
-              style={{
-                padding: '6px 14px', borderRadius: 999, border: '1px solid',
-                borderColor: activeTopic === t.id ? '#7F77DD' : '#e5e4df',
-                fontSize: 12, fontWeight: 600, textDecoration: 'none',
-                color: activeTopic === t.id ? '#fff' : '#888780',
-                background: activeTopic === t.id ? '#7F77DD' : '#fff',
-              }}
-            >{t.label}</Link>
-          ))}
+        {/* ── Topic pills ── */}
+        <div className="flex flex-wrap gap-2 md:gap-2.5 mb-8 md:mb-10">
+          {TOPICS.map((t) => {
+            const isActive = activeTopic === t.id
+            return (
+              <Link key={t.id} href={t.id === 'all' ? '/browse' : `/browse?topic=${t.id}`}
+                className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full border text-[12px] md:text-[13px] font-bold active:scale-95 transition-all
+                  ${isActive ? 'bg-[#7F77DD] text-white border-[#7F77DD] shadow-md' : 'bg-white text-[#888780] border-[#e5e4df] hover:border-[#7F77DD] hover:text-[#534AB7] hover:bg-[#EEEDFE] shadow-sm'}
+                `}
+              >
+                {t.label}
+              </Link>
+            )
+          })}
         </div>
 
-        {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+        {/* ── Grid ── */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
           {filtered.map((note) => {
             const av = avatarStyle(note.author)
             return (
-              <Link key={`${note.author}-${note.slug}`} href={`/@${note.author}/${note.slug}`}
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <div 
-                  className="bg-white border border-[#e5e4df] hover:border-[#7F77DD] hover:-translate-y-[2px] transition-all duration-150"
-                  style={{ borderRadius: 14, padding: 18, cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}
-                >
-                  <div style={{ display: 'flex', gap: 4, marginBottom: 8, flexWrap: 'wrap' }}>
-                    {note.tags.slice(0, 3).map((tag: string) => (
-                      <span key={tag} style={{ fontSize: 10, padding: '2px 7px', borderRadius: 5, background: '#EEEDFE', color: '#534AB7', fontWeight: 600 }}>#{tag}</span>
+              <Link key={`${note.author}-${note.slug}`} href={`/@${note.author}/${note.slug}`} className="block group active:scale-[0.98] transition-transform">
+                <div className="bg-white border border-[#e5e4df] group-hover:border-[#7F77DD] group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-200 rounded-[18px] p-5 relative overflow-hidden flex flex-col h-full min-h-[200px]">
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {note.tags.slice(0, 2).map((tag: string) => (
+                      <span key={tag} className="text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-md bg-[#EEEDFE] text-[#534AB7]">#{tag}</span>
                     ))}
                   </div>
-                  <h3 style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.35, marginBottom: 8, flex: 1 }}>{note.title}</h3>
-                  <p style={{ fontSize: 13, color: '#888780', lineHeight: 1.6, marginBottom: 14, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden' }}>
+                  <h3 className="text-[15px] md:text-[16px] font-bold leading-[1.35] mb-2 group-hover:text-[#7F77DD] transition-colors">{note.title}</h3>
+                  <p className="text-[13px] text-[#888780] leading-[1.6] line-clamp-2 mb-4 flex-1">
                     {note.contentPreview}
                   </p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 12, borderTop: '1px solid #f2f1ed', marginTop: 'auto' }}>
-                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: av.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: av.color }}>
-                      {note.author.slice(0, 2).toUpperCase()}
+                  <div className="flex items-center justify-between pt-4 border-t border-[#f2f1ed] mt-auto">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-extrabold" style={{ background: av.bg, color: av.color }}>
+                        {note.author.slice(0, 2).toUpperCase()}
+                      </div>
+                      <span className="text-[12px] font-bold">@{note.author}</span>
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 500 }}>@{note.author}</span>
-                    <span style={{ fontSize: 11, color: '#888780', marginLeft: 'auto' }}>{formatDate(note.publishedAt)}</span>
+                    <span className="text-[11px] font-medium text-[#888780]">{formatDate(note.publishedAt)}</span>
                   </div>
                 </div>
               </Link>
@@ -130,10 +132,10 @@ export default async function BrowsePage({ searchParams }: Props) {
         </div>
 
         {filtered.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '5rem 0', color: '#888780' }}>
-            <p style={{ fontSize: 40, marginBottom: 12 }}>🔍</p>
-            <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>No notes found</p>
-            <p style={{ fontSize: 14 }}>Try a different topic or search term.</p>
+          <div className="text-center py-24 text-[#888780]">
+            <p className="text-5xl mb-4">🔍</p>
+            <p className="text-lg font-bold mb-1">No notes found</p>
+            <p className="text-[14px]">Try a different topic or search term.</p>
           </div>
         )}
       </div>

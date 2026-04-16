@@ -90,10 +90,10 @@ const ToolBtn = ({
       onClick()
     }}
     className={cn(
-      'flex items-center justify-center w-8 h-8 rounded-lg transition-all text-sm shrink-0',
+      'flex items-center justify-center min-w-[36px] min-h-[36px] md:w-9 md:h-9 rounded-xl transition-all text-sm shrink-0 active:scale-90',
       active
-        ? 'bg-[var(--p-purple)] text-white shadow-sm'
-        : 'text-[var(--muted-text)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]',
+        ? 'bg-[#7F77DD] text-white shadow-md'
+        : 'text-[#888780] hover:bg-[#f2f1ed] hover:text-[#0f0f0f]',
       className
     )}
   >
@@ -102,7 +102,7 @@ const ToolBtn = ({
 )
 
 const Divider = () => (
-  <div className="w-px h-5 bg-[var(--border)] mx-0.5 shrink-0" />
+  <div className="w-[1.5px] h-6 bg-[#e5e4df] mx-1 md:mx-2 shrink-0 self-center opacity-50" />
 )
 
 export default function Editor({
@@ -140,12 +140,12 @@ export default function Editor({
 
   const getBgColor = () => {
     switch (color) {
-      case 'purple': return 'rgba(127, 119, 221, 0.05)'
-      case 'teal': return 'rgba(29, 158, 117, 0.05)'
-      case 'amber': return 'rgba(239, 159, 39, 0.05)'
-      case 'blue': return 'rgba(55, 138, 221, 0.05)'
-      case 'red': return 'rgba(226, 75, 74, 0.05)'
-      case 'green': return 'rgba(99, 153, 34, 0.05)'
+      case 'purple': return 'rgba(127, 119, 221, 0.03)'
+      case 'teal': return 'rgba(29, 158, 117, 0.03)'
+      case 'amber': return 'rgba(239, 159, 39, 0.03)'
+      case 'blue': return 'rgba(55, 138, 221, 0.03)'
+      case 'red': return 'rgba(226, 75, 74, 0.03)'
+      case 'green': return 'rgba(99, 153, 34, 0.03)'
       default: return 'transparent'
     }
   }
@@ -174,7 +174,7 @@ export default function Editor({
       Placeholder.configure({
         placeholder: ({ node }) => {
           if (node.type.name === 'heading') return 'Heading...'
-          return "Write something, or type '/' for commands..."
+          return "Start writing, use '/' for commands..."
         },
       }),
       CharacterCount,
@@ -208,7 +208,7 @@ export default function Editor({
     editorProps: {
       attributes: {
         class:
-          'prose prose-base max-w-none focus:outline-none min-h-[60vh] text-[var(--foreground)] prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-relaxed prose-li:leading-relaxed',
+          'prose prose-base md:prose-lg max-w-none focus:outline-none min-h-[60vh] text-[#0f0f0f] dark:text-[#f8f8f6] prose-headings:font-black prose-headings:tracking-tight prose-h1:text-[32px] md:prose-h1:text-4xl prose-h2:text-[24px] md:prose-h2:text-2xl prose-h3:text-[20px] md:prose-h3:text-xl prose-p:leading-relaxed prose-p:mb-4 prose-li:leading-relaxed',
         spellcheck: 'true',
       },
     },
@@ -224,7 +224,7 @@ export default function Editor({
         editor.commands.setContent(parsed, { emitUpdate: false })
       }
     } catch {}
-  }, [content])
+  }, [content, editor])
 
   const handleImageUpload = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -268,417 +268,201 @@ export default function Editor({
 
   return (
     <div
-      className="flex flex-col w-full max-w-full transition-colors duration-500 rounded-3xl"
+      className="flex flex-col w-full max-w-full transition-colors duration-500 rounded-[32px] overflow-hidden"
       style={{ backgroundColor: getBgColor() }}
     >
 
       {editable && (
         <>
           {/* ── Main toolbar ───────────────────────────────── */}
-          <div className="sticky top-0 z-20 bg-[var(--background)] border-b border-[var(--border)] max-w-full overflow-hidden">
-            {/* Row 1 — History + Headings + Text format */}
-            <div className="flex items-center gap-0.5 px-3 py-2 overflow-x-auto scrollbar-hide max-w-full">
+          <div className="sticky top-0 z-30 bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-xl border-b border-[#e5e4df] dark:border-white/5 max-w-full">
+            {/* Row 1 — Fluid Touch Toolbar */}
+            <div className="flex items-center gap-1 px-4 py-2.5 overflow-x-auto scrollbar-hide max-w-full no-scrollbar">
               {/* History */}
-              <ToolBtn
-                onClick={() => editor.chain().focus().undo().run()}
-                title="Undo (Ctrl+Z)"
-                active={false}
-              >
-                <Undo size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().redo().run()}
-                title="Redo (Ctrl+Y)"
-                active={false}
-              >
-                <Redo size={15} />
-              </ToolBtn>
+              <div className="flex items-center gap-1 mr-1">
+                <ToolBtn
+                  onClick={() => editor.chain().focus().undo().run()}
+                  title="Undo"
+                >
+                  <Undo size={17} />
+                </ToolBtn>
+                <ToolBtn
+                  onClick={() => editor.chain().focus().redo().run()}
+                  title="Redo"
+                >
+                  <Redo size={17} />
+                </ToolBtn>
+              </div>
 
               <Divider />
 
               {/* Headings */}
-              <ToolBtn
-                onClick={() => editor.chain().focus().setParagraph().run()}
-                active={editor.isActive('paragraph')}
-                title="Paragraph"
-              >
-                <Type size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                active={editor.isActive('heading', { level: 1 })}
-                title="Heading 1"
-              >
-                <Heading1 size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                active={editor.isActive('heading', { level: 2 })}
-                title="Heading 2"
-              >
-                <Heading2 size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-                active={editor.isActive('heading', { level: 3 })}
-                title="Heading 3"
-              >
-                <Heading3 size={15} />
-              </ToolBtn>
+              <div className="flex items-center gap-1">
+                <ToolBtn
+                  onClick={() => editor.chain().focus().setParagraph().run()}
+                  active={editor.isActive('paragraph')}
+                  title="Text"
+                >
+                  <Type size={17} />
+                </ToolBtn>
+                <ToolBtn
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                  active={editor.isActive('heading', { level: 1 })}
+                  title="H1"
+                >
+                  <Heading1 size={17} />
+                </ToolBtn>
+                <ToolBtn
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                  active={editor.isActive('heading', { level: 2 })}
+                  title="H2"
+                >
+                  <Heading2 size={17} />
+                </ToolBtn>
+              </div>
 
               <Divider />
 
-              {/* Text formatting */}
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleBold().run()}
-                active={editor.isActive('bold')}
-                title="Bold (Ctrl+B)"
-              >
-                <Bold size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleItalic().run()}
-                active={editor.isActive('italic')}
-                title="Italic (Ctrl+I)"
-              >
-                <Italic size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleUnderline().run()}
-                active={editor.isActive('underline')}
-                title="Underline (Ctrl+U)"
-              >
-                <UnderlineIcon size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleStrike().run()}
-                active={editor.isActive('strike')}
-                title="Strikethrough"
-              >
-                <Strikethrough size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleSubscript().run()}
-                active={editor.isActive('subscript')}
-                title="Subscript"
-              >
-                <SubscriptIcon size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleSuperscript().run()}
-                active={editor.isActive('superscript')}
-                title="Superscript"
-              >
-                <SuperscriptIcon size={15} />
-              </ToolBtn>
-
-              <div className="relative">
+              {/* Formatting */}
+              <div className="flex items-center gap-1">
                 <ToolBtn
-                  onClick={() => {
-                    setShowColorPicker(!showColorPicker)
-                    setShowHighlighterPicker(false)
-                  }}
-                  active={editor.isActive('textStyle', { color: /./ })}
-                  title="Text color"
+                  onClick={() => editor.chain().focus().toggleBold().run()}
+                  active={editor.isActive('bold')}
+                  title="Bold"
                 >
-                  <div className="flex items-center gap-0.5">
-                    <Palette size={15} />
-                    <ChevronDown size={10} className="opacity-50" />
-                  </div>
+                  <Bold size={17} strokeWidth={3} />
                 </ToolBtn>
-                {showColorPicker && (
-                  <div className="absolute top-full left-0 mt-1 p-2 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-xl z-50 flex flex-wrap gap-1 w-32">
-                    {PRESET_COLORS.map((c) => (
-                      <button
-                        key={c.name}
-                        onClick={() => {
-                          if (c.color === 'inherit') {
-                            editor.chain().focus().unsetColor().run()
-                          } else {
-                            editor.chain().focus().setColor(c.color).run()
-                          }
-                          setShowColorPicker(false)
-                        }}
-                        className="w-6 h-6 rounded-md border border-[var(--border)] flex items-center justify-center hover:scale-110 transition-transform"
-                        style={{ backgroundColor: c.color === 'inherit' ? 'transparent' : c.color }}
-                        title={c.name}
-                      >
-                        {c.color === 'inherit' && <span className="text-[8px]">×</span>}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="relative">
                 <ToolBtn
-                  onClick={() => {
-                    setShowHighlighterPicker(!showHighlighterPicker)
-                    setShowColorPicker(false)
-                  }}
-                  active={editor.isActive('highlight')}
-                  title="Highlight"
+                  onClick={() => editor.chain().focus().toggleItalic().run()}
+                  active={editor.isActive('italic')}
+                  title="Italic"
                 >
-                  <div className="flex items-center gap-0.5">
-                    <Highlighter size={15} />
-                    <ChevronDown size={10} className="opacity-50" />
-                  </div>
+                  <Italic size={17} strokeWidth={2.5} />
                 </ToolBtn>
-                {showHighlighterPicker && (
-                  <div className="absolute top-full left-0 mt-1 p-2 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-xl z-50 flex flex-wrap gap-1 w-32">
-                    <button
-                      onClick={() => {
-                        editor.chain().focus().unsetHighlight().run()
-                        setShowHighlighterPicker(false)
-                      }}
-                      className="w-full text-[10px] py-1 mb-1 rounded bg-[var(--muted)] hover:bg-[var(--border)]"
-                    >
-                      Clear
-                    </button>
-                    {HIGHLIGHT_COLORS.map((c) => (
+                <ToolBtn
+                  onClick={() => editor.chain().focus().toggleUnderline().run()}
+                  active={editor.isActive('underline')}
+                >
+                  <UnderlineIcon size={17} strokeWidth={2.5} />
+                </ToolBtn>
+                
+                <div className="relative">
+                  <ToolBtn
+                    onClick={() => {
+                      setShowHighlighterPicker(!showHighlighterPicker)
+                      setShowColorPicker(false)
+                    }}
+                    active={editor.isActive('highlight')}
+                  >
+                    <div className="flex items-center">
+                      <Highlighter size={16} />
+                      <ChevronDown size={10} className="ml-0.5 opacity-50" />
+                    </div>
+                  </ToolBtn>
+                  {showHighlighterPicker && (
+                    <div className="absolute top-full left-0 mt-2 p-2 bg-white border border-[#e5e4df] rounded-[20px] shadow-2xl z-50 grid grid-cols-4 gap-2 w-max">
                       <button
-                        key={c.name}
                         onClick={() => {
-                          editor.chain().focus().toggleHighlight({ color: c.color }).run()
+                          editor.chain().focus().unsetHighlight().run()
                           setShowHighlighterPicker(false)
                         }}
-                        className="w-6 h-6 rounded-md border border-[var(--border)] hover:scale-110 transition-transform"
-                        style={{ backgroundColor: c.color }}
-                        title={c.name}
-                      />
-                    ))}
-                  </div>
-                )}
+                        className="col-span-4 text-[10px] font-black uppercase py-2 bg-[#f2f1ed] rounded-xl"
+                      >
+                        Reset Highlight
+                      </button>
+                      {HIGHLIGHT_COLORS.map((c) => (
+                        <button
+                          key={c.name}
+                          onClick={() => {
+                            editor.chain().focus().toggleHighlight({ color: c.color }).run()
+                            setShowHighlighterPicker(false)
+                          }}
+                          className="w-8 h-8 rounded-full border border-[#e5e4df] hover:scale-110 transition-transform active:scale-90"
+                          style={{ backgroundColor: c.color }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleCode().run()}
-                active={editor.isActive('code')}
-                title="Inline code"
-              >
-                <Code size={15} />
-              </ToolBtn>
-
               <Divider />
 
-              {/* Lists */}
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleBulletList().run()}
-                active={editor.isActive('bulletList')}
-                title="Bullet list"
-              >
-                <List size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                active={editor.isActive('orderedList')}
-                title="Numbered list"
-              >
-                <ListOrdered size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleTaskList().run()}
-                active={editor.isActive('taskList')}
-                title="Task list (checklist)"
-              >
-                <ListChecks size={15} />
-              </ToolBtn>
-
-              <Divider />
-
-              {/* Blocks */}
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                active={editor.isActive('blockquote')}
-                title="Quote"
-              >
-                <Quote size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-                active={editor.isActive('codeBlock')}
-                title="Code block"
-              >
-                <Code2 size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => editor.chain().focus().setHorizontalRule().run()}
-                title="Divider line"
-              >
-                <Minus size={15} />
-              </ToolBtn>
-
-              <Divider />
-
-              {/* Insert */}
-              <ToolBtn onClick={insertTable} title="Insert table">
-                <TableIcon size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => fileInputRef.current?.click()}
-                title="Insert image"
-              >
-                <ImageIcon size={15} />
-              </ToolBtn>
-              <ToolBtn
-                onClick={() => setShowLinkInput((v) => !v)}
-                active={editor.isActive('link')}
-                title="Insert link"
-              >
-                <LinkIcon size={15} />
-              </ToolBtn>
+              {/* Extras */}
+              <div className="flex items-center gap-1">
+                <ToolBtn
+                  onClick={() => editor.chain().focus().toggleBulletList().run()}
+                  active={editor.isActive('bulletList')}
+                >
+                  <List size={17} />
+                </ToolBtn>
+                <ToolBtn
+                  onClick={() => editor.chain().focus().toggleTaskList().run()}
+                  active={editor.isActive('taskList')}
+                >
+                  <ListChecks size={17} />
+                </ToolBtn>
+                <ToolBtn
+                  onClick={() => editor.chain().focus().toggleBlockquote().run()}
+                  active={editor.isActive('blockquote')}
+                >
+                  <Quote size={17} />
+                </ToolBtn>
+                <ToolBtn
+                  onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+                  active={editor.isActive('codeBlock')}
+                >
+                  <Code2 size={17} />
+                </ToolBtn>
+                <ToolBtn
+                  onClick={() => setShowLinkInput(v => !v)}
+                  active={editor.isActive('link')}
+                >
+                  <LinkIcon size={17} />
+                </ToolBtn>
+                <ToolBtn
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <ImageIcon size={17} />
+                </ToolBtn>
+              </div>
             </div>
 
             {/* Link input bar */}
             {showLinkInput && (
-              <div className="flex items-center gap-2 px-3 pb-2 border-t border-[var(--border)] pt-2">
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 px-4 pb-3 border-t border-[#e5e4df] pt-3"
+              >
                 <input
                   autoFocus
                   type="url"
                   value={linkUrl}
                   onChange={(e) => setLinkUrl(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSetLink()}
-                  placeholder="https://example.com"
-                  className="flex-1 text-sm px-3 py-1.5 bg-[var(--muted)] rounded-lg outline-none focus:ring-1 focus:ring-[var(--p-purple)] border border-transparent focus:border-[var(--p-purple)] transition-all"
+                  placeholder="Paste URL..."
+                  className="flex-1 text-[14px] px-4 py-2.5 bg-[#f2f1ed] rounded-xl outline-none focus:ring-4 focus:ring-[#7F77DD]/10 border border-transparent focus:border-[#7F77DD] transition-all font-medium"
                 />
                 <button
                   onMouseDown={(e) => { e.preventDefault(); handleSetLink() }}
-                  className="text-xs px-3 py-1.5 bg-[var(--p-purple)] text-white rounded-lg hover:opacity-90 transition-all"
+                  className="px-6 py-2.5 bg-[#7F77DD] text-white rounded-xl font-bold text-xs"
                 >
-                  Set
+                  Save
                 </button>
-                <button
-                  onMouseDown={(e) => { e.preventDefault(); setShowLinkInput(false) }}
-                  className="text-xs px-3 py-1.5 bg-[var(--muted)] rounded-lg text-[var(--muted-text)] hover:bg-[var(--border)] transition-all"
-                >
-                  Cancel
-                </button>
-              </div>
+              </motion.div>
             )}
           </div>
 
-          {/* ── Bubble menu (appears on text selection) ──── */}
+          {/* Selection Bubble Menu */}
           <BubbleMenu
             editor={editor}
-            options={{ placement: 'top' }}
-            className="flex items-center gap-0.5 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-xl px-1.5 py-1.5"
+            className="flex items-center gap-1 bg-[#1a1a1a] text-white rounded-[20px] shadow-2xl px-2 py-2 border border-white/10"
           >
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleBold().run()}
-              active={editor.isActive('bold')}
-              title="Bold"
-            >
-              <Bold size={14} />
-            </ToolBtn>
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleItalic().run()}
-              active={editor.isActive('italic')}
-              title="Italic"
-            >
-              <Italic size={14} />
-            </ToolBtn>
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleUnderline().run()}
-              active={editor.isActive('underline')}
-              title="Underline"
-            >
-              <UnderlineIcon size={14} />
-            </ToolBtn>
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleHighlight().run()}
-              active={editor.isActive('highlight')}
-              title="Highlight"
-            >
-              <Highlighter size={14} />
-            </ToolBtn>
-            <ToolBtn
-              onClick={() => setShowColorPicker(!showColorPicker)}
-              active={editor.isActive('textStyle', { color: /./ })}
-              title="Color"
-            >
-              <Palette size={14} />
-            </ToolBtn>
-            <div className="w-px h-4 bg-[var(--border)] mx-0.5" />
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-              active={editor.isActive('heading', { level: 1 })}
-              title="H1"
-            >
-              <span className="text-[11px] font-bold">H1</span>
-            </ToolBtn>
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-              active={editor.isActive('heading', { level: 2 })}
-              title="H2"
-            >
-              <span className="text-[11px] font-bold">H2</span>
-            </ToolBtn>
-            <div className="w-px h-4 bg-[var(--border)] mx-0.5" />
-            <ToolBtn
-              onClick={() => setShowLinkInput((v) => !v)}
-              active={editor.isActive('link')}
-              title="Link"
-            >
-              <LinkIcon size={14} />
-            </ToolBtn>
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleCode().run()}
-              active={editor.isActive('code')}
-              title="Code"
-            >
-              <Code size={14} />
-            </ToolBtn>
+            <button onClick={() => editor.chain().focus().toggleBold().run()} className={cn("p-2 rounded-xl", editor.isActive('bold') && "bg-white/10")}><Bold size={15} /></button>
+            <button onClick={() => editor.chain().focus().toggleItalic().run()} className={cn("p-2 rounded-xl", editor.isActive('italic') && "bg-white/10")}><Italic size={15} /></button>
+            <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={cn("p-2 rounded-xl", editor.isActive('heading') && "bg-white/10")}><span className="text-[11px] font-black">H2</span></button>
           </BubbleMenu>
-
-          {/* ── Floating menu (appears on empty line) ──── */}
-          <FloatingMenu
-            editor={editor}
-            options={{ placement: 'left' }}
-            className="flex items-center gap-1 bg-[var(--card-bg)] border border-[var(--border)] rounded-xl shadow-xl px-2 py-1.5"
-          >
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-              active={editor.isActive('heading', { level: 1 })}
-              title="Heading 1"
-            >
-              <Heading1 size={15} />
-            </ToolBtn>
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-              active={editor.isActive('heading', { level: 2 })}
-              title="Heading 2"
-            >
-              <Heading2 size={15} />
-            </ToolBtn>
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleBulletList().run()}
-              active={editor.isActive('bulletList')}
-              title="Bullet list"
-            >
-              <List size={15} />
-            </ToolBtn>
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleTaskList().run()}
-              active={editor.isActive('taskList')}
-              title="Task list"
-            >
-              <ListChecks size={15} />
-            </ToolBtn>
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleBlockquote().run()}
-              active={editor.isActive('blockquote')}
-              title="Quote"
-            >
-              <Quote size={15} />
-            </ToolBtn>
-            <ToolBtn
-              onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-              active={editor.isActive('codeBlock')}
-              title="Code block"
-            >
-              <Code2 size={15} />
-            </ToolBtn>
-          </FloatingMenu>
         </>
       )}
 
@@ -692,15 +476,21 @@ export default function Editor({
       />
 
       {/* ── Editor content ─────────────────────────────── */}
-      <div className="px-1 py-6">
+      <div className="px-5 md:px-10 lg:px-20 py-10">
         <EditorContent editor={editor} />
       </div>
 
-      {/* ── Word/char count footer ──────────────────────── */}
+      {/* ── Footer ──────────────────────── */}
       {editable && (
-        <div className="flex items-center gap-4 px-2 py-3 border-t border-[var(--border)] text-[11px] text-[var(--muted-text)] mt-4">
-          <span>{wordCount} words</span>
-          <span>{charCount} characters</span>
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[#e5e4df] dark:border-white/5 bg-[#f8f8f6]/50">
+          <div className="flex gap-4 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-[#888780]">
+            <span>{wordCount} Words</span>
+            <span className="opacity-40">/</span>
+            <span>{charCount} Chars</span>
+          </div>
+          <div className="text-[10px] font-black uppercase tracking-tighter text-[#7F77DD] bg-[#7F77DD]/10 px-2.5 py-1 rounded-full">
+            Shell Active
+          </div>
         </div>
       )}
     </div>

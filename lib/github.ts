@@ -6,6 +6,7 @@ import { Note, NoteIndexEntry, Folder, NotesIndex, Attachment } from '@/types'
 
 const GITHUB_API_BASE = 'https://api.github.com'
 export const REPO_NAME = 'noteflow-data'
+export const PUBLIC_REPO_NAME = 'noteflow-public'
 
 // ── Core fetch wrapper ───────────────────────────────────────
 export async function githubFetch(
@@ -49,14 +50,31 @@ export async function getOrCreateRepo(token: string, username: string) {
   })
 }
 
+// ── Ensure public repo exists ───────────────────────────────
+export async function getOrCreatePublicRepo(token: string, username: string) {
+  const repo = await githubFetch(`/repos/${username}/${PUBLIC_REPO_NAME}`, token)
+  if (repo) return repo
+
+  return githubFetch('/user/repos', token, {
+    method: 'POST',
+    body: JSON.stringify({
+      name: PUBLIC_REPO_NAME,
+      private: false,
+      description: 'Public notes published via Noteflow',
+      auto_init: true,
+    }),
+  })
+}
+
 // ── Read a file from the repo ────────────────────────────────
 export async function getFile(
   token: string,
   username: string,
-  path: string
+  path: string,
+  repoName: string = REPO_NAME
 ): Promise<{ content: any; sha: string } | null> {
   const data = await githubFetch(
-    `/repos/${username}/${REPO_NAME}/contents/${path}`,
+    `/repos/${username}/${repoName}/contents/${path}`,
     token
   )
   if (!data?.content) return null
@@ -75,7 +93,8 @@ export async function saveFile(
   username: string,
   path: string,
   content: any,
-  sha?: string
+  sha?: string,
+  repoName: string = REPO_NAME
 ) {
   // Encode JSON → base64 (browser-safe, no Buffer)
   const json = JSON.stringify(content, null, 2)
@@ -88,7 +107,7 @@ export async function saveFile(
   if (sha) body.sha = sha
 
   return githubFetch(
-    `/repos/${username}/${REPO_NAME}/contents/${path}`,
+    `/repos/${username}/${repoName}/contents/${path}`,
     token,
     {
       method: 'PUT',

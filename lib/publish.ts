@@ -3,9 +3,7 @@
 // Public URL: mynotes.bytecores.in/@{username}/{slug}
 
 import { Note } from '@/types'
-import { getFile, saveFile, githubFetch } from './github'
-
-const REPO_NAME = 'noteflow-data'
+import { getFile, saveFile, githubFetch, getOrCreatePublicRepo, PUBLIC_REPO_NAME } from './github'
 
 function makeSlug(title: string): string {
   return title
@@ -23,6 +21,8 @@ export async function publishNote(
   username: string,
   note: Note
 ): Promise<Note> {
+  await getOrCreatePublicRepo(token, username)
+
   const slug = note.slug || makeSlug(note.title)
   const publishedAt = note.publishedAt || new Date().toISOString()
 
@@ -42,13 +42,14 @@ export async function publishNote(
   }
 
   // Save to public/{slug}.json
-  const existingFile = await getFile(token, username, `public/${slug}.json`)
+  const existingFile = await getFile(token, username, `public/${slug}.json`, PUBLIC_REPO_NAME)
   await saveFile(
     token,
     username,
     `public/${slug}.json`,
     publicNote,
-    existingFile?.sha
+    existingFile?.sha,
+    PUBLIC_REPO_NAME
   )
 
   // Update public/index.json (list of all published notes)
@@ -75,10 +76,10 @@ export async function unpublishNote(
   if (!note.slug) return { ...note, isPublished: false }
 
   try {
-    const file = await getFile(token, username, `public/${note.slug}.json`)
+    const file = await getFile(token, username, `public/${note.slug}.json`, PUBLIC_REPO_NAME)
     if (file?.sha) {
       await githubFetch(
-        `/repos/${username}/${REPO_NAME}/contents/public/${note.slug}.json`,
+        `/repos/${username}/${PUBLIC_REPO_NAME}/contents/public/${note.slug}.json`,
         token,
         {
           method: 'DELETE',
@@ -105,7 +106,7 @@ export async function getPublicIndex(
 ): Promise<any[]> {
   try {
     const res = await fetch(
-      `https://api.github.com/repos/${username}/${REPO_NAME}/contents/public/index.json`,
+      `https://api.github.com/repos/${username}/${PUBLIC_REPO_NAME}/contents/public/index.json`,
       { headers: { Accept: 'application/vnd.github.v3+json' } }
     )
     if (!res.ok) return []
@@ -125,7 +126,7 @@ export async function getPublicNote(
 ): Promise<any | null> {
   try {
     const res = await fetch(
-      `https://api.github.com/repos/${username}/${REPO_NAME}/contents/public/${slug}.json`,
+      `https://api.github.com/repos/${username}/${PUBLIC_REPO_NAME}/contents/public/${slug}.json`,
       { headers: { Accept: 'application/vnd.github.v3+json' } }
     )
     if (!res.ok) return null
@@ -143,12 +144,12 @@ async function updatePublicIndex(
   username: string,
   entry: any
 ) {
-  const existing = await getFile(token, username, 'public/index.json')
+  const existing = await getFile(token, username, 'public/index.json', PUBLIC_REPO_NAME)
   const list: any[] = existing?.content ?? []
   const idx = list.findIndex((n) => n.slug === entry.slug)
   if (idx >= 0) list[idx] = entry
   else list.unshift(entry)
-  await saveFile(token, username, 'public/index.json', list, existing?.sha)
+  await saveFile(token, username, 'public/index.json', list, existing?.sha, PUBLIC_REPO_NAME)
 }
 
 async function removeFromPublicIndex(
@@ -156,8 +157,8 @@ async function removeFromPublicIndex(
   username: string,
   slug: string
 ) {
-  const existing = await getFile(token, username, 'public/index.json')
+  const existing = await getFile(token, username, 'public/index.json', PUBLIC_REPO_NAME)
   if (!existing) return
   const list = (existing.content as any[]).filter((n) => n.slug !== slug)
-  await saveFile(token, username, 'public/index.json', list, existing.sha)
+  await saveFile(token, username, 'public/index.json', list, existing.sha, PUBLIC_REPO_NAME)
 }
