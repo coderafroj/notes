@@ -6,13 +6,16 @@ import { Note } from '@/types'
 import { getFile, saveFile, githubFetch, getOrCreatePublicRepo, PUBLIC_REPO_NAME } from './github'
 
 function makeSlug(title: string): string {
-  return title
+  const s = title
     .toLowerCase()
     .trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove accents
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
-    .slice(0, 60) || 'untitled'
+    .replace(/^-+|-+$/g, '') 
+    .slice(0, 60)
+  return s || `note-${Math.random().toString(36).slice(2, 7)}`
 }
 
 // Publish note — saves public/{slug}.json to GitHub repo
@@ -124,17 +127,22 @@ export async function getPublicNote(
   username: string,
   slug: string
 ): Promise<any | null> {
+  const url = `https://api.github.com/repos/${username}/${PUBLIC_REPO_NAME}/contents/public/${slug}.json`
   try {
-    const res = await fetch(
-      `https://api.github.com/repos/${username}/${PUBLIC_REPO_NAME}/contents/public/${slug}.json`,
-      { headers: { Accept: 'application/vnd.github.v3+json' } }
-    )
-    if (!res.ok) return null
+    const res = await fetch(url, { 
+      headers: { Accept: 'application/vnd.github.v3+json' },
+      cache: 'no-store' 
+    })
+    if (!res.ok) {
+      console.warn(`[getPublicNote] Fetch failed (${res.status}): ${url}`)
+      return null
+    }
     const data = await res.json()
     if (!data.content) return null
     const raw = atob(data.content.replace(/\n/g, ''))
     return JSON.parse(raw)
-  } catch {
+  } catch (e) {
+    console.error(`[getPublicNote] Error fetching ${url}:`, e)
     return null
   }
 }

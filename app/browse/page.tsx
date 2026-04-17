@@ -36,18 +36,23 @@ export default async function BrowsePage({ searchParams }: Props) {
   const searchQuery = params.q ?? ''
 
   const session = await getServerSession(authOptions)
-  const authors = ['coderafroj']
+  const authors = ['coderafroj', 'bytecorecomputer'] // Added bytecorecomputer as common author
   if (session?.user?.login && !authors.includes(session.user.login)) {
     authors.push(session.user.login)
   }
   
   const allNotes: any[] = []
-  for (const author of authors) {
+  const promises = authors.map(async (author) => {
     try {
       const notes = await getPublicIndex(author)
-      for (const n of notes) allNotes.push({ ...n, author })
-    } catch {}
-  }
+      return notes.map((n: any) => ({ ...n, author }))
+    } catch {
+      return []
+    }
+  })
+  
+  const results = await Promise.all(promises)
+  results.forEach(notes => allNotes.push(...notes))
 
   const filtered = allNotes
     .filter((n) => activeTopic === 'all' || n.tags.includes(activeTopic))

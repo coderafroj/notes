@@ -14,7 +14,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props) {
   const { username: rawUsername, slug } = await params
-  const username = rawUsername.replace('%40', '').replace('@', '')
+  const username = decodeURIComponent(rawUsername).replace('@', '')
   const note = await getPublicNote(username, slug)
   if (!note) return { title: 'Note not found' }
   return {
@@ -83,7 +83,7 @@ function jsonToHtml(node: any): string {
 
 export default async function PublicNotePage({ params }: Props) {
   const { username: rawUsername, slug } = await params
-  const username = rawUsername.replace('%40', '').replace('@', '')
+  const username = decodeURIComponent(rawUsername).replace('@', '')
   const note = await getPublicNote(username, slug)
 
   if (!note) notFound()

@@ -51,7 +51,7 @@ export default function PublishToggle({ note, token, username, onUpdate }: Props
       {open && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-3 w-72 glass-card rounded-2xl shadow-2xl p-5 z-40 animate-in origin-top-right">
+          <div className="absolute right-0 top-full mt-3 w-[calc(100vw-32px)] sm:w-80 glass-card rounded-2xl shadow-2xl p-5 z-[100] animate-in origin-top-right mx-4 sm:mx-0">
             <div className="flex items-center gap-3 mb-4">
                <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm',
                  note.isPublished ? 'bg-[var(--p-teal)]/10 text-[var(--p-teal)]' : 'bg-[var(--muted)] text-[var(--muted-text)]'

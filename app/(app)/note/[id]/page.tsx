@@ -169,7 +169,7 @@ export default function NotePage() {
           </div>
 
           {!isGuest && session?.accessToken && (
-            <div className="hidden sm:block">
+            <div className="flex items-center">
               <PublishToggle note={note} token={session.accessToken} username={session.user.login}
                 onUpdate={(updated) => setNote(updated)}
               />
