@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getPublicIndex } from '@/lib/publish'
+import { getGlobalFeed } from '@/lib/publish'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
@@ -71,26 +71,10 @@ function avatarStyle(login: string) {
   return AVATAR_STYLES[idx]
 }
 
-// ── Fetch all public notes from all known authors ───────────
-async function getAllPublicNotes(currentUser?: string | null): Promise<PublicNote[]> {
-  const authors = ['coderafroj']
-  if (currentUser && !authors.includes(currentUser)) {
-    authors.push(currentUser)
-  }
-  const all: PublicNote[] = []
-  for (const author of authors) {
-    try {
-      const notes = await getPublicIndex(author)
-      for (const n of notes) all.push({ ...n, author })
-    } catch {}
-  }
-  return all.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
-}
-
 // ── Page ────────────────────────────────────────────────────
 export default async function HomePage() {
   const session = await getServerSession(authOptions)
-  const allNotes = await getAllPublicNotes(session?.user?.login)
+  const allNotes = await getGlobalFeed(session?.user?.login)
   const featured = allNotes[0]
   const rest = allNotes.slice(1)
 

@@ -110,7 +110,7 @@ export async function getPublicIndex(
   try {
     const res = await fetch(
       `https://api.github.com/repos/${username}/${PUBLIC_REPO_NAME}/contents/public/index.json`,
-      { headers: { Accept: 'application/vnd.github.v3+json' } }
+      { headers: { Accept: 'application/vnd.github.v3+json' }, next: { revalidate: 60 } }
     )
     if (!res.ok) return []
     const data = await res.json()
@@ -120,6 +120,60 @@ export async function getPublicIndex(
   } catch {
     return []
   }
+}
+
+// Fetch all notes globally across all discovered authors
+export async function getGlobalFeed(currentUser?: string | null): Promise<any[]> {
+  let authors = ['coderafroj']
+  if (currentUser && !authors.includes(currentUser)) {
+    authors.push(currentUser)
+  }
+
+  try {
+    const headers: Record<string, string> = { 
+      Accept: 'application/vnd.github.v3+json',
+      'User-Agent': 'Noteflow-Global-Feed'
+    }
+    
+    if (process.env.GITHUB_TOKEN) {
+       headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`
+    }
+    
+    const searchRes = await fetch('https://api.github.com/search/repositories?q=noteflow-public+in:name&per_page=100', {
+       headers,
+       next: { revalidate: 3600 } // Cache for 1 hour
+    })
+    
+    if (searchRes.ok) {
+       const data = await searchRes.json()
+       if (data.items) {
+         const foundAuthors = data.items.map((repo: any) => repo.owner.login)
+         authors = Array.from(new Set([...authors, ...foundAuthors]))
+       }
+    }
+  } catch (e) {
+    console.warn("[Global Feed] Failed to fetch dynamic authors:", e)
+  }
+
+  const allNotes: any[] = []
+  
+  const indexPromises = authors.map(async (author) => {
+    try {
+      const notes = await getPublicIndex(author)
+      return notes.map(n => ({ ...n, author }))
+    } catch (e) {
+      return []
+    }
+  })
+  
+  const results = await Promise.all(indexPromises)
+  for (const authorNotes of results) {
+    allNotes.push(...authorNotes)
+  }
+  
+  allNotes.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+  
+  return allNotes
 }
 
 // Fetch a single published note (no auth needed)

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getPublicIndex } from '@/lib/publish'
+import { getGlobalFeed } from '@/lib/publish'
 import { formatDate } from '@/lib/utils'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -36,23 +36,8 @@ export default async function BrowsePage({ searchParams }: Props) {
   const searchQuery = params.q ?? ''
 
   const session = await getServerSession(authOptions)
-  const authors = ['coderafroj', 'bytecorecomputer'] // Added bytecorecomputer as common author
-  if (session?.user?.login && !authors.includes(session.user.login)) {
-    authors.push(session.user.login)
-  }
   
-  const allNotes: any[] = []
-  const promises = authors.map(async (author) => {
-    try {
-      const notes = await getPublicIndex(author)
-      return notes.map((n: any) => ({ ...n, author }))
-    } catch {
-      return []
-    }
-  })
-  
-  const results = await Promise.all(promises)
-  results.forEach(notes => allNotes.push(...notes))
+  const allNotes = await getGlobalFeed(session?.user?.login)
 
   const filtered = allNotes
     .filter((n) => activeTopic === 'all' || n.tags.includes(activeTopic))

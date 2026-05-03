@@ -7,6 +7,7 @@
 // ============================================================
 
 import { useRef, useCallback, useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 import { useEditor, EditorContent } from '@tiptap/react'
 import { BubbleMenu, FloatingMenu } from '@tiptap/react/menus'
 import StarterKit from '@tiptap/starter-kit'
