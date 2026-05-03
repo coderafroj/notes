@@ -67,6 +67,17 @@ export async function publishNote(
     author: username,
   })
 
+  // ── Global Registration ──
+  // We notify the central registry that a new user has published content.
+  // This ensures the global feed is updated instantly without waiting for GitHub Search indexing.
+  try {
+    fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username })
+    }).catch(err => console.warn('[Publish] Registration ping failed:', err))
+  } catch (e) {}
+
   return { ...note, isPublished: true, slug, publishedAt }
 }
 
@@ -134,34 +145,60 @@ export async function getAdminStats(currentUser?: string | null): Promise<{
   userStats: { login: string, noteCount: number }[]
 }> {
   let authors = ['coderafroj']
-  if (currentUser && !authors.includes(currentUser)) {
-    authors.push(currentUser)
-  }
+  const adminUser = 'coderafroj'
 
+  // 1. Try to fetch authors from the Central Registry (Reliable & Instant)
   try {
-    const headers: Record<string, string> = { 
-      Accept: 'application/vnd.github.v3+json',
-      'User-Agent': 'Noteflow-Global-Feed'
-    }
-    
-    if (process.env.GITHUB_TOKEN) {
-       headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`
-    }
-    
-    const searchRes = await fetch('https://api.github.com/search/repositories?q=noteflow-public+in:name&per_page=100', {
-       headers,
-       next: { revalidate: 3600 } // Cache for 1 hour
+    const res = await fetch(`https://api.github.com/repos/${adminUser}/${PUBLIC_REPO_NAME}/contents/registry.json`, {
+      headers: { Accept: 'application/vnd.github.v3+json' },
+      next: { revalidate: 60 } // Fast revalidation
     })
-    
-    if (searchRes.ok) {
-       const data = await searchRes.json()
-       if (data.items) {
-         const foundAuthors = data.items.map((repo: any) => repo.owner.login)
-         authors = Array.from(new Set([...authors, ...foundAuthors]))
-       }
+    if (res.ok) {
+      const data = await res.json()
+      if (data.content) {
+        const list = JSON.parse(atob(data.content.replace(/\n/g, '')))
+        if (Array.isArray(list)) {
+          authors = Array.from(new Set([...authors, ...list]))
+          console.log(`[Discovery] Loaded ${list.length} authors from Central Registry.`)
+        }
+      }
     }
   } catch (e) {
-    console.warn("[Global Feed] Failed to fetch dynamic authors:", e)
+    console.warn("[Discovery] Central Registry unavailable, falling back to Search API.")
+  }
+
+  // 2. Fallback: Search GitHub for any "noteflow-public" repositories (Dynamic Discovery)
+  // This picks up anyone not yet in the registry.
+  if (authors.length <= 2) { 
+    try {
+      const headers: Record<string, string> = { 
+        Accept: 'application/vnd.github.v3+json',
+        'User-Agent': 'Noteflow-Global-Feed'
+      }
+      
+      if (process.env.GITHUB_TOKEN) {
+         headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`
+      }
+      
+      const searchRes = await fetch('https://api.github.com/search/repositories?q=noteflow-public+in:name&per_page=100', {
+         headers,
+         next: { revalidate: 3600 } 
+      })
+      
+      if (searchRes.ok) {
+         const data = await searchRes.json()
+         if (data.items) {
+           const foundAuthors = data.items.map((repo: any) => repo.owner.login)
+           authors = Array.from(new Set([...authors, ...foundAuthors]))
+         }
+      }
+    } catch (e) {
+      console.warn("[Discovery] GitHub Search API failed.")
+    }
+  }
+
+  if (currentUser && !authors.includes(currentUser)) {
+    authors.push(currentUser)
   }
 
   const allNotes: any[] = []
@@ -170,7 +207,9 @@ export async function getAdminStats(currentUser?: string | null): Promise<{
   const indexPromises = authors.map(async (author) => {
     try {
       const notes = await getPublicIndex(author)
-      userStats.push({ login: author, noteCount: notes.length })
+      if (notes.length > 0) {
+        userStats.push({ login: author, noteCount: notes.length })
+      }
       return notes.map(n => ({ ...n, author }))
     } catch (e) {
       return []

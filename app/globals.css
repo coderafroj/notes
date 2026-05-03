@@ -179,13 +179,6 @@
   background: var(--p-purple);
 }
 
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* ── Layout Utilities ── */
-.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-.pt-safe { padding-top: env(safe-area-inset-top); }
-
 /* Animation Keyframes */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }

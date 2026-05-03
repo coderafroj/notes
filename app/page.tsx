@@ -47,18 +47,10 @@ function avatarStyle(login: string) {
   return AVATAR_STYLES[idx]
 }
 
+import { Suspense } from 'react'
+
 export default async function HomePage() {
   const session = await getServerSession(authOptions)
-  const allNotes = await getGlobalFeed(session?.user?.login)
-  const featured = allNotes[0]
-  const rest = allNotes.slice(1)
-
-  const topicCounts: Record<string, number> = { all: allNotes.length }
-  for (const note of allNotes) {
-    for (const tag of note.tags) {
-      topicCounts[tag] = (topicCounts[tag] ?? 0) + 1
-    }
-  }
 
   return (
     <div className="min-h-screen bg-[#fbfbfc] dark:bg-[#09090b] font-sans text-[#0c0c0e] dark:text-[#fafafa] selection:bg-[#7F77DD]/30">
@@ -102,6 +94,25 @@ export default async function HomePage() {
       </div>
 
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10 -mt-16">
+        <Suspense fallback={<FeedSkeleton />}>
+          <GlobalFeed currentUser={session?.user?.login} />
+        </Suspense>
+      </div>
+    </div>
+  )
+}
+
+async function GlobalFeed({ currentUser }: { currentUser?: string | null }) {
+  const allNotes = await getGlobalFeed(currentUser)
+  const featured = allNotes[0]
+  const rest = allNotes.slice(1)
+
+  const topicCounts: Record<string, number> = { all: allNotes.length }
+  for (const note of allNotes) {
+    for (const tag of note.tags) {
+      topicCounts[tag] = (topicCounts[tag] ?? 0) + 1
+    }
+  }
 
         {/* ── Featured Note Showcase ── */}
         {featured && (
@@ -217,6 +228,19 @@ export default async function HomePage() {
           </div>
         )}
 
+      </div>
+    </div>
+  )
+}
+
+function FeedSkeleton() {
+  return (
+    <div className="animate-pulse space-y-12">
+      <div className="h-[400px] bg-black/5 dark:bg-white/5 rounded-[32px]" />
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div key={i} className="h-[300px] bg-black/5 dark:bg-white/5 rounded-[28px]" />
+        ))}
       </div>
     </div>
   )
