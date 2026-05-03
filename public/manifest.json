@@ -4,7 +4,7 @@
   "description": "Your notes. Your GitHub. Zero lock-in.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#09090b",
   "theme_color": "#7F77DD",
   "orientation": "portrait-primary",
   "icons": [

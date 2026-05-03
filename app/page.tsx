@@ -136,7 +136,7 @@ export default async function HomePage() {
                       <span className="text-[#8b949e]"># {featured.title}</span><br/><br/>
                       <span className="text-[#ff7b72]">export</span> <span className="text-[#ff7b72]">const</span> <span className="text-[#79c0ff]">note</span> <span className="text-[#ff7b72]">=</span> <span className="text-[#a5d6ff]">{'{'}</span><br/>
                       &nbsp;&nbsp;author: <span className="text-[#a5d6ff]">'@{featured.author}'</span>,<br/>
-                      &nbsp;&nbsp;tags: [<span className="text-[#a5d6ff]">{featured.tags.map(t => `'${t}'`).join(', ')}</span>]<br/>
+                      &nbsp;&nbsp;tags: [<span className="text-[#a5d6ff]">{featured.tags.map((t: string) => `'${t}'`).join(', ')}</span>]<br/>
                       <span className="text-[#a5d6ff]">{'}'}</span>
                     </div>
                   </div>

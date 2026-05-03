@@ -66,9 +66,9 @@ function LoginContent() {
           </p>
         </div>
 
-        <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-[48px] p-8 md:p-12 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] relative">
-          <h2 className="text-3xl font-bold mb-3 text-center text-[var(--foreground)] tracking-tight">Welcome back</h2>
-          <p className="text-[var(--muted-text)] text-sm font-medium text-center mb-10">
+        <div className="bg-[#111114]/80 backdrop-blur-3xl border border-white/10 rounded-[48px] p-8 md:p-12 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] relative z-10">
+          <h2 className="text-3xl font-bold mb-3 text-center text-white tracking-tight">Welcome back</h2>
+          <p className="text-[#a1a1aa] text-sm font-medium text-center mb-10">
             Securely synced with your private GitHub.
           </p>
 
