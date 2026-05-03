@@ -4,7 +4,6 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
 
-// ── Types ──────────────────────────────────────────────────
 interface PublicNote {
   id: string
   title: string
@@ -16,48 +15,25 @@ interface PublicNote {
   author: string
 }
 
-// ── Topic config ────────────────────────────────────────────
 const TOPICS = [
-  { id: 'all',    label: 'All',        emoji: '📚' },
-  { id: 'sql',    label: 'SQL',        emoji: '🗄️' },
-  { id: 'python', label: 'Python',     emoji: '🐍' },
-  { id: 'webdev', label: 'Web Dev',    emoji: '🌐' },
-  { id: 'react',  label: 'React',      emoji: '⚛️' },
-  { id: 'math',   label: 'Math',       emoji: '📐' },
-  { id: 'ai',     label: 'AI / ML',    emoji: '🤖' },
+  { id: 'all',    label: 'All',        emoji: '📚', color: 'from-[#7F77DD] to-[#9F97ED]' },
+  { id: 'sql',    label: 'SQL',        emoji: '🗄️', color: 'from-[#534AB7] to-[#7F77DD]' },
+  { id: 'python', label: 'Python',     emoji: '🐍', color: 'from-[#0F6E56] to-[#1D9E75]' },
+  { id: 'webdev', label: 'Web Dev',    emoji: '🌐', color: 'from-[#993556] to-[#D4537E]' },
+  { id: 'react',  label: 'React',      emoji: '⚛️', color: 'from-[#185FA5] to-[#378ADD]' },
+  { id: 'math',   label: 'Math',       emoji: '📐', color: 'from-[#854F0B] to-[#EF9F27]' },
+  { id: 'ai',     label: 'AI / ML',    emoji: '🤖', color: 'from-[#3B6D11] to-[#639922]' },
 ]
 
-// Tag → accent color
-const TAG_COLOR: Record<string, { bg: string; text: string; dot: string }> = {
-  sql:      { bg: '#EEEDFE', text: '#534AB7', dot: '#7F77DD' },
-  database: { bg: '#EEEDFE', text: '#534AB7', dot: '#7F77DD' },
-  python:   { bg: '#E1F5EE', text: '#0F6E56', dot: '#1D9E75' },
-  react:    { bg: '#E6F1FB', text: '#185FA5', dot: '#378ADD' },
-  nextjs:   { bg: '#E6F1FB', text: '#185FA5', dot: '#378ADD' },
-  math:     { bg: '#FAEEDA', text: '#854F0B', dot: '#EF9F27' },
-  css:      { bg: '#FBEAF0', text: '#993556', dot: '#D4537E' },
-  webdev:   { bg: '#FBEAF0', text: '#993556', dot: '#D4537E' },
-  ai:       { bg: '#EAF3DE', text: '#3B6D11', dot: '#639922' },
-  ml:       { bg: '#EAF3DE', text: '#3B6D11', dot: '#639922' },
-}
-
-function getColor(tags: string[]) {
-  for (const t of tags) {
-    if (TAG_COLOR[t]) return TAG_COLOR[t]
-  }
-  return { bg: '#F1EFE8', text: '#5F5E5A', dot: '#888780' }
-}
-
 function readTime(preview: string) {
-  const words = preview.split(' ').length * 8 // rough full content estimate
-  return Math.max(2, Math.round(words / 200)) + ' min read'
+  const words = preview.split(' ').length * 8
+  return Math.max(2, Math.round(words / 200)) + ' min'
 }
 
 function getInitials(login: string) {
   return login.slice(0, 2).toUpperCase()
 }
 
-// Avatar colors cycle
 const AVATAR_STYLES = [
   { bg: '#EEEDFE', color: '#534AB7' },
   { bg: '#E1F5EE', color: '#0F6E56' },
@@ -71,14 +47,12 @@ function avatarStyle(login: string) {
   return AVATAR_STYLES[idx]
 }
 
-// ── Page ────────────────────────────────────────────────────
 export default async function HomePage() {
   const session = await getServerSession(authOptions)
   const allNotes = await getGlobalFeed(session?.user?.login)
   const featured = allNotes[0]
   const rest = allNotes.slice(1)
 
-  // Topic counts
   const topicCounts: Record<string, number> = { all: allNotes.length }
   for (const note of allNotes) {
     for (const tag of note.tags) {
@@ -87,194 +61,161 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f8f6] font-sans text-[#0f0f0f]">
+    <div className="min-h-screen bg-[#fbfbfc] dark:bg-[#09090b] font-sans text-[#0c0c0e] dark:text-[#fafafa] selection:bg-[#7F77DD]/30">
+      
       {/* ── Navbar ── */}
-      <nav className="sticky top-0 bg-white/90 backdrop-blur-xl border-b border-[#e5e4df] z-50 h-14 md:h-16 flex items-center px-4 md:px-8 justify-between">
-        <Link href="/" className="flex items-center gap-2 md:gap-3 outline-none active:scale-95 transition-transform">
-          <div className="w-7 h-7 md:w-8 md:h-8 bg-[#7F77DD] rounded-lg md:rounded-xl flex items-center justify-center text-white font-bold text-xs md:text-sm shadow-sm">N</div>
-          <span className="font-bold text-base md:text-lg">Noteflow</span>
-          <span className="hidden sm:block text-[11px] text-[#888780] tracking-wide mt-1">probanda.tech</span>
+      <nav className="sticky top-0 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-black/5 dark:border-white/5 z-50 h-16 flex items-center px-6 justify-between">
+        <Link href="/" className="flex items-center gap-3 outline-none hover:scale-105 active:scale-95 transition-transform duration-300">
+          <div className="w-8 h-8 bg-gradient-to-br from-[#7F77DD] to-[#534AB7] rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-[#7F77DD]/30">N</div>
+          <span className="font-extrabold text-lg tracking-tight">Noteflow</span>
         </Link>
-        <div className="flex items-center gap-2 md:gap-3">
-          <Link href="/browse" className="hidden sm:flex px-3 py-1.5 md:px-4 md:py-2 border border-[#e5e4df] rounded-lg md:rounded-xl text-[13px] md:text-sm font-semibold bg-white hover:bg-[#f8f8f6] active:scale-95 transition-all">Browse</Link>
-          <Link href="/login" className="px-3 py-1.5 md:px-4 md:py-2 border border-[#e5e4df] rounded-lg md:rounded-xl text-[13px] md:text-sm font-semibold bg-white hover:bg-[#f8f8f6] active:scale-95 transition-all">Sign in</Link>
-          <Link href="/login" className="px-3 py-1.5 md:px-4 md:py-2 bg-[#7F77DD] text-white rounded-lg md:rounded-xl text-[13px] md:text-sm font-bold shadow-md hover:bg-[#6b62cf] hover:shadow-lg active:scale-95 transition-all">Write <span className="hidden sm:inline">→</span></Link>
+        <div className="flex items-center gap-4">
+          <Link href="/browse" className="hidden sm:flex px-4 py-2 text-sm font-semibold text-[#6b7280] hover:text-[#0c0c0e] dark:text-[#a1a1aa] dark:hover:text-white transition-colors">Browse</Link>
+          <Link href="/login" className="hidden sm:flex px-4 py-2 text-sm font-semibold text-[#6b7280] hover:text-[#0c0c0e] dark:text-[#a1a1aa] dark:hover:text-white transition-colors">Sign in</Link>
+          <Link href="/login" className="px-5 py-2.5 bg-gradient-to-r from-[#7F77DD] to-[#9F97ED] text-white rounded-xl text-sm font-bold shadow-lg shadow-[#7F77DD]/30 hover:shadow-[#7F77DD]/50 hover:-translate-y-0.5 active:scale-95 transition-all">Start Writing</Link>
         </div>
       </nav>
 
-      {/* ── Hero ── */}
-      <div className="bg-white border-b border-[#e5e4df] px-4 py-12 md:py-24 text-center flex flex-col items-center justify-center">
-        <h1 className="text-[32px] sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] mb-5 max-w-4xl">
-          Learn from real notes,<br className="sm:hidden" />{' '}
-          <span className="text-[#7F77DD]">write your own</span>
-        </h1>
-        <p className="text-[15px] md:text-[17px] text-[#888780] max-w-[500px] mb-8 leading-relaxed px-2">
-          Community-published notes on SQL, Python, React, Math and more. Read free — no account needed. GitHub users publish. Guests export.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto px-4 sm:px-0">
-          <Link href="/browse" className="w-full sm:w-auto px-6 py-3.5 bg-[#0f0f0f] text-white rounded-xl font-bold text-[15px] shadow-lg shadow-black/10 hover:shadow-xl hover:-translate-y-0.5 active:scale-95 active:translate-y-0 transition-all">Browse {allNotes.length} notes</Link>
-          <Link href="/login" className="w-full sm:w-auto px-6 py-3.5 bg-transparent border border-[#e5e4df] text-[#0f0f0f] rounded-xl font-bold text-[15px] hover:bg-[#f8f8f6] active:scale-95 transition-all">Start writing →</Link>
+      {/* ── Cinematic Hero ── */}
+      <div className="relative overflow-hidden bg-white dark:bg-[#09090b] border-b border-black/5 dark:border-white/5 pt-24 pb-32 flex flex-col items-center justify-center text-center px-4">
+        {/* Abstract Background Elements */}
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#7F77DD]/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#1D9E75]/10 rounded-full blur-[100px] pointer-events-none" />
+        
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EEEDFE] dark:bg-[#7F77DD]/10 text-[#534AB7] dark:text-[#9F97ED] text-xs font-bold mb-8 uppercase tracking-widest border border-[#7F77DD]/20">
+          <span className="w-2 h-2 rounded-full bg-[#534AB7] dark:bg-[#9F97ED] animate-pulse" /> Global Publishing Live
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-8 max-w-[280px] sm:max-w-xl">
-          {[
-            { label: 'GitHub sync',    bg: '#EEEDFE', color: '#534AB7' },
-            { label: 'Works offline',  bg: '#E1F5EE', color: '#0F6E56' },
-            { label: 'No login to read', bg: '#FAEEDA', color: '#854F0B' },
-            { label: 'Export PDF / MD', bg: '#E6F1FB', color: '#185FA5' },
-          ].map((b) => (
-            <span key={b.label} className="text-[10px] md:text-[11px] px-3 py-1 md:py-1.5 rounded-full font-bold shadow-sm" style={{ background: b.bg, color: b.color }}>{b.label}</span>
-          ))}
+        
+        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[80px] font-black tracking-tighter leading-[1.05] mb-6 max-w-5xl text-transparent bg-clip-text bg-gradient-to-b from-[#0c0c0e] to-[#6b7280] dark:from-white dark:to-[#a1a1aa]">
+          Thoughts that scale.<br className="hidden sm:block" />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#7F77DD] to-[#1D9E75]">Without limits.</span>
+        </h1>
+        
+        <p className="text-[17px] md:text-xl text-[#6b7280] dark:text-[#a1a1aa] max-w-[600px] mb-12 leading-relaxed font-medium">
+          A high-performance markdown editor backed entirely by your GitHub. Write offline, sync instantly, and publish to the world in a single click.
+        </p>
+        
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          <Link href="/login" className="w-full sm:w-auto px-8 py-4 bg-[#0c0c0e] dark:bg-white text-white dark:text-black rounded-2xl font-bold text-[16px] shadow-2xl hover:shadow-3xl hover:-translate-y-1 active:scale-95 transition-all">Start creating for free</Link>
+          <Link href="/browse" className="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-black/10 dark:border-white/10 text-[#0c0c0e] dark:text-white rounded-2xl font-bold text-[16px] hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all">Explore community notes</Link>
         </div>
       </div>
 
-      <div className="max-w-[1140px] mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10 -mt-16">
 
-        {/* ── Browse by topic ── */}
-        <div className="bg-white border border-[#e5e4df] rounded-2xl md:rounded-[24px] p-5 md:p-8 mb-10 shadow-sm">
-          <p className="text-[15px] md:text-[17px] font-bold mb-4">Browse by topic</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
-            {TOPICS.filter((t) => t.id !== 'all').map((topic) => (
-              <Link key={topic.id} href={`/browse?topic=${topic.id}`}
-                className="group border border-[#e5e4df] hover:border-[#7F77DD] hover:bg-[#EEEDFE] active:scale-95 p-3 md:p-4 rounded-xl md:rounded-[16px] transition-all duration-200 block shadow-sm hover:shadow-md"
-              >
-                <div className="text-2xl md:text-3xl mb-1.5 md:mb-2 group-hover:scale-110 transition-transform origin-left">{topic.emoji}</div>
-                <div className="text-[13px] md:text-[15px] font-bold text-[#0f0f0f] leading-tight">{topic.label}</div>
-                <div className="text-[11px] md:text-xs text-[#888780] mt-1 font-medium">{topicCounts[topic.id] ?? 0} notes</div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Featured note ── */}
+        {/* ── Featured Note Showcase ── */}
         {featured && (
-          <Link href={`/@${featured.author}/${featured.slug}`} className="block mb-10 group active:scale-[0.98] transition-transform">
-            <div className="bg-white border border-[#e5e4df] group-hover:border-[#7F77DD] group-hover:shadow-lg rounded-2xl md:rounded-[24px] p-5 md:p-8 grid lg:grid-cols-2 gap-6 md:gap-10 transition-all duration-300">
-              <div className="flex flex-col justify-center">
-                <span className="inline-block text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-[#EEEDFE] text-[#534AB7] mb-4 w-max">Featured note</span>
-                <h2 className="text-xl md:text-[26px] font-extrabold leading-[1.2] mb-3 tracking-tight group-hover:text-[#7F77DD] transition-colors">{featured.title}</h2>
-                <p className="text-[14px] md:text-[15px] text-[#888780] leading-[1.7] mb-6 line-clamp-3 md:line-clamp-none">{featured.contentPreview}</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-[#7F77DD] flex items-center justify-center text-white font-bold text-sm shadow-md">
-                    {getInitials(featured.author)}
+          <Link href={`/@${featured.author}/${featured.slug}`} className="block mb-16 group active:scale-[0.98] transition-transform duration-500">
+            <div className="bg-white/80 dark:bg-[#111114]/80 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-[32px] overflow-hidden shadow-2xl shadow-black/5 dark:shadow-black/50 hover:shadow-[#7F77DD]/20 transition-all duration-500">
+              <div className="grid lg:grid-cols-2">
+                <div className="p-8 md:p-12 flex flex-col justify-center">
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="px-3 py-1 rounded-full bg-[#EEEDFE] dark:bg-[#7F77DD]/20 text-[#534AB7] dark:text-[#9F97ED] text-xs font-black uppercase tracking-widest">Featured</span>
+                    <span className="text-xs font-medium text-[#6b7280] dark:text-[#a1a1aa]">{formatDate(featured.publishedAt)}</span>
                   </div>
-                  <div>
-                    <div className="text-[13px] md:text-[14px] font-bold">@{featured.author}</div>
-                    <div className="text-[11px] md:text-[12px] text-[#888780] font-medium">{formatDate(featured.publishedAt)} · {readTime(featured.contentPreview)}</div>
+                  <h2 className="text-3xl md:text-5xl font-black leading-[1.1] mb-4 tracking-tight group-hover:text-[#7F77DD] transition-colors">{featured.title}</h2>
+                  <p className="text-[16px] md:text-lg text-[#6b7280] dark:text-[#a1a1aa] leading-relaxed mb-8 line-clamp-3">{featured.contentPreview}</p>
+                  <div className="flex items-center gap-3 mt-auto">
+                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm shadow-md" style={{ background: avatarStyle(featured.author).bg, color: avatarStyle(featured.author).color }}>
+                      {getInitials(featured.author)}
+                    </div>
+                    <div>
+                      <div className="text-[15px] font-bold dark:text-white">@{featured.author}</div>
+                      <div className="text-[13px] text-[#6b7280] dark:text-[#a1a1aa] font-medium">{readTime(featured.contentPreview)} read</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="hidden lg:block bg-[#1e1e2e] rounded-[16px] p-6 font-mono text-[13px] leading-[1.8] text-[#cdd6f4] overflow-hidden shadow-inner">
-                <span className="text-[#89b4fa]">-- </span><span className="text-[#a6e3a1]">{featured.title.slice(0, 30)}...</span>{'\n\n'}
-                <span className="text-[#89dceb]">SELECT</span> *{'\n'}
-                <span className="text-[#89dceb]">FROM</span> notes{'\n'}
-                <span className="text-[#89dceb]">WHERE</span> published = <span className="text-[#a6e3a1]">true</span>{'\n'}
-                <span className="text-[#89dceb]">ORDER BY</span> published_at <span className="text-[#89dceb]">DESC</span>;
+                <div className="hidden lg:flex items-center justify-center bg-gradient-to-br from-[#7F77DD]/10 to-[#1D9E75]/10 p-12">
+                  <div className="w-full h-full max-h-[300px] bg-[#0d1117] rounded-2xl shadow-2xl p-6 font-mono text-sm leading-relaxed text-[#e6edf3] overflow-hidden border border-white/10 relative">
+                    <div className="absolute top-0 left-0 w-full h-8 bg-white/5 border-b border-white/10 flex items-center px-4 gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                      <div className="w-3 h-3 rounded-full bg-amber-500/80" />
+                      <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                    </div>
+                    <div className="pt-8">
+                      <span className="text-[#8b949e]"># {featured.title}</span><br/><br/>
+                      <span className="text-[#ff7b72]">export</span> <span className="text-[#ff7b72]">const</span> <span className="text-[#79c0ff]">note</span> <span className="text-[#ff7b72]">=</span> <span className="text-[#a5d6ff]">{'{'}</span><br/>
+                      &nbsp;&nbsp;author: <span className="text-[#a5d6ff]">'@{featured.author}'</span>,<br/>
+                      &nbsp;&nbsp;tags: [<span className="text-[#a5d6ff]">{featured.tags.map(t => `'${t}'`).join(', ')}</span>]<br/>
+                      <span className="text-[#a5d6ff]">{'}'}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </Link>
         )}
 
-        {/* ── Latest notes grid ── */}
-        <div className="flex items-end justify-between mb-5 px-1">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
-            <p className="text-lg md:text-[22px] font-extrabold tracking-tight">Latest notes</p>
-            <p className="text-[13px] text-[#888780] mt-0.5 font-medium">Published by the community</p>
+            <h3 className="text-3xl font-black tracking-tight mb-2">Global Feed</h3>
+            <p className="text-[15px] text-[#6b7280] dark:text-[#a1a1aa] font-medium">Discover thoughts published directly from personal GitHub repos.</p>
           </div>
-          <Link href="/browse" className="text-[13px] text-[#7F77DD] font-bold hover:underline active:scale-95 transition-transform">See all →</Link>
+          <Link href="/browse" className="px-5 py-2.5 rounded-xl bg-white dark:bg-[#111114] border border-black/5 dark:border-white/10 text-sm font-bold shadow-sm hover:shadow-md active:scale-95 transition-all">
+            View All →
+          </Link>
         </div>
 
-        {/* Topic filter pills */}
-        <div className="flex flex-wrap gap-2 mb-6 px-1">
+        {/* ── Topic Filter Pills ── */}
+        <div className="flex flex-wrap gap-2 mb-10">
           {TOPICS.map((t) => (
             <Link key={t.id} href={t.id === 'all' ? '/browse' : `/browse?topic=${t.id}`}
-              className="px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-[#e5e4df] text-[12px] font-semibold text-[#888780] bg-white hover:bg-[#EEEDFE] hover:text-[#534AB7] hover:border-[#7F77DD] active:scale-95 transition-all shadow-sm"
+              className="px-5 py-2 rounded-full border border-black/5 dark:border-white/10 text-[14px] font-semibold bg-white dark:bg-[#111114] hover:border-[#7F77DD] hover:text-[#7F77DD] active:scale-95 transition-all shadow-sm flex items-center gap-2"
             >
-              {t.label}
+              <span>{t.emoji}</span> {t.label} <span className="opacity-50 text-xs ml-1">{topicCounts[t.id] ?? 0}</span>
             </Link>
           ))}
         </div>
 
-        {/* Notes grid */}
+        {/* ── Notes Masonry / Grid ── */}
         {rest.length === 0 && allNotes.length === 0 ? (
-          <div className="text-center py-20 text-[#888780]">
-            <p className="text-5xl mb-4">📝</p>
-            <p className="text-lg font-bold mb-2">No public notes yet</p>
-            <p className="text-sm">Be the first to publish a note!</p>
-            <Link href="/login" className="inline-block mt-6 px-6 py-3 bg-[#7F77DD] text-white rounded-xl font-bold shadow-md hover:bg-[#6b62cf] transition-colors active:scale-95">Start writing →</Link>
+          <div className="text-center py-32 bg-white dark:bg-[#111114] border border-dashed border-black/10 dark:border-white/10 rounded-[32px]">
+            <p className="text-6xl mb-6">📝</p>
+            <p className="text-2xl font-black mb-3">No public notes yet</p>
+            <p className="text-[#6b7280] dark:text-[#a1a1aa] mb-8">Be the first to publish a note to the global feed!</p>
+            <Link href="/login" className="px-8 py-4 bg-gradient-to-r from-[#7F77DD] to-[#9F97ED] text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl active:scale-95 transition-all">Start Writing</Link>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-16">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {(rest.length > 0 ? rest : allNotes).map((note) => {
-              const color = getColor(note.tags)
               const av = avatarStyle(note.author)
               return (
-                <Link key={`${note.author}-${note.slug}`} href={`/@${note.author}/${note.slug}`} className="block group active:scale-[0.98] transition-transform">
-                  <div className="bg-white border border-[#e5e4df] group-hover:border-[#7F77DD] group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-200 rounded-[18px] p-5 md:p-6 relative overflow-hidden flex flex-col h-full min-h-[220px]">
-                    <div className="absolute top-0 left-0 w-1 h-full rounded-l-[18px]" style={{ background: color.dot }} />
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-md" style={{ color: color.text, background: color.bg }}>
-                        {note.tags[0] || 'Note'}
-                      </span>
-                      <span className="text-[10px] text-[#888780] font-medium">· {readTime(note.contentPreview)}</span>
+                <Link key={`${note.author}-${note.slug}`} href={`/@${note.author}/${note.slug}`} className="block group active:scale-[0.98] transition-transform duration-300 h-full">
+                  <div className="bg-white dark:bg-[#111114] border border-black/5 dark:border-white/10 group-hover:border-[#7F77DD]/50 group-hover:shadow-[0_20px_40px_-15px_rgba(127,119,221,0.2)] transition-all duration-300 rounded-[28px] p-7 flex flex-col h-full relative overflow-hidden">
+                    {/* Hover Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#7F77DD]/0 to-[#7F77DD]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                    
+                    <div className="flex flex-wrap items-center gap-2 mb-4 z-10">
+                      {note.tags.slice(0, 2).map((tag: string) => (
+                        <span key={tag} className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg bg-[#f3f4f6] dark:bg-white/5 text-[#6b7280] dark:text-[#a1a1aa] group-hover:bg-[#7F77DD]/10 group-hover:text-[#7F77DD] transition-colors">
+                          #{tag}
+                        </span>
+                      ))}
                     </div>
-                    <h3 className="text-[15px] md:text-[17px] font-bold leading-[1.3] mb-3 group-hover:text-[#7F77DD] transition-colors">{note.title}</h3>
-                    <p className="text-[13px] md:text-[14px] text-[#888780] leading-[1.6] line-clamp-2 md:line-clamp-3 mb-4 flex-1">
+                    
+                    <h3 className="text-xl font-bold leading-[1.3] mb-3 group-hover:text-[#7F77DD] transition-colors z-10">{note.title}</h3>
+                    <p className="text-[15px] text-[#6b7280] dark:text-[#a1a1aa] leading-[1.6] line-clamp-3 mb-6 flex-1 z-10">
                       {note.contentPreview}
                     </p>
-                    <div className="flex items-center justify-between pt-4 border-t border-[#f2f1ed] mt-auto">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-extrabold" style={{ background: av.bg, color: av.color }}>
+                    
+                    <div className="flex items-center justify-between pt-5 border-t border-black/5 dark:border-white/5 mt-auto z-10">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: av.bg, color: av.color }}>
                           {getInitials(note.author)}
                         </div>
-                        <span className="text-[12px] font-bold">@{note.author}</span>
+                        <div>
+                          <p className="text-[13px] font-bold leading-tight">@{note.author}</p>
+                          <p className="text-[11px] text-[#6b7280] dark:text-[#a1a1aa] font-medium">{formatDate(note.publishedAt)}</p>
+                        </div>
                       </div>
-                      <span className="text-[11px] font-medium text-[#888780]">{formatDate(note.publishedAt)}</span>
+                      <span className="text-[11px] font-black uppercase tracking-widest text-[#6b7280] dark:text-[#a1a1aa] opacity-50 group-hover:opacity-100 transition-opacity">{readTime(note.contentPreview)}</span>
                     </div>
                   </div>
                 </Link>
               )
             })}
-
-            {/* Write CTA card */}
-            <Link href="/login" className="block active:scale-[0.98] transition-transform">
-              <div className="bg-[#f8f8f6] border-2 border-dashed border-[#e5e4df] hover:border-[#7F77DD] hover:bg-[#EEEDFE]/30 transition-all duration-200 rounded-[18px] p-6 flex flex-col items-center justify-center text-center h-full min-h-[220px]">
-                <div className="text-3xl mb-3">✏️</div>
-                <p className="text-[15px] font-bold mb-1">Write your own notes</p>
-                <p className="text-[12px] text-[#888780] mb-4 max-w-[180px] font-medium">GitHub users publish free. Guests export locally.</p>
-                <span className="px-5 py-2 bg-[#7F77DD] text-white rounded-xl text-[12px] font-bold shadow-sm">Start writing →</span>
-              </div>
-            </Link>
           </div>
         )}
-
-        {/* ── How it works ── */}
-        <div className="bg-white border border-[#e5e4df] rounded-[24px] p-6 md:p-10 mb-12 shadow-sm">
-          <p className="text-[17px] md:text-[20px] font-extrabold mb-8 text-center">How Noteflow works</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {[
-              { icon: '📖', title: 'Read for free', desc: 'Browse and read any public note without creating an account.' },
-              { icon: '🔑', title: 'GitHub login', desc: 'Sign in with GitHub. Notes save to your private repo automatically.' },
-              { icon: '👤', title: 'Guest mode', desc: 'No GitHub? Write notes locally and export as PDF or Markdown.' },
-              { icon: '🌍', title: 'Publish publicly', desc: 'One tap to publish. Students can read at probanda.tech/@you.' },
-            ].map((item) => (
-              <div key={item.title} className="text-center group">
-                <div className="text-3xl md:text-4xl mb-3 group-hover:scale-110 transition-transform origin-center">{item.icon}</div>
-                <p className="text-[14px] font-bold mb-1.5">{item.title}</p>
-                <p className="text-[13px] text-[#888780] leading-relaxed px-2 font-medium">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Footer ── */}
-        <div className="text-center pb-10 text-[#888780] text-[13px] font-medium">
-          <p className="mb-3">Built with Noteflow · <a href="https://probanda.tech" className="text-[#7F77DD] font-bold hover:underline">probanda.tech</a></p>
-          <div className="flex items-center justify-center gap-5">
-            <Link href="/browse" className="hover:text-[#0f0f0f] transition-colors">Browse notes</Link>
-            <Link href="/login" className="hover:text-[#0f0f0f] transition-colors">Start writing</Link>
-            <a href="https://github.com/coderafroj/notes" target="_blank" rel="noopener" className="hover:text-[#0f0f0f] transition-colors">GitHub</a>
-          </div>
-        </div>
 
       </div>
     </div>

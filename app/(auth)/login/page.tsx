@@ -34,11 +34,14 @@ function LoginContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[radial-gradient(circle_at_top_left,rgba(127,119,221,0.15),transparent),radial-gradient(circle_at_bottom_right,rgba(29,158,117,0.1),transparent)] relative overflow-hidden bg-[var(--background)]">
-      {/* Premium Gradient Overlays */}
-      <div className="absolute top-0 left-0 w-full h-full -z-10 bg-[var(--background)]">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[var(--p-purple)]/10 rounded-full blur-[160px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[var(--p-teal)]/5 rounded-full blur-[140px]" />
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden bg-[#09090b] selection:bg-[#7F77DD]/30">
+      {/* Premium Cinematic Background */}
+      <div className="absolute inset-0 w-full h-full -z-10 bg-black">
+        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-gradient-to-br from-[#7F77DD]/20 to-transparent rounded-full blur-[160px] animate-pulse duration-10000" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-gradient-to-tl from-[#1D9E75]/15 to-transparent rounded-full blur-[140px]" />
+        
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-[0.03]" />
       </div>
 
       <motion.div 

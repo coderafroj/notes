@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { Home, Search, Plus, Star, Settings } from 'lucide-react'
+import { Home, Search, Plus, Star, Settings, UploadCloud } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useNoteflowStore } from '@/lib/store'
 import { saveNoteLocal, saveNoteWithSync } from '@/lib/sync'
@@ -11,11 +11,15 @@ import { v4 as uuidv4 } from 'uuid'
 import { Note } from '@/types'
 import { motion } from 'framer-motion'
 
+import { useState } from 'react'
+import ImportModal from '../sidebar/ImportModal'
+
 export default function BottomNav() {
   const pathname = usePathname()
   const router = useRouter()
   const { data: session } = useSession()
   const { isGuest, selectedFolderId } = useNoteflowStore()
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
 
   const handleNew = async () => {
     const id = uuidv4()
@@ -37,7 +41,7 @@ export default function BottomNav() {
     { label: 'Home', icon: Home, href: '/dashboard' },
     { label: 'Search', icon: Search, href: '/search' },
     { label: 'New', icon: Plus, href: '#', isAction: true, onClick: handleNew },
-    { label: 'Saved', icon: Star, href: '/favorites' },
+    { label: 'Import', icon: UploadCloud, href: '#', isAction: true, isImport: true, onClick: () => setIsImportModalOpen(true) },
     { label: 'Settings', icon: Settings, href: '/settings' },
   ]
 
@@ -85,6 +89,7 @@ export default function BottomNav() {
           )
         })}
       </nav>
+      <ImportModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} />
     </div>
   )
 }

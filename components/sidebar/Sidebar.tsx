@@ -4,12 +4,13 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useState, useCallback } from 'react'
-import { Plus, Search, Settings, Star, PenLine, ChevronRight, Tag, Loader2, LogIn, UserCircle2 } from 'lucide-react'
+import { Plus, Search, Settings, Star, PenLine, ChevronRight, Tag, Loader2, LogIn, UserCircle2, UploadCloud } from 'lucide-react'
 import { useNoteflowStore } from '@/lib/store'
 import { saveNoteLocal, saveNoteWithSync } from '@/lib/sync'
 import { cn } from '@/lib/utils'
 import { v4 as uuidv4 } from 'uuid'
 import { Note } from '@/types'
+import ImportModal from './ImportModal'
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -17,6 +18,7 @@ export default function Sidebar() {
   const { data: session } = useSession()
   const { folders, tags, selectedFolderId, setSelectedFolderId, searchQuery, setSearchQuery, isGuest } = useNoteflowStore()
   const [isCreating, setIsCreating] = useState(false)
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
 
   const handleNewNote = useCallback(async () => {
     if (isCreating) return
@@ -55,13 +57,21 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* New Note */}
-      <button onClick={handleNewNote} disabled={isCreating}
-        className="interactive-scale flex items-center gap-2 justify-center w-full bg-[var(--foreground)] text-[var(--background)] py-3 rounded-2xl font-semibold hover:opacity-90 transition-all premium-shadow disabled:opacity-60 text-sm"
-      >
-        {isCreating ? <Loader2 size={16} className="animate-spin" /> : <Plus size={18} />}
-        {isCreating ? 'Creating...' : 'New Note'}
-      </button>
+      {/* New Note & Import */}
+      <div className="flex gap-2">
+        <button onClick={handleNewNote} disabled={isCreating}
+          className="flex-1 interactive-scale flex items-center gap-2 justify-center bg-[var(--foreground)] text-[var(--background)] py-3 rounded-2xl font-semibold hover:opacity-90 transition-all premium-shadow disabled:opacity-60 text-sm"
+        >
+          {isCreating ? <Loader2 size={16} className="animate-spin" /> : <Plus size={18} />}
+          {isCreating ? 'Creating...' : 'New'}
+        </button>
+        <button onClick={() => setIsImportModalOpen(true)}
+          className="interactive-scale flex items-center justify-center w-12 bg-[var(--muted)] text-[var(--foreground)] py-3 rounded-2xl hover:bg-[var(--p-purple)] hover:text-white transition-all premium-shadow text-sm"
+          title="Import Note"
+        >
+          <UploadCloud size={18} />
+        </button>
+      </div>
 
       {/* Search */}
       <div className="relative group">
@@ -153,6 +163,8 @@ export default function Sidebar() {
           Settings
         </Link>
       </div>
+
+      <ImportModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} />
     </aside>
   )
 }
