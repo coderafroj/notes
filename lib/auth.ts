@@ -26,6 +26,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       session.accessToken = token.accessToken as string
       session.user.login = token.login as string
+      session.user.isAdmin = token.login === 'coderafroj'
       return session
     },
   },

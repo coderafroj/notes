@@ -124,6 +124,15 @@ export async function getPublicIndex(
 
 // Fetch all notes globally across all discovered authors
 export async function getGlobalFeed(currentUser?: string | null): Promise<any[]> {
+  const { notes } = await getAdminStats(currentUser)
+  return notes
+}
+
+export async function getAdminStats(currentUser?: string | null): Promise<{
+  notes: any[],
+  authors: string[],
+  userStats: { login: string, noteCount: number }[]
+}> {
   let authors = ['coderafroj']
   if (currentUser && !authors.includes(currentUser)) {
     authors.push(currentUser)
@@ -156,10 +165,12 @@ export async function getGlobalFeed(currentUser?: string | null): Promise<any[]>
   }
 
   const allNotes: any[] = []
+  const userStats: { login: string, noteCount: number }[] = []
   
   const indexPromises = authors.map(async (author) => {
     try {
       const notes = await getPublicIndex(author)
+      userStats.push({ login: author, noteCount: notes.length })
       return notes.map(n => ({ ...n, author }))
     } catch (e) {
       return []
@@ -173,7 +184,11 @@ export async function getGlobalFeed(currentUser?: string | null): Promise<any[]>
   
   allNotes.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
   
-  return allNotes
+  return { 
+    notes: allNotes, 
+    authors, 
+    userStats: userStats.sort((a, b) => b.noteCount - a.noteCount)
+  }
 }
 
 // Fetch a single published note (no auth needed)

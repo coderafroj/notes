@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useState, useCallback } from 'react'
-import { Plus, Search, Settings, Star, PenLine, ChevronRight, Tag, Loader2, LogIn, UserCircle2, UploadCloud } from 'lucide-react'
+import { Plus, Search, Settings, Star, PenLine, ChevronRight, Tag, Loader2, LogIn, UserCircle2, UploadCloud, ShieldCheck } from 'lucide-react'
 import { useNoteflowStore } from '@/lib/store'
 import { saveNoteLocal, saveNoteWithSync } from '@/lib/sync'
 import { cn } from '@/lib/utils'
@@ -153,6 +153,15 @@ export default function Sidebar() {
           <Link href="/login" className="interactive-scale flex items-center gap-3 px-4 py-3 rounded-2xl bg-[var(--p-purple)]/10 text-[var(--p-purple)] text-xs font-bold hover:bg-[var(--p-purple)]/20 transition-all mb-2">
             <LogIn size={16} />
             Connect GitHub
+          </Link>
+        )}
+        
+        {session?.user?.isAdmin && (
+          <Link href="/admin" className={cn('interactive-scale flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all mb-1',
+            pathname === '/admin' ? 'bg-[#7F77DD] text-white shadow-md shadow-purple-500/20' : 'text-[var(--muted-text)] hover:bg-[var(--muted)]'
+          )}>
+            <ShieldCheck size={18} />
+            Admin Console
           </Link>
         )}
         
