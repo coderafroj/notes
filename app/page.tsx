@@ -114,6 +114,8 @@ async function GlobalFeed({ currentUser }: { currentUser?: string | null }) {
     }
   }
 
+  return (
+    <>
         {/* ── Featured Note Showcase ── */}
         {featured && (
           <Link href={`/@${featured.author}/${featured.slug}`} className="block mb-16 group active:scale-[0.98] transition-transform duration-500">
@@ -227,9 +229,7 @@ async function GlobalFeed({ currentUser }: { currentUser?: string | null }) {
             })}
           </div>
         )}
-
-      </div>
-    </div>
+    </>
   )
 }
 
