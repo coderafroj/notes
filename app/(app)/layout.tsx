@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import Sidebar from '@/components/sidebar/Sidebar'
-import BottomNav from '@/components/mobile/BottomNav'
 import CommandPalette from '@/components/ui/CommandPalette'
 import SyncListener from '@/components/providers/SyncListener'
 
@@ -20,7 +19,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <div className="flex-1 overflow-y-auto pb-20 lg:pb-0">
           {children}
         </div>
-        <BottomNav />
       </main>
       <CommandPalette />
     </div>

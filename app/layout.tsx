@@ -33,6 +33,7 @@ export const metadata: Metadata = {
 import PWARegister from '@/components/PWARegister'
 import SyncListener from '@/components/providers/SyncListener'
 import ConnectionStatus from '@/components/shared/ConnectionStatus'
+import BottomNav from '@/components/mobile/BottomNav'
 
 export default function RootLayout({
   children,
@@ -41,9 +42,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable}`}>
-      <body className="antialiased">
+      <body className="antialiased pb-24 lg:pb-0">
         <AuthProvider>
           {children}
+          <BottomNav />
           <SyncListener />
         </AuthProvider>
         <ConnectionStatus />

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { Home, Search, Plus, Star, Settings, UploadCloud } from 'lucide-react'
+import { Home, Search, Plus, Star, Settings, UploadCloud, LayoutDashboard, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useNoteflowStore } from '@/lib/store'
 import { saveNoteLocal, saveNoteWithSync } from '@/lib/sync'
@@ -38,11 +38,11 @@ export default function BottomNav() {
   }
 
   const navItems = [
-    { label: 'Home', icon: Home, href: '/dashboard' },
-    { label: 'Search', icon: Search, href: '/search' },
-    { label: 'New', icon: Plus, href: '#', isAction: true, onClick: handleNew },
-    { label: 'Import', icon: UploadCloud, href: '#', isAction: true, isImport: true, onClick: () => setIsImportModalOpen(true) },
-    { label: 'Settings', icon: Settings, href: '/settings' },
+    { label: 'Home', icon: Home, href: '/' },
+    { label: 'Explore', icon: Search, href: '/browse' },
+    { label: 'Create', icon: Plus, href: '#', isAction: true, onClick: handleNew },
+    { label: 'Dash', icon: LayoutDashboard, href: '/dashboard' },
+    { label: 'Profile', icon: User, href: session ? `/@${session.user.login}` : '/login' },
   ]
 
   // Only show on mobile

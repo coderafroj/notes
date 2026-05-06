@@ -180,7 +180,7 @@ async function GlobalFeed({ currentUser }: { currentUser?: string | null }) {
           ))}
         </div>
 
-        {/* ── Notes Masonry / Grid ── */}
+        {/* ── Notes Vertical Feed ── */}
         {rest.length === 0 && allNotes.length === 0 ? (
           <div className="text-center py-32 bg-white dark:bg-[#111114] border border-dashed border-black/10 dark:border-white/10 rounded-[32px]">
             <p className="text-6xl mb-6">📝</p>
@@ -189,42 +189,62 @@ async function GlobalFeed({ currentUser }: { currentUser?: string | null }) {
             <Link href="/login" className="px-8 py-4 bg-gradient-to-r from-[#7F77DD] to-[#9F97ED] text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl active:scale-95 transition-all">Start Writing</Link>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-col gap-12 max-w-2xl mx-auto">
             {(rest.length > 0 ? rest : allNotes).map((note) => {
               const av = avatarStyle(note.author)
               return (
-                <Link key={`${note.author}-${note.slug}`} href={`/@${note.author}/${note.slug}`} className="block group active:scale-[0.98] transition-transform duration-300 h-full">
-                  <div className="bg-white dark:bg-[#111114] border border-black/5 dark:border-white/10 group-hover:border-[#7F77DD]/50 group-hover:shadow-[0_20px_40px_-15px_rgba(127,119,221,0.2)] transition-all duration-300 rounded-[28px] p-7 flex flex-col h-full relative overflow-hidden">
-                    {/* Hover Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#7F77DD]/0 to-[#7F77DD]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                    
-                    <div className="flex flex-wrap items-center gap-2 mb-4 z-10">
-                      {note.tags.slice(0, 2).map((tag: string) => (
-                        <span key={tag} className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg bg-[#f3f4f6] dark:bg-white/5 text-[#6b7280] dark:text-[#a1a1aa] group-hover:bg-[#7F77DD]/10 group-hover:text-[#7F77DD] transition-colors">
+                <div key={`${note.author}-${note.slug}`} className="bg-white dark:bg-[#111114] sm:border sm:border-black/5 dark:sm:border-white/10 sm:rounded-[32px] overflow-hidden shadow-sm flex flex-col relative group pb-4 sm:pb-0 border-b border-black/5 dark:border-white/10 sm:border-b-0">
+                  
+                  {/* Header */}
+                  <div className="flex items-center justify-between p-4 sm:p-6">
+                    <Link href={`/@${note.author}`} className="flex items-center gap-3 active:scale-95 transition-transform">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-[12px] font-black border border-black/5 dark:border-white/10" style={{ background: av.bg, color: av.color }}>
+                        {getInitials(note.author)}
+                      </div>
+                      <div>
+                        <p className="text-[14px] font-bold leading-tight hover:underline">@{note.author}</p>
+                        <p className="text-[12px] text-[#6b7280] dark:text-[#a1a1aa] font-medium">{formatDate(note.publishedAt)}</p>
+                      </div>
+                    </Link>
+                  </div>
+
+                  {/* Content Link wrapper */}
+                  <Link href={`/@${note.author}/${note.slug}`} className="block px-4 sm:px-6 cursor-pointer active:opacity-80 transition-opacity">
+                    <h3 className="text-2xl font-bold leading-[1.3] mb-3 group-hover:text-[#7F77DD] transition-colors">{note.title}</h3>
+                    <p className="text-[16px] text-[#0c0c0e]/80 dark:text-[#fafafa]/80 leading-[1.6] line-clamp-4 mb-4">
+                      {note.contentPreview}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
+                      {note.tags.slice(0, 4).map((tag: string) => (
+                        <span key={tag} className="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#f3f4f6] dark:bg-white/5 text-[#6b7280] dark:text-[#a1a1aa]">
                           #{tag}
                         </span>
                       ))}
                     </div>
-                    
-                    <h3 className="text-xl font-bold leading-[1.3] mb-3 group-hover:text-[#7F77DD] transition-colors z-10">{note.title}</h3>
-                    <p className="text-[15px] text-[#6b7280] dark:text-[#a1a1aa] leading-[1.6] line-clamp-3 mb-6 flex-1 z-10">
-                      {note.contentPreview}
-                    </p>
-                    
-                    <div className="flex items-center justify-between pt-5 border-t border-black/5 dark:border-white/5 mt-auto z-10">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: av.bg, color: av.color }}>
-                          {getInitials(note.author)}
-                        </div>
-                        <div>
-                          <p className="text-[13px] font-bold leading-tight">@{note.author}</p>
-                          <p className="text-[11px] text-[#6b7280] dark:text-[#a1a1aa] font-medium">{formatDate(note.publishedAt)}</p>
-                        </div>
-                      </div>
-                      <span className="text-[11px] font-black uppercase tracking-widest text-[#6b7280] dark:text-[#a1a1aa] opacity-50 group-hover:opacity-100 transition-opacity">{readTime(note.contentPreview)}</span>
+                  </Link>
+
+                  {/* Action Bar */}
+                  <div className="flex items-center justify-between px-4 sm:px-6 pt-2 pb-4">
+                    <div className="flex items-center gap-6">
+                      <button className="flex items-center gap-2 text-[#6b7280] dark:text-[#a1a1aa] hover:text-red-500 transition-colors active:scale-90">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                      </button>
+                      <button className="flex items-center gap-2 text-[#6b7280] dark:text-[#a1a1aa] hover:text-[#7F77DD] transition-colors active:scale-90">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+                      </button>
+                      <button className="flex items-center gap-2 text-[#6b7280] dark:text-[#a1a1aa] hover:text-[#7F77DD] transition-colors active:scale-90">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+                      </button>
                     </div>
+                    <button className="text-[#6b7280] dark:text-[#a1a1aa] hover:text-[#7F77DD] transition-colors active:scale-90">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                    </button>
                   </div>
-                </Link>
+                  <div className="px-4 sm:px-6 pb-2 sm:pb-6">
+                    <span className="text-[12px] font-medium text-[#6b7280] dark:text-[#a1a1aa]">{readTime(note.contentPreview)}</span>
+                  </div>
+
+                </div>
               )
             })}
           </div>
