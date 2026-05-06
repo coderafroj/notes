@@ -22,6 +22,28 @@ const withPWA = require("@ducanh2912/next-pwa").default({
         },
       },
       {
+        urlPattern: /\/api\/global-feed/i,
+        handler: "StaleWhileRevalidate",
+        options: {
+          cacheName: "global-feed",
+          expiration: {
+            maxEntries: 5,
+            maxAgeSeconds: 60 * 60 * 24, // 24 hours
+          },
+        },
+      },
+      {
+        urlPattern: /^https:\/\/api\.github\.com\/repos\/.*\/noteflow-public\/contents\/public\/.*/i,
+        handler: "StaleWhileRevalidate",
+        options: {
+          cacheName: "public-notes",
+          expiration: {
+            maxEntries: 200,
+            maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+          },
+        },
+      },
+      {
         urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
         handler: "CacheFirst",
         options: {

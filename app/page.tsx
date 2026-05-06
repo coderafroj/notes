@@ -255,11 +255,17 @@ async function GlobalFeed({ currentUser }: { currentUser?: string | null }) {
 
 function FeedSkeleton() {
   return (
-    <div className="animate-pulse space-y-12">
+    <div className="animate-pulse space-y-12 max-w-2xl mx-auto">
       <div className="h-[400px] bg-black/5 dark:bg-white/5 rounded-[32px]" />
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="h-[300px] bg-black/5 dark:bg-white/5 rounded-[28px]" />
+      <div className="flex flex-col gap-12">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex flex-col gap-4">
+            <div className="flex items-center gap-4 px-6">
+              <div className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5" />
+              <div className="h-4 w-24 bg-black/5 dark:bg-white/5 rounded" />
+            </div>
+            <div className="h-[200px] bg-black/5 dark:bg-white/5 sm:rounded-[32px]" />
+          </div>
         ))}
       </div>
     </div>
