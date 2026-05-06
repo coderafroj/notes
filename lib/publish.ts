@@ -197,7 +197,30 @@ export async function getAdminStats(currentUser?: string | null): Promise<{
     }
   }
 
-  if (currentUser && !authors.includes(currentUser)) {
+  // 2.5 Try to fetch banned list
+  let bannedUsers: string[] = []
+  let bannedNotes: string[] = []
+  try {
+    const res = await fetch(`https://api.github.com/repos/${adminUser}/${PUBLIC_REPO_NAME}/contents/banned.json`, {
+      headers: { Accept: 'application/vnd.github.v3+json' },
+      next: { revalidate: 60 }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      if (data.content) {
+        const banned = JSON.parse(atob(data.content.replace(/\n/g, '')))
+        bannedUsers = banned.users || []
+        bannedNotes = banned.notes || [] // Array of 'username/slug'
+      }
+    }
+  } catch (e) {
+    console.warn("[Discovery] Banned list unavailable.")
+  }
+
+  // Filter out banned authors completely
+  authors = authors.filter(author => !bannedUsers.includes(author))
+
+  if (currentUser && !authors.includes(currentUser) && !bannedUsers.includes(currentUser)) {
     authors.push(currentUser)
   }
 
@@ -207,10 +230,12 @@ export async function getAdminStats(currentUser?: string | null): Promise<{
   const indexPromises = authors.map(async (author) => {
     try {
       const notes = await getPublicIndex(author)
-      if (notes.length > 0) {
-        userStats.push({ login: author, noteCount: notes.length })
+      // Filter banned notes for this author
+      const validNotes = notes.filter(n => !bannedNotes.includes(`${author}/${n.slug}`))
+      if (validNotes.length > 0) {
+        userStats.push({ login: author, noteCount: validNotes.length })
       }
-      return notes.map(n => ({ ...n, author }))
+      return validNotes.map(n => ({ ...n, author }))
     } catch (e) {
       return []
     }

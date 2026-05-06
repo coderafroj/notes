@@ -1,10 +1,12 @@
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getAdminStats } from '@/lib/publish'
+import { getFile, PUBLIC_REPO_NAME } from '@/lib/github'
 import { redirect } from 'next/navigation'
 import { Users, FileText, Activity, ShieldCheck, ExternalLink, User } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import Link from 'next/link'
+import { BanButton } from '@/components/admin/BanButton'
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions)
@@ -14,6 +16,18 @@ export default async function AdminPage() {
   }
 
   const { notes, authors, userStats } = await getAdminStats(session.user.login)
+  
+  let bannedUsers: string[] = []
+  let bannedNotes: string[] = []
+  
+  if (process.env.GITHUB_TOKEN) {
+    const bannedFile = await getFile(process.env.GITHUB_TOKEN, 'coderafroj', 'banned.json', PUBLIC_REPO_NAME)
+    if (bannedFile?.content) {
+      const parsed = typeof bannedFile.content === 'string' ? JSON.parse(bannedFile.content) : bannedFile.content
+      bannedUsers = parsed.users || []
+      bannedNotes = parsed.notes || []
+    }
+  }
 
   const stats = [
     { label: 'Total Authors', value: authors.length, icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
@@ -22,7 +36,7 @@ export default async function AdminPage() {
   ]
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-10">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-10 pb-20">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -68,6 +82,7 @@ export default async function AdminPage() {
                   <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-[var(--muted-text)]">User</th>
                   <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-[var(--muted-text)]">Public Repo</th>
                   <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-[var(--muted-text)] text-right">Notes</th>
+                  <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-[var(--muted-text)] text-right">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -91,6 +106,9 @@ export default async function AdminPage() {
                       </a>
                     </td>
                     <td className="px-6 py-5 text-right font-black text-lg">{u.noteCount}</td>
+                    <td className="px-6 py-5 flex justify-end">
+                      <BanButton type="user" target={u.login} isBannedInitially={bannedUsers.includes(u.login)} />
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -106,7 +124,10 @@ export default async function AdminPage() {
               <div key={note.id} className="bg-[var(--card-bg)] border border-[var(--border)] p-5 rounded-[24px] shadow-sm relative group hover:border-[var(--p-purple)] transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-black uppercase tracking-widest text-[var(--p-purple)]">Published</span>
-                  <span className="text-[10px] text-[var(--muted-text)] font-medium">{formatDate(note.publishedAt)}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-[var(--muted-text)] font-medium">{formatDate(note.publishedAt)}</span>
+                    <BanButton type="note" target={`${note.author}/${note.slug}`} isBannedInitially={bannedNotes.includes(`${note.author}/${note.slug}`)} />
+                  </div>
                 </div>
                 <h3 className="font-bold text-sm mb-1 truncate">{note.title}</h3>
                 <p className="text-xs text-[var(--muted-text)] mb-3 font-medium">by @{note.author}</p>

@@ -152,7 +152,7 @@ export default async function PublicNotePage({ params }: Props) {
 
         {/* Content */}
         <div
-          className="prose prose-base max-w-none dark:prose-invert prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-p:leading-relaxed prose-a:text-[var(--p-purple)] prose-code:bg-[var(--muted)] prose-code:text-[var(--p-purple)] prose-code:px-1 prose-code:rounded prose-blockquote:border-l-[var(--p-purple)] prose-pre:bg-[#1e1e2e] prose-pre:text-[#cdd6f4]"
+          className="prose prose-base max-w-none prose-p:text-[var(--foreground)] prose-headings:text-[var(--foreground)] prose-strong:text-[var(--foreground)] prose-li:text-[var(--foreground)] prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-p:leading-relaxed prose-a:text-[var(--p-purple)] prose-code:bg-[var(--muted)] prose-code:text-[var(--p-purple)] prose-code:px-1 prose-code:rounded prose-blockquote:border-l-[var(--p-purple)] prose-blockquote:text-[var(--muted-text)] prose-pre:bg-[#1e1e2e] prose-pre:text-[#cdd6f4]"
           dangerouslySetInnerHTML={{ __html: html }}
         />
 

@@ -278,7 +278,7 @@ export default function Editor({
           {/* ── Main toolbar ───────────────────────────────── */}
           <div className="sticky top-0 z-30 bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-xl border-b border-[#e5e4df] dark:border-white/5 max-w-full">
             {/* Row 1 — Fluid Touch Toolbar */}
-            <div className="flex items-center gap-1 px-4 py-2.5 overflow-x-auto scrollbar-hide max-w-full no-scrollbar">
+            <div className="flex items-center gap-1 px-4 py-2.5 flex-wrap overflow-visible max-w-full">
               {/* History */}
               <div className="flex items-center gap-1 mr-1">
                 <ToolBtn
