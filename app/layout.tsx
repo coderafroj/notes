@@ -14,8 +14,23 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://merenotes.me"),
   title: "Noteflow | Your Notes, Your GitHub",
   description: "A premium notes application that stores your data in your own private GitHub repository.",
+  keywords: ["noteflow", "notes app", "github notes", "markdown editor", "pwa", "developer notes"],
+  authors: [{ name: "Noteflow" }],
+  openGraph: {
+    title: "Noteflow | Your Notes, Your GitHub",
+    description: "A premium notes application that stores your data in your own private GitHub repository.",
+    url: "https://merenotes.me",
+    siteName: "Noteflow",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Noteflow | Your Notes, Your GitHub",
+    description: "A premium notes application that stores your data in your own private GitHub repository.",
+  },
   manifest: "/manifest.json",
   appleWebApp: {
     title: "Noteflow",
@@ -27,8 +42,6 @@ export const metadata: Metadata = {
     apple: "/icon-192x192.png",
   },
 };
-
-
 
 import PWARegister from '@/components/PWARegister'
 import SyncListener from '@/components/providers/SyncListener'

@@ -17,15 +17,34 @@ export async function generateMetadata({ params }: Props) {
   const username = decodeURIComponent(rawUsername).replace('@', '')
   const note = await getPublicNote(username, slug)
   if (!note) return { title: 'Note not found' }
+  const desc = note.contentPreview || note.contentText?.slice(0, 160) || 'Read this note on Noteflow.'
   return {
-    title: `${note.title} — by @${username}`,
-    description: note.contentText?.slice(0, 160),
+    title: `${note.title} | Noteflow`,
+    description: desc,
     openGraph: {
       title: note.title,
-      description: note.contentText?.slice(0, 160),
+      description: desc,
       type: 'article',
+      url: `https://merenotes.me/@${username}/${slug}`,
       authors: [username],
+      images: [
+        {
+          url: `https://github.com/${username}.png`,
+          width: 400,
+          height: 400,
+          alt: `@${username}'s avatar`,
+        },
+      ],
     },
+    twitter: {
+      card: "summary_large_image",
+      title: note.title,
+      description: desc,
+      images: [`https://github.com/${username}.png`],
+    },
+    alternates: {
+      canonical: `https://merenotes.me/@${username}/${slug}`,
+    }
   }
 }
 
@@ -111,7 +130,7 @@ export default async function PublicNotePage({ params }: Props) {
       {/* Article */}
       <article className="max-w-3xl mx-auto px-6 py-12">
         {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight break-words">
           {note.title}
         </h1>
 
@@ -152,7 +171,7 @@ export default async function PublicNotePage({ params }: Props) {
 
         {/* Content */}
         <div
-          className="prose prose-base max-w-none prose-p:text-[var(--foreground)] prose-headings:text-[var(--foreground)] prose-strong:text-[var(--foreground)] prose-li:text-[var(--foreground)] prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-p:leading-relaxed prose-a:text-[var(--p-purple)] prose-code:bg-[var(--muted)] prose-code:text-[var(--p-purple)] prose-code:px-1 prose-code:rounded prose-blockquote:border-l-[var(--p-purple)] prose-blockquote:text-[var(--muted-text)] prose-pre:bg-[#1e1e2e] prose-pre:text-[#cdd6f4]"
+          className="prose prose-base max-w-none break-words prose-p:text-[var(--foreground)] prose-headings:text-[var(--foreground)] prose-strong:text-[var(--foreground)] prose-li:text-[var(--foreground)] prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-p:leading-relaxed prose-a:text-[var(--p-purple)] prose-code:bg-[var(--muted)] prose-code:text-[var(--p-purple)] prose-code:px-1 prose-code:rounded prose-blockquote:border-l-[var(--p-purple)] prose-blockquote:text-[var(--muted-text)] prose-pre:bg-[#1e1e2e] prose-pre:text-[#cdd6f4]"
           dangerouslySetInnerHTML={{ __html: html }}
         />
 

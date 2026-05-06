@@ -210,8 +210,8 @@ async function GlobalFeed({ currentUser }: { currentUser?: string | null }) {
 
                   {/* Content Link wrapper */}
                   <Link href={`/@${note.author}/${note.slug}`} className="block px-4 sm:px-6 cursor-pointer active:opacity-80 transition-opacity">
-                    <h3 className="text-2xl font-bold leading-[1.3] mb-3 group-hover:text-[#7F77DD] transition-colors">{note.title}</h3>
-                    <p className="text-[16px] text-[#0c0c0e]/80 dark:text-[#fafafa]/80 leading-[1.6] line-clamp-4 mb-4">
+                    <h3 className="text-2xl font-bold leading-[1.3] mb-3 group-hover:text-[#7F77DD] transition-colors break-words">{note.title}</h3>
+                    <p className="text-[16px] text-[#0c0c0e]/80 dark:text-[#fafafa]/80 leading-[1.6] line-clamp-4 mb-4 break-words">
                       {note.contentPreview}
                     </p>
                     <div className="flex flex-wrap items-center gap-2 mb-4">
