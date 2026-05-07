@@ -165,6 +165,12 @@
   position: relative;
 }
 
+.tiptap pre code {
+  color: inherit !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
 .dark .tiptap pre {
   background: #010409;
 }

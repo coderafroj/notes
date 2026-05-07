@@ -125,7 +125,7 @@ export default function NotePage() {
   return (
     <div className="flex flex-col h-full bg-[#f8f8f6] text-[#0f0f0f]">
       {/* Premium Header */}
-      <header className="px-4 md:px-6 h-[72px] flex items-center justify-between border-b border-[#e5e4df] sticky top-0 bg-white/90 backdrop-blur-xl z-30 gap-4">
+      <header className="px-4 md:px-6 h-[72px] flex items-center justify-between border-b border-[#e5e4df] sticky top-0 bg-white/90 backdrop-blur-xl z-50 gap-4">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <button onClick={() => router.back()} className="p-2.5 rounded-xl hover:bg-[#f2f1ed] transition-all text-[#888780] active:scale-95 shrink-0">
             <ChevronLeft size={20} strokeWidth={3} />

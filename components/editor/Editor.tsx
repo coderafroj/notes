@@ -19,6 +19,7 @@ import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
 import { Color } from '@tiptap/extension-color'
 import { TextStyle } from '@tiptap/extension-text-style'
+import FontFamily from '@tiptap/extension-font-family'
 import { Table } from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
@@ -58,6 +59,7 @@ import {
   ChevronDown,
   Subscript as SubscriptIcon,
   Superscript as SuperscriptIcon,
+  Trash2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -159,6 +161,7 @@ export default function Editor({
         codeBlock: {},
       }),
       TextStyle,
+      FontFamily,
       Color,
       Image.configure({ inline: true, allowBase64: true }),
       TaskList,
@@ -269,14 +272,14 @@ export default function Editor({
 
   return (
     <div
-      className="flex flex-col w-full max-w-full transition-colors duration-500 rounded-[32px] overflow-hidden"
+      className="flex flex-col w-full max-w-full transition-colors duration-500 rounded-[32px] overflow-visible relative"
       style={{ backgroundColor: getBgColor() }}
     >
 
       {editable && (
         <>
           {/* ── Main toolbar ───────────────────────────────── */}
-          <div className="sticky top-0 z-30 bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-xl border-b border-[#e5e4df] dark:border-white/5 max-w-full">
+          <div className="sticky top-0 z-30 bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-xl border-b border-[#e5e4df] dark:border-white/5 max-w-full rounded-t-[32px]">
             {/* Row 1 — Fluid Touch Toolbar */}
             <div className="flex items-center gap-1 px-4 py-2.5 flex-wrap overflow-visible max-w-full">
               {/* History */}
@@ -297,8 +300,25 @@ export default function Editor({
 
               <Divider />
 
-              {/* Headings */}
+              {/* Headings & Font */}
               <div className="flex items-center gap-1">
+                <select
+                  onChange={(e) => {
+                    if (e.target.value === '') {
+                      editor.chain().focus().unsetFontFamily().run()
+                    } else {
+                      editor.chain().focus().setFontFamily(e.target.value).run()
+                    }
+                  }}
+                  className="bg-transparent text-[13px] font-medium outline-none text-[#0f0f0f] dark:text-white w-24 mr-2 hidden md:block"
+                  defaultValue=""
+                >
+                  <option value="">Default Font</option>
+                  <option value="Inter">Inter</option>
+                  <option value="Comic Sans MS, Comic Sans">Comic Sans</option>
+                  <option value="serif">Serif</option>
+                  <option value="monospace">Monospace</option>
+                </select>
                 <ToolBtn
                   onClick={() => editor.chain().focus().setParagraph().run()}
                   active={editor.isActive('paragraph')}
@@ -422,6 +442,19 @@ export default function Editor({
                   <LinkIcon size={17} />
                 </ToolBtn>
                 <ToolBtn
+                  onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+                  title="Insert Table"
+                >
+                  <TableIcon size={17} />
+                </ToolBtn>
+                {editor.isActive('table') && (
+                  <div className="flex items-center bg-[#f2f1ed] dark:bg-white/10 rounded-xl px-1 gap-1 ml-1">
+                    <ToolBtn onClick={() => editor.chain().focus().addColumnAfter().run()} title="Add Column">+</ToolBtn>
+                    <ToolBtn onClick={() => editor.chain().focus().addRowAfter().run()} title="Add Row">▤</ToolBtn>
+                    <ToolBtn onClick={() => editor.chain().focus().deleteTable().run()} title="Delete Table" className="text-red-500 hover:bg-red-50 hover:text-red-600"><Trash2 size={14} /></ToolBtn>
+                  </div>
+                )}
+                <ToolBtn
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <ImageIcon size={17} />
@@ -483,7 +516,7 @@ export default function Editor({
 
       {/* ── Footer ──────────────────────── */}
       {editable && (
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[#e5e4df] dark:border-white/5 bg-[#f8f8f6]/50">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[#e5e4df] dark:border-white/5 bg-[#f8f8f6]/50 dark:bg-white/5 rounded-b-[32px]">
           <div className="flex gap-4 text-[10px] md:text-[11px] font-black uppercase tracking-widest text-[#888780]">
             <span>{wordCount} Words</span>
             <span className="opacity-40">/</span>

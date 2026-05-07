@@ -30,38 +30,43 @@ export async function getAllLocalNotes() {
 // -----------------------------------------------------------
 export async function syncToGitHub(token: string, username: string) {
   if (!token || !username) return
-  const remoteIndex = await initializeNoteflow(token, username)
+  
+  try {
+    const remoteIndex = await initializeNoteflow(token, username)
 
-  // Pull notes that are newer on remote or missing locally
-  for (const remoteEntry of remoteIndex.notes) {
-    const localNote = await db.notes.get(remoteEntry.id)
-    const remoteIsNewer =
-      !localNote ||
-      new Date(remoteEntry.updatedAt) > new Date(localNote.updatedAt)
+    // Pull notes that are newer on remote or missing locally
+    for (const remoteEntry of remoteIndex.notes) {
+      const localNote = await db.notes.get(remoteEntry.id)
+      const remoteIsNewer =
+        !localNote ||
+        new Date(remoteEntry.updatedAt) > new Date(localNote.updatedAt)
 
-    if (remoteIsNewer) {
-      const remoteNote = await getFile(
-        token,
-        username,
-        `notes/note-${remoteEntry.id}.json`
-      )
-      if (remoteNote) {
-        await db.notes.put({ ...remoteNote.content, sha: remoteNote.sha })
+      if (remoteIsNewer) {
+        const remoteNote = await getFile(
+          token,
+          username,
+          `notes/note-${remoteEntry.id}.json`
+        )
+        if (remoteNote) {
+          await db.notes.put({ ...remoteNote.content, sha: remoteNote.sha })
+        }
       }
     }
-  }
 
-  // Push local notes that are newer than remote
-  const localNotes = await db.notes.toArray()
-  for (const localNote of localNotes) {
-    const remoteEntry = remoteIndex.notes.find((n) => n.id === localNote.id)
-    const localIsNewer =
-      !remoteEntry ||
-      new Date(localNote.updatedAt) > new Date(remoteEntry.updatedAt)
+    // Push local notes that are newer than remote
+    const localNotes = await db.notes.toArray()
+    for (const localNote of localNotes) {
+      const remoteEntry = remoteIndex.notes.find((n) => n.id === localNote.id)
+      const localIsNewer =
+        !remoteEntry ||
+        new Date(localNote.updatedAt) > new Date(remoteEntry.updatedAt)
 
-    if (localIsNewer) {
-      await saveNoteWithSync(token, username, localNote)
+      if (localIsNewer) {
+        await saveNoteWithSync(token, username, localNote)
+      }
     }
+  } catch (error: any) {
+    console.warn('[Noteflow] Sync to GitHub failed (likely offline):', error.message)
   }
 }
 

@@ -14,15 +14,21 @@ export async function githubFetch(
   token: string,
   options: RequestInit = {}
 ) {
-  const res = await fetch(`${GITHUB_API_BASE}${path}`, {
-    ...options,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github.v3+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      ...(options.headers ?? {}),
-    },
-  })
+  let res: Response;
+  try {
+    res = await fetch(`${GITHUB_API_BASE}${path}`, {
+      ...options,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github.v3+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        ...(options.headers ?? {}),
+      },
+    })
+  } catch (err: any) {
+    console.warn(`[githubFetch] Network error for ${path}:`, err.message);
+    throw new Error('NETWORK_OFFLINE');
+  }
 
   if (!res.ok) {
     if (res.status === 404) return null
