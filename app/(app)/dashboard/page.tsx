@@ -31,25 +31,30 @@ export default function Dashboard() {
 
   // Load notes
   useEffect(() => {
-    if (isGuest) {
-      getAllLocalNotes().then((localNotes) => {
-        setNotes(localNotes.map((n: any) => ({
-          ...n,
-          isPublished: n.isPublished ?? false,
-          slug: n.slug ?? '',
-        })))
-      })
-      return
-    }
+    // 1. Always load local notes first (Local-First approach)
+    getAllLocalNotes().then((localNotes) => {
+      setNotes(localNotes.map((n: any) => ({
+        ...n,
+        isPublished: n.isPublished ?? false,
+        slug: n.slug ?? '',
+      })))
+    })
+
+    if (isGuest) return
+
+    // 2. If logged in, sync with GitHub in background
     if (!session?.accessToken) return
     setIsSyncing(true)
     initializeNoteflow(session.accessToken, session.user.login)
       .then((index) => {
+        // Once synced, update state with remote index (which might have new stuff)
         setNotes(index.notes)
         setFolders(index.folders)
         setTags(index.tags)
       })
-      .catch(console.error)
+      .catch((err) => {
+        console.warn('[Dashboard] Offline or sync failed:', err.message)
+      })
       .finally(() => setIsSyncing(false))
   }, [session, isGuest, setNotes, setFolders, setTags])
 

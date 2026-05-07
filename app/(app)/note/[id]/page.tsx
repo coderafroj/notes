@@ -54,6 +54,9 @@ export default function NotePage() {
             db.notes.put({ ...n, sha: res.sha }) 
           }
         })
+        .catch((err) => {
+          console.warn('[NotePage] Offline or fetch failed:', err.message)
+        })
         .finally(() => setIsLoading(false))
     } else {
       setIsLoading(false)
