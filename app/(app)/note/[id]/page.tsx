@@ -79,9 +79,14 @@ export default function NotePage() {
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
       if (!pendingNote.current) return
-      try { await saveNote(pendingNote.current); setSaveStatus('saved'); setTimeout(() => setSaveStatus('idle'), 2500) }
-      catch { setSaveStatus('error') }
-    }, 1500)
+      try {
+        await saveNote(pendingNote.current)
+        setSaveStatus('saved')
+        setTimeout(() => setSaveStatus('idle'), 1500)
+      } catch {
+        setSaveStatus('error')
+      }
+    }, 800)
   }, [note, saveNote])
 
   const handleTitleBlur = useCallback(async (title: string) => {

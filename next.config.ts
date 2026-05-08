@@ -7,9 +7,57 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
   swcMinify: true,
+  extendDefaultRuntimeCaching: true,
+  fallbacks: {
+    document: "/~offline",
+  },
   workboxOptions: {
     disableDevLogs: true,
     runtimeCaching: [
+      {
+        urlPattern: /\/note\/[^\/]+$/i,
+        handler: "StaleWhileRevalidate",
+        options: {
+          cacheName: "note-pages",
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+          },
+        },
+      },
+      {
+        urlPattern: /\/_next\/data\/.*\/note\/.*\.json/i,
+        handler: "StaleWhileRevalidate",
+        options: {
+          cacheName: "note-data",
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+          },
+        },
+      },
+      {
+        urlPattern: /\/(?:focus|history|settings)\/.*/i,
+        handler: "StaleWhileRevalidate",
+        options: {
+          cacheName: "editor-extras",
+          expiration: {
+            maxEntries: 50,
+            maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+          },
+        },
+      },
+      {
+        urlPattern: /^https:\/\/fonts\.(?:gstatic|googleapis)\.com\/.*/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "google-fonts",
+          expiration: {
+            maxEntries: 30,
+            maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+          },
+        },
+      },
       {
         urlPattern: /^https:\/\/avatars\.githubusercontent\.com\/.*/i,
         handler: "CacheFirst",
@@ -22,32 +70,26 @@ const withPWA = require("@ducanh2912/next-pwa").default({
         },
       },
       {
-        urlPattern: /\/api\/global-feed/i,
-        handler: "StaleWhileRevalidate",
+        urlPattern: /\/api\/.*/i,
+        handler: "NetworkFirst",
         options: {
-          cacheName: "global-feed",
+          cacheName: "api-cache",
+          networkTimeoutSeconds: 10,
           expiration: {
-            maxEntries: 5,
+            maxEntries: 50,
             maxAgeSeconds: 60 * 60 * 24, // 24 hours
           },
         },
       },
       {
-        urlPattern: /^https:\/\/api\.github\.com\/repos\/.*\/noteflow-public\/contents\/public\/.*/i,
-        handler: "StaleWhileRevalidate",
-        options: {
-          cacheName: "public-notes",
-          expiration: {
-            maxEntries: 200,
-            maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
-          },
-        },
-      },
-      {
-        urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
+        urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
         handler: "CacheFirst",
         options: {
           cacheName: "images",
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+          },
         },
       },
     ],
