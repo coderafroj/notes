@@ -32,8 +32,8 @@ export const CertificatePreview = React.forwardRef<HTMLDivElement, CertificatePr
         }}
       >
         {/* Border */}
-        <div className="absolute inset-4 border-[12px] border-double border-black opacity-90 pointer-events-none" style={{boxSizing: 'border-box'}}></div>
-        <div className="absolute inset-7 border-2 border-black opacity-90 pointer-events-none" style={{boxSizing: 'border-box'}}></div>
+        <div className="absolute inset-4 border-[16px] border-double border-black opacity-90 pointer-events-none" style={{boxSizing: 'border-box'}}></div>
+        <div className="absolute inset-[1.35rem] border-[3px] border-black opacity-90 pointer-events-none" style={{boxSizing: 'border-box'}}></div>
 
         {/* Watermark Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
@@ -61,57 +61,57 @@ export const CertificatePreview = React.forwardRef<HTMLDivElement, CertificatePr
             Scholarship Entrance Exam Result
           </h2>
 
-          <div className="w-full flex justify-between items-center text-lg font-bold mb-10 px-4">
-            <div className="tracking-wide">Roll No: <span className="text-black font-black border-b-[3px] border-black pb-1 ml-2 px-2 inline-block min-w-[100px] text-center">{rollNumber || ''}</span></div>
-            <div className="text-sm text-gray-800 font-bold border-2 border-black px-4 py-1.5 rounded-full">Contact: 6396835709, 8923916987</div>
+          <div className="w-full flex justify-between items-end text-2xl font-bold mb-8 px-4 mt-2">
+            <div className="tracking-wide flex items-end">Roll No: <span className="text-black font-black text-4xl border-b-4 border-black pb-1 ml-4 px-4 inline-block min-w-[150px] text-center leading-none">{rollNumber || ''}</span></div>
+            <div className="text-base text-gray-800 font-black border-2 border-black px-5 py-2 rounded-full mb-1">Contact: 6396835709, 8923916987</div>
           </div>
 
-          <div className="w-full text-left px-4 space-y-6 text-xl">
+          <div className="w-full text-left px-4 space-y-8 text-2xl mt-4">
             <div className="flex gap-4 items-end">
-              <span className="font-bold w-48 text-gray-800 tracking-wide uppercase text-lg">Name Of Student:</span>
-              <span className="font-black border-b-[3px] border-dotted border-black flex-1 uppercase text-2xl pb-1 px-4">
+              <span className="font-bold w-64 text-gray-800 tracking-wide uppercase">Name Of Student:</span>
+              <span className="font-black border-b-4 border-dotted border-black flex-1 uppercase text-4xl pb-1 px-4 leading-none">
                 {studentName || ''}
               </span>
             </div>
             
             <div className="flex gap-4 items-end">
-              <span className="font-bold w-48 text-gray-800 tracking-wide uppercase text-lg">Father&apos;s Name:</span>
-              <span className="font-black border-b-[3px] border-dotted border-black flex-1 uppercase text-2xl pb-1 px-4">
+              <span className="font-bold w-64 text-gray-800 tracking-wide uppercase">Father&apos;s Name:</span>
+              <span className="font-black border-b-4 border-dotted border-black flex-1 uppercase text-4xl pb-1 px-4 leading-none">
                 {fatherName || ''}
               </span>
             </div>
           </div>
 
-          <div className="mt-14 text-center text-2xl font-bold px-12 leading-[2.5rem] text-gray-800">
+          <div className="mt-12 text-center text-[1.65rem] font-bold px-12 leading-[3rem] text-gray-800">
             AWARDED TO <br/>
             Mr./Ms <span className="text-black font-black uppercase border-b-4 border-black mx-4 px-6 pb-1 inline-block min-w-[300px]">{studentName || ''}</span> <br/>
             obtain <span className="text-black font-black border-b-4 border-black mx-3 px-4 pb-1 inline-block min-w-[100px]">{division || ''}</span> division. <br/>
             Has attend competition exam of general knowledge.
           </div>
 
-          <div className="w-full mt-20 grid grid-cols-2 gap-8 px-8">
-            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center transform transition-transform">
-              <div className="text-lg text-gray-800 font-bold mb-2 uppercase tracking-wider">Marks & Division</div>
-              <div className="text-3xl font-black text-black">
-                {marks || '0'} <span className="text-xl text-gray-700 font-bold ml-2">& {division || '-'} Division</span>
+          <div className="w-full mt-auto mb-10 grid grid-cols-2 gap-8 px-8">
+            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center">
+              <div className="text-xl text-gray-800 font-bold mb-2 uppercase tracking-wider">Marks & Division</div>
+              <div className="text-4xl font-black text-black">
+                {marks || '0'} <span className="text-2xl text-gray-700 font-bold ml-2">& {division || '-'} Div.</span>
               </div>
             </div>
-            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center transform transition-transform">
-              <div className="text-lg text-gray-800 font-bold mb-2 uppercase tracking-wider">Discount Awarded</div>
-              <div className="text-4xl font-black text-black">
+            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center">
+              <div className="text-xl text-gray-800 font-bold mb-2 uppercase tracking-wider">Discount Awarded</div>
+              <div className="text-5xl font-black text-black">
                 {discount}%
               </div>
             </div>
-            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center transform transition-transform">
-              <div className="text-lg text-gray-800 font-bold mb-2 uppercase tracking-wider">Fee Per Month</div>
-              <div className="text-4xl font-black text-black tracking-tighter">
+            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center">
+              <div className="text-xl text-gray-800 font-bold mb-2 uppercase tracking-wider">Fee Per Month</div>
+              <div className="text-5xl font-black text-black tracking-tighter">
                 ₹{feePerMonth}
               </div>
             </div>
-            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center text-center transform transition-transform">
-              <div className="text-lg text-gray-800 font-bold mb-2 uppercase tracking-wider">Admission Fee</div>
-              <div className="text-2xl font-black text-black tracking-tight">
-                ₹100 + <span className="text-lg font-bold uppercase ml-1">एक माह की फ़ीस एडवांस</span>
+            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center text-center">
+              <div className="text-xl text-gray-800 font-bold mb-2 uppercase tracking-wider">Admission Fee</div>
+              <div className="text-3xl font-black text-black tracking-tight">
+                ₹100 + <span className="text-xl font-bold uppercase ml-1 block mt-1">एक माह की फ़ीस एडवांस</span>
               </div>
             </div>
           </div>
