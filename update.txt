@@ -15,7 +15,7 @@ Note Page
 Ensure the Drawing Tab is seamless and saves correctly to Dexie/GitHub.
 Verify the Publish Toggle correctly handles public/private states.
 [MODIFY] 
-Focus Mode
+Focus Modedekh notes bale app ko mt chedna ok ismen ek prinyan pdf krke ek fel ahi isi nextjs kause kr lena ok mein aisa fiel baan de jo diploma genratekr jai epriyanka bali hai priyanka pdf hai dekh mien student naem father naem marks add kron to same result generato ho jaye pdf ek hi pdf mein ey diploma add ote rhe a4 siz ais it is ek dma best krna hai sab ek jdgimag ehoga usmein marks ke hisabse discunt ahi jaise 1-20 tk 50% ok to fee  600 rupa yahi ok aise ek form hojsiemi student name father naem marks or rollnumerb pooche or boapne hisasbe logic lage is iamge mien j bhi data likha hai ok or ha i40se neeceh balo ki division 3rd 4p se uper 2nd or 60 se uper 1st ekdma achese ban pd acchse generat ho mtln mein result enra kr skon mujeh bahtu studen tka reseutl bana hai sab ek dhi pdf ein store hote rhe sameok nptes bale app mein chedn mt bs sisi folde ke kaamkr kiunik nextjs instal hai ok kr bestdeign achcse ok pro lvel oj
 Ensure it provides a distraction-free environment as intended in V2.
 [MODIFY] 
 Version History

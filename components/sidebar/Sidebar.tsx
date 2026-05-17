@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useState, useCallback } from 'react'
-import { Plus, Search, Settings, Star, PenLine, ChevronRight, Tag, Loader2, LogIn, UserCircle2, UploadCloud, ShieldCheck } from 'lucide-react'
+import { Plus, Search, Settings, Star, PenLine, ChevronRight, Tag, Loader2, LogIn, UserCircle2, UploadCloud, ShieldCheck, FileText } from 'lucide-react'
 import { useNoteflowStore } from '@/lib/store'
 import { saveNoteLocal, saveNoteWithSync } from '@/lib/sync'
 import { cn } from '@/lib/utils'
@@ -157,12 +157,20 @@ export default function Sidebar() {
         )}
         
         {session?.user?.isAdmin && (
-          <Link href="/admin" className={cn('interactive-scale flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all mb-1',
-            pathname === '/admin' ? 'bg-[#7F77DD] text-white shadow-md shadow-purple-500/20' : 'text-[var(--muted-text)] hover:bg-[var(--muted)]'
-          )}>
-            <ShieldCheck size={18} />
-            Admin Console
-          </Link>
+          <>
+            <Link href="/admin" className={cn('interactive-scale flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all mb-1',
+              pathname === '/admin' ? 'bg-[#7F77DD] text-white shadow-md shadow-purple-500/20' : 'text-[var(--muted-text)] hover:bg-[var(--muted)]'
+            )}>
+              <ShieldCheck size={18} />
+              Admin Console
+            </Link>
+            <Link href="/result-generator" className={cn('interactive-scale flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all mb-1',
+              pathname === '/result-generator' ? 'bg-red-500 text-white shadow-md shadow-red-500/20' : 'text-[var(--muted-text)] hover:bg-[var(--muted)]'
+            )}>
+              <FileText size={18} />
+              Result Generator
+            </Link>
+          </>
         )}
         
         <Link href="/settings" className={cn('interactive-scale flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all',
