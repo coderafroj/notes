@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
+import { toPng } from 'html-to-image'
 import TurndownService from 'turndown'
 
 export async function exportToPDF(title: string, selector: string = '.tiptap') {
@@ -7,46 +7,19 @@ export async function exportToPDF(title: string, selector: string = '.tiptap') {
   if (!element) return
 
   try {
-    const canvas = await html2canvas(element, {
-      scale: 5, // Higher scale for extreme sharpness on zoom
-      useCORS: true,
-      logging: false,
+    const imgData = await toPng(element, {
+      quality: 1.0,
       backgroundColor: '#ffffff',
-      onclone: (clonedDoc) => {
-        const clonedElement = clonedDoc.querySelector(selector) as HTMLElement
-        if (clonedElement) {
-          clonedElement.style.padding = '60px'
-          clonedElement.style.width = '850px' // Standard A4 width-ish
-          clonedElement.style.background = '#ffffff'
-
-          // ── Normalize only problematic modern colors ─────────
-          const allElements = clonedElement.querySelectorAll('*')
-          allElements.forEach((el) => {
-            const htmlEl = el as HTMLElement
-            // Use inline style if available, otherwise computed
-            const style = window.getComputedStyle(htmlEl)
-            
-            const props = ['color', 'backgroundColor', 'borderColor', 'outlineColor']
-            props.forEach(prop => {
-              const val = (style as any)[prop]
-              // Only convert if it contains modern functions that html2canvas fails on
-              if (val && (val.includes('lab(') || val.includes('oklch(') || val.includes('hwb('))) {
-                // Determine a safe fallback color
-                if (prop === 'color') {
-                   // If it's a heading or text, use dark gray instead of stripping
-                   htmlEl.style.setProperty(prop, '#111827', 'important')
-                } else {
-                   htmlEl.style.setProperty(prop, 'transparent', 'important')
-                }
-              }
-            })
-          })
-        }
+      pixelRatio: 5, // Higher scale for extreme sharpness on zoom
+      style: {
+        padding: '60px',
+        width: '850px', // Standard A4 width-ish
+        background: '#ffffff',
+        margin: '0',
       }
     })
     
     // Calculate aspect ratio and dimensions for A4 page
-    const imgData = canvas.toDataURL('image/jpeg', 0.95)
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -55,22 +28,30 @@ export async function exportToPDF(title: string, selector: string = '.tiptap') {
     
     const imgWidth = 210 // A4 width in mm
     const pageHeight = 297 // A4 height in mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width
+    
+    // Create an image object to get its natural dimensions
+    const img = new Image()
+    img.src = imgData
+    
+    await new Promise((resolve) => {
+      img.onload = resolve
+    })
+
+    const imgHeight = (img.height * imgWidth) / img.width
     let heightLeft = imgHeight
     let position = 0
     
     // Add first page
-    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST')
     heightLeft -= pageHeight
     
     // Add subsequent pages if content is long
     while (heightLeft > 0) {
       position = heightLeft - imgHeight
       pdf.addPage()
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST')
       heightLeft -= pageHeight
     }
-
     
     pdf.save(`${title.toLowerCase().replace(/\s+/g, '-')}.pdf`)
   } catch (error) {
