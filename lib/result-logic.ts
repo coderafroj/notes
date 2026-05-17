@@ -5,12 +5,12 @@ export function calculateResult(marks: number) {
 
   if (marks >= 81) {
     division = '1ST'
-    discount = 100
-    feePerMonth = 0
-  } else if (marks >= 61) {
-    division = '1ST'
     discount = 80
     feePerMonth = 200
+  } else if (marks >= 61) {
+    division = '1ST'
+    discount = 70
+    feePerMonth = 300
   } else if (marks >= 41) {
     division = '2ND'
     discount = 65
