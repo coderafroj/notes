@@ -9,8 +9,6 @@ import { db } from '@/lib/db'
 import { Mic, MicOff, Save, Download, FileText, Loader2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { v4 as uuidv4 } from 'uuid'
-import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
 
 // Add speech recognition types
 declare global {
@@ -134,20 +132,25 @@ export default function ResultGeneratorPage() {
     if (!certificateRef.current) return
 
     try {
-      setIsSaving(true) // Re-using state for loading indication
+      setIsSaving(true) 
       
-      // html2canvas works best when the element is not scaled by CSS.
-      // We explicitly pass scale: 4 for ultra HD quality.
+      const html2canvas = (await import('html2canvas')).default
+      const { jsPDF } = await import('jspdf')
+
+      // Temporarily remove transform from parent to prevent html2canvas clipping
+      const parentElement = certificateRef.current.parentElement
+      const originalTransform = parentElement ? parentElement.style.transform : ''
+      if (parentElement) parentElement.style.transform = 'none'
+
       const canvas = await html2canvas(certificateRef.current, { 
-        scale: 4, // 4x resolution for crisp text
+        scale: 2, 
         useCORS: true,
         logging: false,
-        width: 794,
-        height: 1123,
-        windowWidth: 794,
-        windowHeight: 1123,
         backgroundColor: '#ffffff'
       })
+      
+      if (parentElement) parentElement.style.transform = originalTransform
+
       const imgData = canvas.toDataURL('image/png', 1.0)
       
       const pdf = new jsPDF({
@@ -160,7 +163,7 @@ export default function ResultGeneratorPage() {
       pdf.save(`${studentName || 'Student'}_Result.pdf`)
     } catch (error) {
       console.error(error)
-      alert("Failed to generate PDF.")
+      alert("Failed to generate PDF. Please try again.")
     } finally {
       setIsSaving(false)
     }
@@ -339,6 +342,7 @@ export default function ResultGeneratorPage() {
             
             <div className="transform scale-[0.6] sm:scale-75 md:scale-[0.85] xl:scale-95 2xl:scale-100 origin-top flex-shrink-0 shadow-[0_20px_60px_rgba(0,0,0,0.5)] rounded-lg">
               <CertificatePreview 
+                ref={certificateRef}
                 studentName={studentName}
                 fatherName={fatherName}
                 rollNumber={rollNumber}
@@ -351,20 +355,6 @@ export default function ResultGeneratorPage() {
           </div>
 
         </div>
-      </div>
-
-      {/* Hidden Pristine Node for PDF Generation (Immune to CSS scaling & cutoff) */}
-      <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '794px', height: '1123px', overflow: 'hidden' }}>
-        <CertificatePreview 
-          ref={certificateRef}
-          studentName={studentName}
-          fatherName={fatherName}
-          rollNumber={rollNumber}
-          marks={marks}
-          division={division}
-          discount={discount}
-          feePerMonth={feePerMonth}
-        />
       </div>
     </div>
   )
