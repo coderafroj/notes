@@ -10,10 +10,11 @@ interface CertificateProps {
   division: string;
   discount: number;
   feePerMonth: number;
+  admissionDate?: string;
 }
 
 export const CertificatePreview = React.forwardRef<HTMLDivElement, CertificateProps>(
-  ({ studentName, fatherName, rollNumber, marks, division, discount, feePerMonth }, ref) => {
+  ({ studentName, fatherName, rollNumber, marks, division, discount, feePerMonth, admissionDate }, ref) => {
     
     // Getting current date in required format e.g., 23-APRIL-2026
     const date = new Date()
@@ -115,11 +116,20 @@ export const CertificatePreview = React.forwardRef<HTMLDivElement, CertificatePr
               </div>
             </div>
           </div>
+          
+          <div className="w-full text-center mt-6">
+            <span className="font-bold text-2xl text-gray-800 uppercase tracking-widest bg-gray-100 px-6 py-2 rounded-full border-2 border-black inline-block shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+              Admission Date:- <span className="text-black font-black">{admissionDate || '23 APRIL - 26 APRIL'}</span>
+            </span>
+          </div>
 
-          <div className="mt-auto w-full px-12 flex justify-between items-end pb-10">
+          <div className="mt-auto w-full text-center mb-6">
+            <h3 className="text-4xl font-black text-black tracking-widest uppercase">ByteCore Computer Centre</h3>
+          </div>
+
+          <div className="w-full px-12 flex justify-between items-end pb-8">
             <div className="flex flex-col text-lg">
               <span className="font-bold mb-3 text-gray-700 uppercase tracking-wide">Date of Issue:- <span className="text-black font-black ml-2 border-b-2 border-black pb-1 px-4">{formattedDate}</span></span>
-              <span className="font-bold text-gray-700 uppercase tracking-wide">Admission Date:- <span className="text-black font-black ml-2 border-b-2 border-black pb-1 px-4">{formattedDate.split('-')[0]} {formattedDate.split('-')[1]} - 26 {formattedDate.split('-')[1]}</span></span>
             </div>
             <div className="flex flex-col items-center">
               <div className="w-56 border-b-[3px] border-black mb-3"></div>

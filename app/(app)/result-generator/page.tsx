@@ -27,6 +27,7 @@ export default function ResultGeneratorPage() {
   const [fatherName, setFatherName] = useState('')
   const [rollNumber, setRollNumber] = useState('')
   const [marks, setMarks] = useState('')
+  const [admissionDate, setAdmissionDate] = useState('23 APRIL - 26 APRIL')
   
   const [isListening, setIsListening] = useState(false)
   const [activeField, setActiveField] = useState<string | null>(null)
@@ -225,6 +226,7 @@ export default function ResultGeneratorPage() {
                   { id: 'fatherName', label: 'Father\'s Name', val: fatherName, set: setFatherName },
                   { id: 'rollNumber', label: 'Roll Number', val: rollNumber, set: setRollNumber },
                   { id: 'marks', label: 'Marks', val: marks, set: setMarks, type: 'number' },
+                  { id: 'admissionDate', label: 'Admission Date', val: admissionDate, set: setAdmissionDate },
                 ].map((field) => (
                   <div key={field.id} className="relative group">
                     <label className="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider pl-1">{field.label}</label>
@@ -347,6 +349,7 @@ export default function ResultGeneratorPage() {
                 division={division}
                 discount={discount}
                 feePerMonth={feePerMonth}
+                admissionDate={admissionDate}
               />
             </div>
           </div>
