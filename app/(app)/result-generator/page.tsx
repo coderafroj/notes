@@ -146,6 +146,7 @@ export default function ResultGeneratorPage() {
         height: 1123,
         windowWidth: 794,
         windowHeight: 1123,
+        backgroundColor: '#ffffff'
       })
       const imgData = canvas.toDataURL('image/png', 1.0)
       
@@ -338,7 +339,6 @@ export default function ResultGeneratorPage() {
             
             <div className="transform scale-[0.6] sm:scale-75 md:scale-[0.85] xl:scale-95 2xl:scale-100 origin-top flex-shrink-0 shadow-[0_20px_60px_rgba(0,0,0,0.5)] rounded-lg">
               <CertificatePreview 
-                ref={certificateRef}
                 studentName={studentName}
                 fatherName={fatherName}
                 rollNumber={rollNumber}
@@ -351,6 +351,20 @@ export default function ResultGeneratorPage() {
           </div>
 
         </div>
+      </div>
+
+      {/* Hidden Pristine Node for PDF Generation (Immune to CSS scaling & cutoff) */}
+      <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '794px', height: '1123px', overflow: 'hidden' }}>
+        <CertificatePreview 
+          ref={certificateRef}
+          studentName={studentName}
+          fatherName={fatherName}
+          rollNumber={rollNumber}
+          marks={marks}
+          division={division}
+          discount={discount}
+          feePerMonth={feePerMonth}
+        />
       </div>
     </div>
   )

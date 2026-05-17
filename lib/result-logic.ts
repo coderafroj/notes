@@ -1,28 +1,32 @@
 export function calculateResult(marks: number) {
   let division = '3RD'
-  let discount = 50
-  let feePerMonth = 700
+  let discount = 0
+  let feePerMonth = 1400
 
-  // Fallback default base fee
-  const BASE_FEE = 1400
-
-  if (marks >= 60) {
+  if (marks >= 81) {
+    division = '1ST'
+    discount = 100
+    feePerMonth = 0
+  } else if (marks >= 61) {
     division = '1ST'
     discount = 80
-    feePerMonth = 200 // Subsidized heavily for 1st div
-  } else if (marks >= 40) {
+    feePerMonth = 200
+  } else if (marks >= 41) {
     division = '2ND'
     discount = 65
-    feePerMonth = 450 // As per PRIYANKA.pdf
+    feePerMonth = 450 // As per PRIYANKA.pdf (48 marks)
+  } else if (marks >= 21) {
+    division = '3RD'
+    discount = 60
+    feePerMonth = 500 // As per user instruction
   } else if (marks >= 1) {
     division = '3RD'
-    discount = 50 // As per user prompt (1-20 get 50%)
-    feePerMonth = 700 
+    discount = 50
+    feePerMonth = 600 // As per user instruction
   } else {
-    // 0 marks
     division = 'FAIL'
     discount = 0
-    feePerMonth = BASE_FEE
+    feePerMonth = 1400
   }
 
   return {
