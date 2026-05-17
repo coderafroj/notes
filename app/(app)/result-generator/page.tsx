@@ -134,20 +134,34 @@ export default function ResultGeneratorPage() {
     if (!certificateRef.current) return
 
     try {
-      const canvas = await html2canvas(certificateRef.current, { scale: 2 })
-      const imgData = canvas.toDataURL('image/png')
+      setIsSaving(true) // Re-using state for loading indication
+      
+      // html2canvas works best when the element is not scaled by CSS.
+      // We explicitly pass scale: 4 for ultra HD quality.
+      const canvas = await html2canvas(certificateRef.current, { 
+        scale: 4, // 4x resolution for crisp text
+        useCORS: true,
+        logging: false,
+        width: 794,
+        height: 1123,
+        windowWidth: 794,
+        windowHeight: 1123,
+      })
+      const imgData = canvas.toDataURL('image/png', 1.0)
       
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'px',
-        format: [794, 1123] // A4 size in pixels roughly at 96 DPI
+        format: [794, 1123]
       })
       
-      pdf.addImage(imgData, 'PNG', 0, 0, 794, 1123)
-      pdf.save(`${studentName}_Result.pdf`)
+      pdf.addImage(imgData, 'PNG', 0, 0, 794, 1123, undefined, 'FAST')
+      pdf.save(`${studentName || 'Student'}_Result.pdf`)
     } catch (error) {
       console.error(error)
       alert("Failed to generate PDF.")
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -160,35 +174,47 @@ export default function ResultGeneratorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8 pb-32 overflow-y-auto">
+    <div className="min-h-screen bg-[#050505] text-white p-4 sm:p-8 pb-32 overflow-y-auto relative isolate">
+      {/* Dynamic Ambient Background */}
+      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div className="absolute -top-[40%] -left-[20%] w-[80%] h-[80%] rounded-full bg-purple-900/20 blur-[120px] mix-blend-screen" />
+        <div className="absolute top-[20%] -right-[20%] w-[60%] h-[80%] rounded-full bg-red-900/20 blur-[120px] mix-blend-screen" />
+      </div>
+
       <div className="max-w-7xl mx-auto space-y-8">
         
-        <div className="flex justify-between items-center bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl backdrop-blur-md bg-opacity-70">
-          <div>
-            <h1 className="text-3xl font-extrabold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent flex items-center gap-3">
-              <FileText className="text-red-500" />
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row justify-between items-center bg-white/5 p-6 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] backdrop-blur-xl relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-orange-500/10 pointer-events-none" />
+          <div className="relative z-10 text-center sm:text-left mb-4 sm:mb-0">
+            <h1 className="text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent flex justify-center sm:justify-start items-center gap-3">
+              <FileText className="text-red-500 w-8 h-8" />
               Pro Result Generator
             </h1>
-            <p className="text-gray-400 mt-1">Create premium scholarship certificates instantly.</p>
+            <p className="text-gray-400 mt-2 font-medium">Create premium scholarship certificates instantly.</p>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium bg-gray-700 px-4 py-2 rounded-full border border-gray-600 shadow-inner">
-              Admin: coderafroj
-            </span>
+          <div className="relative z-10 flex items-center gap-4">
+            <div className="px-5 py-2.5 bg-black/40 rounded-full border border-white/10 flex items-center gap-2 backdrop-blur-md shadow-inner">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-sm font-bold tracking-wide text-gray-200">Admin: coderafroj</span>
+            </div>
           </div>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
           
           {/* Form Section */}
           <div className="xl:col-span-4 space-y-6">
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-gray-800 p-6 rounded-3xl shadow-2xl border border-gray-700 relative overflow-hidden"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-black/40 p-7 rounded-[2rem] shadow-2xl border border-white/10 relative overflow-hidden backdrop-blur-2xl"
             >
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-orange-500"></div>
-              <h2 className="text-2xl font-bold mb-6 text-gray-100 flex items-center gap-2">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500"></div>
+              <h2 className="text-2xl font-bold mb-8 text-white flex items-center gap-2">
                 Student Details
               </h2>
               
@@ -199,22 +225,22 @@ export default function ResultGeneratorPage() {
                   { id: 'rollNumber', label: 'Roll Number', val: rollNumber, set: setRollNumber },
                   { id: 'marks', label: 'Marks', val: marks, set: setMarks, type: 'number' },
                 ].map((field) => (
-                  <div key={field.id} className="relative">
-                    <label className="block text-sm font-semibold text-gray-400 mb-1">{field.label}</label>
+                  <div key={field.id} className="relative group">
+                    <label className="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider pl-1">{field.label}</label>
                     <div className="relative flex items-center">
                       <input 
                         type={field.type || "text"}
                         value={field.val}
                         onChange={(e) => field.set(e.target.value)}
-                        className="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all shadow-inner"
+                        className="w-full bg-black/50 border border-white/10 rounded-2xl px-5 py-4 text-white font-medium focus:outline-none focus:border-red-500/50 focus:bg-white/5 transition-all shadow-inner hover:border-white/20"
                         placeholder={`Enter ${field.label}`}
                       />
                       <button 
                         onClick={() => startListening(field.id, field.set)}
-                        className={`absolute right-2 p-2 rounded-lg transition-all ${
+                        className={`absolute right-3 p-2.5 rounded-xl transition-all duration-300 ${
                           isListening && activeField === field.id 
-                            ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
-                            : 'text-gray-400 hover:text-red-400 hover:bg-gray-700'
+                            ? 'bg-red-500/20 text-red-400 animate-pulse border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.3)]' 
+                            : 'text-gray-500 hover:text-white hover:bg-white/10'
                         }`}
                         title="Voice Type"
                       >
@@ -227,64 +253,76 @@ export default function ResultGeneratorPage() {
 
               {/* Calculated Stats Display */}
               <div className="mt-8 grid grid-cols-2 gap-4">
-                <div className="bg-gray-900 rounded-xl p-4 border border-gray-700 flex flex-col items-center justify-center">
-                  <span className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Division</span>
-                  <span className={`text-2xl font-black ${division === '1ST' ? 'text-green-500' : division === '2ND' ? 'text-blue-500' : 'text-orange-500'}`}>
+                <div className="bg-black/60 rounded-2xl p-5 border border-white/5 flex flex-col items-center justify-center hover:bg-white/5 transition-colors">
+                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1.5">Division</span>
+                  <span className={`text-3xl font-black tracking-tight ${division === '1ST' ? 'text-green-400 drop-shadow-[0_0_10px_rgba(74,222,128,0.5)]' : division === '2ND' ? 'text-blue-400' : 'text-orange-400'}`}>
                     {division || '-'}
                   </span>
                 </div>
-                <div className="bg-gray-900 rounded-xl p-4 border border-gray-700 flex flex-col items-center justify-center">
-                  <span className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Discount</span>
-                  <span className="text-2xl font-black text-green-400">{discount}%</span>
+                <div className="bg-black/60 rounded-2xl p-5 border border-white/5 flex flex-col items-center justify-center hover:bg-white/5 transition-colors">
+                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1.5">Discount</span>
+                  <span className="text-3xl font-black text-green-400 tracking-tight">{discount}%</span>
                 </div>
-                <div className="bg-gray-900 rounded-xl p-4 border border-gray-700 col-span-2 flex flex-col items-center justify-center">
-                  <span className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Fee Per Month</span>
-                  <span className="text-3xl font-black text-blue-400">₹{feePerMonth}</span>
+                <div className="bg-gradient-to-br from-black/80 to-black/40 rounded-2xl p-5 border border-white/5 col-span-2 flex flex-col items-center justify-center relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1.5 relative z-10">Fee Per Month</span>
+                  <span className="text-4xl font-black text-blue-400 tracking-tight relative z-10">₹{feePerMonth}</span>
                 </div>
               </div>
 
-              <div className="mt-8 flex gap-3">
-                <button 
+              <div className="mt-8 flex gap-4">
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={handleSaveResult}
                   disabled={isSaving}
-                  className="flex-1 bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="flex-1 bg-white/5 hover:bg-white/10 text-white font-bold py-4 px-4 rounded-2xl border border-white/10 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  {isSaving ? <Loader2 className="animate-spin w-5 h-5" /> : <Save className="w-5 h-5" />}
+                  {isSaving ? <Loader2 className="animate-spin w-5 h-5 text-gray-400" /> : <Save className="w-5 h-5 text-gray-400" />}
                   Save Result
-                </button>
-                <button 
+                </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={handleDownloadPDF}
-                  className="flex-1 bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-500 hover:to-orange-400 text-white font-bold py-3 px-4 rounded-xl shadow-[0_0_20px_rgba(239,68,68,0.3)] hover:shadow-[0_0_25px_rgba(239,68,68,0.5)] transition-all flex items-center justify-center gap-2"
+                  disabled={isSaving}
+                  className="flex-1 bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-500 hover:to-orange-400 text-white font-bold py-4 px-4 rounded-2xl shadow-[0_0_20px_rgba(239,68,68,0.3)] hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] transition-all flex items-center justify-center gap-2 border border-red-400/30"
                 >
                   <Download className="w-5 h-5" />
                   Export PDF
-                </button>
+                </motion.button>
               </div>
             </motion.div>
 
             {/* History Section */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-gray-800 p-6 rounded-3xl shadow-2xl border border-gray-700 max-h-[400px] overflow-y-auto custom-scrollbar"
+              className="bg-black/40 p-7 rounded-[2rem] shadow-2xl border border-white/10 max-h-[450px] overflow-y-auto custom-scrollbar backdrop-blur-2xl"
             >
-              <h3 className="text-xl font-bold mb-4 text-gray-200">Recent Results</h3>
+              <h3 className="text-xl font-extrabold mb-6 text-white flex items-center gap-2">
+                <div className="w-2 h-6 bg-red-500 rounded-full" />
+                Recent History
+              </h3>
               {savedResults.length === 0 ? (
-                <p className="text-gray-500 text-sm italic text-center py-4">No results saved yet.</p>
+                <div className="flex flex-col items-center justify-center h-40 opacity-50">
+                  <FileText className="w-10 h-10 mb-3 text-gray-500" />
+                  <p className="text-gray-400 text-sm italic">No results generated yet.</p>
+                </div>
               ) : (
                 <div className="space-y-3">
                   {savedResults.map((res: any) => (
-                    <div key={res.id} className="bg-gray-900 p-4 rounded-xl border border-gray-700 flex justify-between items-center hover:border-gray-600 transition-colors">
+                    <div key={res.id} className="bg-white/5 p-4 rounded-2xl border border-white/5 flex justify-between items-center hover:bg-white/10 transition-colors group cursor-default">
                       <div>
-                        <div className="font-bold text-gray-200">{res.studentName}</div>
-                        <div className="text-xs text-gray-500">Roll: {res.rollNumber} | Marks: {res.marks}</div>
+                        <div className="font-bold text-gray-100 group-hover:text-white transition-colors">{res.studentName}</div>
+                        <div className="text-[11px] text-gray-400 font-medium uppercase tracking-wider mt-1">Roll: {res.rollNumber} • Marks: {res.marks}</div>
                       </div>
                       <div className="text-right">
-                        <div className={`font-black text-sm ${res.division === '1ST' ? 'text-green-500' : res.division === '2ND' ? 'text-blue-500' : 'text-orange-500'}`}>
+                        <div className={`font-black text-sm tracking-tight ${res.division === '1ST' ? 'text-green-400' : res.division === '2ND' ? 'text-blue-400' : 'text-orange-400'}`}>
                           {res.division}
                         </div>
-                        <div className="text-xs text-gray-400">{new Date(res.createdAt).toLocaleDateString()}</div>
+                        <div className="text-[10px] text-gray-500 font-medium mt-1">{new Date(res.createdAt).toLocaleDateString()}</div>
                       </div>
                     </div>
                   ))}
@@ -295,8 +333,10 @@ export default function ResultGeneratorPage() {
           </div>
 
           {/* Preview Section */}
-          <div className="xl:col-span-8 flex justify-center bg-gray-800 rounded-3xl p-8 border border-gray-700 shadow-2xl overflow-x-auto">
-            <div className="transform scale-75 xl:scale-[0.85] 2xl:scale-100 origin-top flex-shrink-0">
+          <div className="xl:col-span-8 flex justify-center items-start bg-black/20 rounded-[2.5rem] p-4 sm:p-10 border border-white/5 shadow-2xl overflow-x-auto backdrop-blur-3xl custom-scrollbar relative">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 rounded-[2.5rem] pointer-events-none" />
+            
+            <div className="transform scale-[0.6] sm:scale-75 md:scale-[0.85] xl:scale-95 2xl:scale-100 origin-top flex-shrink-0 shadow-[0_20px_60px_rgba(0,0,0,0.5)] rounded-lg">
               <CertificatePreview 
                 ref={certificateRef}
                 studentName={studentName}

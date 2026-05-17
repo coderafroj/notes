@@ -22,12 +22,18 @@ export const CertificatePreview = React.forwardRef<HTMLDivElement, CertificatePr
     return (
       <div 
         ref={ref} 
-        className="w-[794px] h-[1123px] bg-white text-black p-10 relative overflow-hidden flex flex-col font-serif"
-        style={{ fontFamily: "'Times New Roman', Times, serif" }}
+        id="certificate-container"
+        className="bg-white text-black p-10 relative overflow-hidden flex flex-col font-serif"
+        style={{ 
+          fontFamily: "'Times New Roman', Times, serif",
+          width: '794px', 
+          height: '1123px',
+          boxSizing: 'border-box'
+        }}
       >
         {/* Border */}
-        <div className="absolute inset-4 border-[12px] border-double border-red-800 opacity-90 pointer-events-none"></div>
-        <div className="absolute inset-6 border-2 border-red-800 opacity-90 pointer-events-none"></div>
+        <div className="absolute inset-4 border-[12px] border-double border-red-800 opacity-90 pointer-events-none" style={{boxSizing: 'border-box'}}></div>
+        <div className="absolute inset-6 border-2 border-red-800 opacity-90 pointer-events-none" style={{boxSizing: 'border-box'}}></div>
 
         <div className="relative z-10 flex flex-col items-center h-full pt-8">
           
