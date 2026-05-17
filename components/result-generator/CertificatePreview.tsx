@@ -89,26 +89,26 @@ export const CertificatePreview = React.forwardRef<HTMLDivElement, CertificatePr
             Has attend competition exam of general knowledge.
           </div>
 
-          <div className="w-full mt-auto mb-10 grid grid-cols-2 gap-8 px-8">
-            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center">
+          <div className="w-full mt-10 grid grid-cols-2 gap-6 px-10">
+            <div className="bg-gray-50 p-5 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center">
               <div className="text-xl text-gray-800 font-bold mb-2 uppercase tracking-wider">Marks & Division</div>
               <div className="text-4xl font-black text-black">
                 {marks || '0'} <span className="text-2xl text-gray-700 font-bold ml-2">& {division || '-'} Div.</span>
               </div>
             </div>
-            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center">
+            <div className="bg-gray-50 p-5 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center">
               <div className="text-xl text-gray-800 font-bold mb-2 uppercase tracking-wider">Discount Awarded</div>
               <div className="text-5xl font-black text-black">
                 {discount}%
               </div>
             </div>
-            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center">
+            <div className="bg-gray-50 p-5 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center">
               <div className="text-xl text-gray-800 font-bold mb-2 uppercase tracking-wider">Fee Per Month</div>
               <div className="text-5xl font-black text-black tracking-tighter">
                 ₹{feePerMonth}
               </div>
             </div>
-            <div className="bg-gray-50 p-6 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center text-center">
+            <div className="bg-gray-50 p-5 rounded-xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] flex flex-col justify-center items-center text-center">
               <div className="text-xl text-gray-800 font-bold mb-2 uppercase tracking-wider">Admission Fee</div>
               <div className="text-3xl font-black text-black tracking-tight">
                 ₹100 + <span className="text-xl font-bold uppercase ml-1 block mt-1">एक माह की फ़ीस एडवांस</span>
@@ -116,7 +116,7 @@ export const CertificatePreview = React.forwardRef<HTMLDivElement, CertificatePr
             </div>
           </div>
 
-          <div className="mt-auto w-full px-12 flex justify-between items-end pb-12">
+          <div className="mt-auto w-full px-12 flex justify-between items-end pb-10">
             <div className="flex flex-col text-lg">
               <span className="font-bold mb-3 text-gray-700 uppercase tracking-wide">Date of Issue:- <span className="text-black font-black ml-2 border-b-2 border-black pb-1 px-4">{formattedDate}</span></span>
               <span className="font-bold text-gray-700 uppercase tracking-wide">Admission Date:- <span className="text-black font-black ml-2 border-b-2 border-black pb-1 px-4">{formattedDate.split('-')[0]} {formattedDate.split('-')[1]} - 26 {formattedDate.split('-')[1]}</span></span>
