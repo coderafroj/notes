@@ -35,17 +35,31 @@ export const CertificatePreview = React.forwardRef<HTMLDivElement, CertificatePr
         <div className="absolute inset-4 border-[12px] border-double border-red-800 opacity-90 pointer-events-none" style={{boxSizing: 'border-box'}}></div>
         <div className="absolute inset-6 border-2 border-red-800 opacity-90 pointer-events-none" style={{boxSizing: 'border-box'}}></div>
 
-        <div className="relative z-10 flex flex-col items-center h-full pt-8">
+        {/* Watermark Background */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
+          <div className="text-[120px] font-black transform -rotate-45 leading-none text-red-900 text-center select-none">
+            BYTECORE<br/>COMPUTER<br/>CENTRE
+          </div>
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center h-full pt-4">
           
-          <h1 className="text-4xl font-extrabold text-red-700 tracking-wider mb-2 text-center uppercase">
-            Scholarship Entrance Exam Result
+          <h1 className="text-5xl font-black text-red-700 tracking-widest mb-1 text-center uppercase drop-shadow-sm">
+            Bytecore Computer Centre
           </h1>
           
-          <p className="text-xl font-bold text-gray-800 mb-6 italic text-center">
+          <p className="text-2xl font-bold text-gray-800 mb-2 italic text-center">
             "Tech Mastery, Starts Here"
           </p>
+
+          <div className="text-[11px] font-bold text-center text-gray-700 leading-tight mb-4 px-12 border-b-2 border-red-800/30 pb-4">
+            ADDRESS: 1. SHITALA MATA MANDIR KE SHAMNE, KUBER INDANE GAS SERVICE NARIYAWAL BAREILLY <br/> 
+            2. CHIDIYA GHAR KE PASS, JAFAR TENT HOUSE KE SHAMNE THIRIYA NIZAWAT KHAN BAREILLY
+          </div>
           
-          <div className="w-full border-b-2 border-gray-400 mb-6"></div>
+          <h2 className="text-3xl font-extrabold text-white bg-red-700 px-8 py-2 rounded-lg tracking-widest mb-6 text-center uppercase shadow-md border-2 border-red-900">
+            Scholarship Entrance Exam Result
+          </h2>
 
           <div className="w-full flex justify-between items-center text-lg font-bold mb-8 px-4">
             <div>Roll No: <span className="text-red-600 underline underline-offset-4">{rollNumber || '______'}</span></div>
@@ -102,19 +116,15 @@ export const CertificatePreview = React.forwardRef<HTMLDivElement, CertificatePr
             </div>
           </div>
 
-          <div className="mt-auto w-full px-8 flex justify-between items-end pb-8">
-            <div className="flex flex-col">
-              <span className="font-bold mb-2">Date of Issue:- {formattedDate}</span>
-              <span className="font-bold">Admission Date:- {formattedDate.split('-')[0]} {formattedDate.split('-')[1]} - 26 {formattedDate.split('-')[1]}</span>
+          <div className="mt-auto w-full px-12 flex justify-between items-end pb-12">
+            <div className="flex flex-col text-lg">
+              <span className="font-bold mb-2 text-red-900">Date of Issue:- <span className="text-black font-semibold">{formattedDate}</span></span>
+              <span className="font-bold text-red-900">Admission Date:- <span className="text-black font-semibold">{formattedDate.split('-')[0]} {formattedDate.split('-')[1]} - 26 {formattedDate.split('-')[1]}</span></span>
             </div>
             <div className="flex flex-col items-center">
-              <div className="w-40 border-b-2 border-black mb-2"></div>
-              <span className="font-bold">Signature</span>
+              <div className="w-48 border-b-2 border-black mb-2 border-dashed"></div>
+              <span className="font-bold text-xl text-gray-800">Authorized Signature</span>
             </div>
-          </div>
-          
-          <div className="w-full text-center text-xs text-gray-500 font-sans mt-4 bg-gray-50 py-2 border-t border-gray-200 absolute bottom-0 left-0">
-            ADDRESS: 1. SHITALA MATA MANDIR KE SHAMNE, KUBER INDANE GAS SERVICE NARIYAWAL BAREILLY | 2. CHIDIYA GHAR KE PASS, JAFAR TENT HOUSE KE SHAMNE THIRIYA NIZAWAT KHAN BAREILLY
           </div>
 
         </div>
