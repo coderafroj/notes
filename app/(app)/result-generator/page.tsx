@@ -135,21 +135,24 @@ export default function ResultGeneratorPage() {
     try {
       setIsSaving(true) 
       
-      const { toPng } = await import('html-to-image')
+      const html2canvas = (await import('html2canvas')).default
       const { jsPDF } = await import('jspdf')
 
-      // html-to-image uses native SVG rendering, avoiding unsupported CSS color parsing errors (like lab/oklch)
-      // and doesn't get clipped by parent transforms.
-      const imgData = await toPng(certificateRef.current, {
-        quality: 1.0,
-        backgroundColor: '#ffffff',
-        pixelRatio: 2, // 2x resolution for crisp text
-        style: {
-          transform: 'none', // Ensure it renders flat
-          margin: '0',
-          padding: '0'
-        }
+      // Temporarily remove transform from parent to prevent html2canvas clipping
+      const parentElement = certificateRef.current.parentElement
+      const originalTransform = parentElement ? parentElement.style.transform : ''
+      if (parentElement) parentElement.style.transform = 'none'
+
+      const canvas = await html2canvas(certificateRef.current, { 
+        scale: 2, 
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
       })
+      
+      if (parentElement) parentElement.style.transform = originalTransform
+
+      const imgData = canvas.toDataURL('image/png', 1.0)
       
       const pdf = new jsPDF({
         orientation: 'portrait',
