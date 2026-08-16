@@ -126,7 +126,7 @@ export async function getPublicIndex(
     if (!res.ok) return []
     const data = await res.json()
     if (!data.content) return []
-    const raw = atob(data.content.replace(/\n/g, ''))
+    const raw = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))))
     return JSON.parse(raw)
   } catch {
     return []
@@ -156,7 +156,7 @@ export async function getAdminStats(currentUser?: string | null): Promise<{
     if (res.ok) {
       const data = await res.json()
       if (data.content) {
-        const list = JSON.parse(atob(data.content.replace(/\n/g, '')))
+        const list = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))))
         if (Array.isArray(list)) {
           authors = Array.from(new Set([...authors, ...list]))
           console.log(`[Discovery] Loaded ${list.length} authors from Central Registry.`)
@@ -208,7 +208,7 @@ export async function getAdminStats(currentUser?: string | null): Promise<{
     if (res.ok) {
       const data = await res.json()
       if (data.content) {
-        const banned = JSON.parse(atob(data.content.replace(/\n/g, '')))
+        const banned = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))))
         bannedUsers = banned.users || []
         bannedNotes = banned.notes || [] // Array of 'username/slug'
       }
@@ -272,7 +272,7 @@ export async function getPublicNote(
     }
     const data = await res.json()
     if (!data.content) return null
-    const raw = atob(data.content.replace(/\n/g, ''))
+    const raw = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))))
     return JSON.parse(raw)
   } catch (e) {
     console.error(`[getPublicNote] Error fetching ${url}:`, e)

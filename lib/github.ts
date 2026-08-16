@@ -86,7 +86,7 @@ export async function getFile(
   if (!data?.content) return null
 
   // Decode base64 → JSON (browser-safe, no Buffer)
-  const raw = atob(data.content.replace(/\n/g, ''))
+  const raw = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))))
   return {
     content: JSON.parse(raw),
     sha: data.sha,
