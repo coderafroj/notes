@@ -212,7 +212,7 @@ export default function Editor({
     editorProps: {
       attributes: {
         class:
-          'prose prose-base md:prose-lg max-w-none focus:outline-none min-h-[60vh] text-[#0f0f0f] dark:text-[#f8f8f6] prose-headings:font-black prose-headings:tracking-tight prose-h1:text-5xl prose-h1:leading-[1.1] md:prose-h1:text-6xl prose-h2:text-3xl md:prose-h2:text-4xl prose-h3:text-2xl md:prose-h3:text-3xl prose-p:leading-[1.7] prose-p:text-[17px] prose-p:mb-6 prose-li:leading-[1.7] prose-code:text-[#7F77DD] prose-code:bg-[#7F77DD]/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-blockquote:border-l-4 prose-blockquote:border-[#7F77DD] prose-blockquote:bg-[#7F77DD]/5 prose-blockquote:py-2 prose-blockquote:px-5 prose-blockquote:rounded-r-2xl',
+          'prose prose-base md:prose-lg max-w-none focus:outline-none min-h-[60vh] text-[#0f0f0f] dark:text-[#f8f8f6] prose-headings:font-black prose-h1:text-5xl prose-h1:leading-[1.1] md:prose-h1:text-6xl prose-h2:text-3xl md:prose-h2:text-4xl prose-h3:text-2xl md:prose-h3:text-3xl prose-p:leading-[1.7] prose-p:text-[17px] prose-p:mb-6 prose-li:leading-[1.7] prose-code:text-[#7F77DD] prose-code:bg-[#7F77DD]/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-blockquote:border-l-4 prose-blockquote:border-[#7F77DD] prose-blockquote:bg-[#7F77DD]/5 prose-blockquote:py-2 prose-blockquote:px-5 prose-blockquote:rounded-r-2xl',
         spellcheck: 'true',
       },
     },

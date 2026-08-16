@@ -126,7 +126,7 @@ async function GlobalFeed({ currentUser }: { currentUser?: string | null }) {
                     <span className="px-3 py-1 rounded-full bg-[#EEEDFE] dark:bg-[#7F77DD]/20 text-[#534AB7] dark:text-[#9F97ED] text-xs font-black uppercase tracking-widest">Featured</span>
                     <span className="text-xs font-medium text-[#6b7280] dark:text-[#a1a1aa]">{formatDate(featured.publishedAt)}</span>
                   </div>
-                  <h2 className="text-3xl md:text-5xl font-black leading-[1.1] mb-4 tracking-tight group-hover:text-[#7F77DD] transition-colors">{featured.title}</h2>
+                  <h2 className="text-3xl md:text-5xl font-black leading-[1.1] mb-4 group-hover:text-[#7F77DD] transition-colors">{featured.title}</h2>
                   <p className="text-[16px] md:text-lg text-[#6b7280] dark:text-[#a1a1aa] leading-relaxed mb-8 line-clamp-3">{featured.contentPreview}</p>
                   <div className="flex items-center gap-3 mt-auto">
                     <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm shadow-md" style={{ background: avatarStyle(featured.author).bg, color: avatarStyle(featured.author).color }}>

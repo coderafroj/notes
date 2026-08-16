@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { Home, Search, Plus, Star, Settings, UploadCloud, LayoutDashboard, User, FileBadge } from 'lucide-react'
+import { Home, Search, Plus, Star, Settings, UploadCloud, LayoutDashboard, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useNoteflowStore } from '@/lib/store'
 import { saveNoteLocal, saveNoteWithSync } from '@/lib/sync'
@@ -41,10 +41,7 @@ export default function BottomNav() {
     { label: 'Home', icon: Home, href: '/' },
     { label: 'Explore', icon: Search, href: '/browse' },
     { label: 'Create', icon: Plus, href: '#', isAction: true, onClick: handleNew },
-    ...(session?.user?.isAdmin 
-      ? [{ label: 'Result', icon: FileBadge, href: '/result-generator' }]
-      : [{ label: 'Dash', icon: LayoutDashboard, href: '/dashboard' }]
-    ),
+    { label: 'Dash', icon: LayoutDashboard, href: '/dashboard' },
     { label: 'Profile', icon: User, href: session ? `/@${session.user.login}` : '/login' },
   ]
 

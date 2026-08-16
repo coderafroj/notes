@@ -15,7 +15,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
     disableDevLogs: true,
     runtimeCaching: [
       {
-        urlPattern: /\/|(\/dashboard)|(\/result-generator)$/i,
+        urlPattern: /\/|(\/dashboard)$/i,
         handler: "StaleWhileRevalidate",
         options: {
           cacheName: "app-pages",

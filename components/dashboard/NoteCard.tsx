@@ -87,7 +87,7 @@ export default function NoteCard({ note, viewMode }: NoteCardProps) {
           {isGrid && note.tags.length > 0 && (
             <div className="flex gap-1.5 overflow-hidden ml-auto">
               {note.tags.slice(0, 2).map((tag) => (
-                <span key={tag} className="px-2.5 py-1 rounded-lg bg-[#7F77DD]/5 text-[#7F77DD] text-[10px] font-black uppercase tracking-tight border border-[#7F77DD]/10">
+                <span key={tag} className="px-2.5 py-1 rounded-lg bg-[#7F77DD]/5 text-[#7F77DD] text-[10px] font-black uppercase border border-[#7F77DD]/10">
                   #{tag}
                 </span>
               ))}

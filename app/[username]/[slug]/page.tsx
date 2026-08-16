@@ -130,7 +130,7 @@ export default async function PublicNotePage({ params }: Props) {
       {/* Article */}
       <article className="max-w-3xl mx-auto px-6 py-12">
         {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 leading-tight break-words">
+        <h1 className="text-3xl md:text-4xl font-bold mb-6 leading-tight break-words">
           {note.title}
         </h1>
 

@@ -2,8 +2,12 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Outfit', 'Inter', system-ui, sans-serif;
+  /* Devanagari-safe stacks: Inter/Outfit don't cover Devanagari glyphs at all,
+     so without an explicit fallback the browser can pick an inconsistent
+     substitute font per-run. Noto Sans / Noto Sans Devanagari + system-ui
+     guarantee correct shaping for Hindi (and other Indic scripts) notes. */
+  --font-sans: 'Inter', 'Noto Sans', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Outfit', 'Inter', 'Noto Sans', 'Noto Sans Devanagari', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   
   --color-brand: #7F77DD;
@@ -63,7 +67,14 @@
     color: var(--foreground);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    letter-spacing: -0.015em;
+    /* NOTE: do not use a negative letter-spacing here. Devanagari (and other
+       complex/conjunct scripts like Hindi) rely on the browser's text-shaping
+       engine to correctly join matras and conjuncts — negative tracking
+       breaks that shaping and glyphs render as broken/incorrect characters.
+       This previously made every Hindi note look corrupted. Tight tracking
+       for the Latin UI chrome is applied locally via `.tracking-brand`
+       instead, never globally on `body`. */
+    letter-spacing: normal;
     font-family: var(--font-sans);
     transition: background-color 0.3s ease, color 0.3s ease;
     
@@ -77,9 +88,21 @@
   
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    letter-spacing: -0.03em;
+    /* Same reasoning as body: headings render live inside note content
+       (Tiptap turns '#'/H1-H3 commands into real <h1>-<h3> tags), so a
+       global negative letter-spacing here corrupted Hindi headings too.
+       Latin marketing/hero headings should opt in via `.tracking-brand`. */
+    letter-spacing: normal;
     font-weight: 700;
     color: var(--foreground);
+  }
+}
+
+@layer utilities {
+  /* Opt-in tight tracking for hardcoded Latin UI/marketing copy only —
+     never apply this to elements that can contain user-typed note content. */
+  .tracking-brand {
+    letter-spacing: -0.03em;
   }
 }
 
@@ -141,6 +164,15 @@
   line-height: 1.7;
   -webkit-user-select: text;
   user-select: text;
+  /* Belt-and-suspenders: user-typed note content (Hindi/Devanagari and
+     other Indic scripts included) must never inherit tight tracking or
+     a Latin-only font, or matras/conjuncts render as broken glyphs. */
+  letter-spacing: normal !important;
+  font-family: var(--font-sans);
+}
+
+.tiptap h1, .tiptap h2, .tiptap h3 {
+  letter-spacing: normal !important;
 }
 
 .tiptap p.is-editor-empty:first-child::before,

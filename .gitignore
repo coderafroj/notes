@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# next-pwa generated service worker (auto-built on `npm run build`,
+# should never be hand-edited or committed)
+/public/sw.js
+/public/workbox-*.js
+/public/fallback-*.js
