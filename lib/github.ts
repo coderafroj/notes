@@ -17,6 +17,7 @@ export async function githubFetch(
   let res: Response;
   try {
     res = await fetch(`${GITHUB_API_BASE}${path}`, {
+      cache: 'no-store',
       ...options,
       headers: {
         Authorization: `Bearer ${token}`,
