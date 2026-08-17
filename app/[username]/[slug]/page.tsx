@@ -3,10 +3,12 @@
 // URL: mynotes.bytecores.in/@coderafroj/my-physics-notes
 
 import { getPublicNote } from '@/lib/publish'
+import { getLikeCount } from '@/lib/likes'
 import { formatDate } from '@/lib/utils'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Calendar } from 'lucide-react'
+import LikeButton from '@/components/note-ui/LikeButton'
 
 interface Props {
   params: Promise<{ username: string; slug: string }>
@@ -108,6 +110,7 @@ export default async function PublicNotePage({ params }: Props) {
   if (!note) notFound()
 
   const html = renderContent(note.content)
+  const likeCount = await getLikeCount(username, slug)
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -174,6 +177,11 @@ export default async function PublicNotePage({ params }: Props) {
           className="prose prose-base max-w-none break-words prose-p:text-[var(--foreground)] prose-headings:text-[var(--foreground)] prose-strong:text-[var(--foreground)] prose-li:text-[var(--foreground)] prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-p:leading-relaxed prose-a:text-[var(--p-purple)] prose-code:bg-[var(--muted)] prose-code:text-[var(--p-purple)] prose-code:px-1 prose-code:rounded prose-blockquote:border-l-[var(--p-purple)] prose-blockquote:text-[var(--muted-text)] prose-pre:bg-[#1e1e2e] prose-pre:text-[#cdd6f4]"
           dangerouslySetInnerHTML={{ __html: html }}
         />
+
+        {/* Like */}
+        <div className="mt-10 flex justify-center">
+          <LikeButton username={username} slug={slug} initialCount={likeCount} />
+        </div>
 
         {/* Footer CTA */}
         <div className="mt-16 pt-8 border-t border-[var(--border)] text-center">

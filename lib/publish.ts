@@ -3,7 +3,7 @@
 // Public URL: mynotes.bytecores.in/@{username}/{slug}
 
 import { Note } from '@/types'
-import { getFile, saveFile, githubFetch, getOrCreatePublicRepo, PUBLIC_REPO_NAME } from './github'
+import { getFile, saveFile, githubFetch, getOrCreatePublicRepo, PUBLIC_REPO_NAME, decodeBase64Utf8 } from './github'
 
 function makeSlug(title: string): string {
   const s = title
@@ -126,7 +126,7 @@ export async function getPublicIndex(
     if (!res.ok) return []
     const data = await res.json()
     if (!data.content) return []
-    const raw = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))))
+    const raw = decodeBase64Utf8(data.content)
     return JSON.parse(raw)
   } catch {
     return []
@@ -156,7 +156,7 @@ export async function getAdminStats(currentUser?: string | null): Promise<{
     if (res.ok) {
       const data = await res.json()
       if (data.content) {
-        const list = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))))
+        const list = JSON.parse(decodeBase64Utf8(data.content))
         if (Array.isArray(list)) {
           authors = Array.from(new Set([...authors, ...list]))
           console.log(`[Discovery] Loaded ${list.length} authors from Central Registry.`)
@@ -208,7 +208,7 @@ export async function getAdminStats(currentUser?: string | null): Promise<{
     if (res.ok) {
       const data = await res.json()
       if (data.content) {
-        const banned = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))))
+        const banned = JSON.parse(decodeBase64Utf8(data.content))
         bannedUsers = banned.users || []
         bannedNotes = banned.notes || [] // Array of 'username/slug'
       }
@@ -272,7 +272,7 @@ export async function getPublicNote(
     }
     const data = await res.json()
     if (!data.content) return null
-    const raw = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))))
+    const raw = decodeBase64Utf8(data.content)
     return JSON.parse(raw)
   } catch (e) {
     console.error(`[getPublicNote] Error fetching ${url}:`, e)

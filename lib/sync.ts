@@ -176,8 +176,13 @@ export async function toggleFavoriteWithSync(
 
 // -----------------------------------------------------------
 // Internal: rebuild the NoteIndexEntry and patch index.json
+// index.json is a single shared file every note-save touches, so two
+// saves close together (multi-tab, quick edits, background sync) can
+// race and hit a stale-SHA 409 conflict. Retrying with a freshly
+// re-fetched SHA a few times avoids silently losing the index update
+// (which would orphan the note file from the dashboard's view).
 // -----------------------------------------------------------
-async function updateIndex(token: string, username: string, note: Note) {
+async function updateIndex(token: string, username: string, note: Note, attempt = 0): Promise<void> {
   const indexFile = await getFile(token, username, 'index.json')
   const index: NotesIndex = indexFile?.content ?? {
     version: '1.0',
@@ -220,7 +225,19 @@ async function updateIndex(token: string, username: string, note: Note) {
   index.tags = Object.entries(tagCounts).map(([name, count]) => ({ name, count }))
   index.updatedAt = new Date().toISOString()
 
-  await saveFile(token, username, 'index.json', index, indexFile?.sha)
+  try {
+    await saveFile(token, username, 'index.json', index, indexFile?.sha)
+  } catch (error: any) {
+    // 409 = SHA conflict (someone else wrote index.json since we fetched it).
+    // Re-fetch the latest SHA and retry a few times before giving up — the
+    // self-healing reconciliation in initializeNoteflow() is the last-resort
+    // safety net if this still fails.
+    if (error?.status === 409 && attempt < 3) {
+      await updateIndex(token, username, note, attempt + 1)
+      return
+    }
+    throw error
+  }
 }
 
 // -----------------------------------------------------------
